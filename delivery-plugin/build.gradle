@@ -1,0 +1,38 @@
+apply plugin: 'groovy'
+apply plugin: 'com.github.dcendents.android-maven'
+
+uploadArchives {
+    repositories project.ext.properties.containsKey('bintrayRepositories')?project.ext.bintrayRepositories : {}
+}
+
+repositories {
+    jcenter()
+    maven { url 'http://dl.bintray.com/content/noamt/gradle-plugins' }
+}
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+
+dependencies {
+    compile gradleApi()
+    compile localGroovy()
+    compile 'com.github.dcendents:android-maven-gradle-plugin:1.3'
+    testCompile 'junit:junit:4.11'
+    testCompile 'com.android.tools.build:gradle:2.1.0'
+}
+
+task(copyLocalProperties, type: Copy) {
+    from('../local.properties')
+    into('src/test/resources/android-app')
+}
+classes.finalizedBy copyLocalProperties
+
+test{
+    workingDir project.projectDir.getParentFile()
+}
+
+
+
+
+
