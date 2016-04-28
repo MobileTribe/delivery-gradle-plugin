@@ -1,0 +1,144 @@
+  
+
+
+# Gradle delivery plugin
+
+
+## Note
+
+This plugin is compatible with java, groovy, android and android-library project. It handles the following part of your continuous delivery process :
+
+- git release workflow (http://nvie.com/posts/a-successful-git-branching-model/)
+- apk signing configuration with external properties
+- artifacts upload to maven (jar, aar, apk-debug, apk-test, apk-release, mapping.txt) 
+
+
+This plugin is based on 2 others plugins :
+
+- https://github.com/dcendents/android-maven-gradle-plugin[Android Maven plugin] from dcendents
+- https://github.com/researchgate/gradle-release[Gradle Release plugin] from researchgate
+
+
+## Configuration
+
+To use delivery, just apply the plugin in your java / android / android-library project.
+
+```java
+buildscript {
+	repositories {
+		jcenter()
+	}
+
+	dependencies {
+		classpath 'com.leroymerlin.plugins:delivery-plugin:LAST_VERSION'
+	}
+}
+
+apply plugin: 'delivery'
+```
+
+Current version is 
+
+[source,java]
+----
+include::gradle.properties[]
+----
+
+Configure the delivery gradle extension in your build.gradle to fit your need
+
+```java
+
+delivery {
+
+    newVersionCommitPattern = 'chore (version) : Update version to $version'
+    
+    releaseTagPattern = '$appname-$versioncode-$version'
+    
+    releaseBranchPattern = 'release/$versioncode-$version'
+    
+    //please refer to https://docs.gradle.org/current/userguide/maven_plugin.html[Maven plugin]
+    archiveRepositories = {
+        mavenDeployer {
+             repository(url: "MY_MAVEN_URL") {
+                  authentication([userName: 'myusername', password: 'mypassword'])
+             }
+             snapshotRepository(url: "MY_MAVEN_URL") {
+                  authentication([userName: 'myusername', password: 'mypassword'])
+             }
+        }
+    }
+    
+    failOnSnapshotDependency = true
+    
+    versionPatterns = [
+                // Increments last number: "2.5-SNAPSHOT" => "2.6-SNAPSHOT"
+                /(\d+)([^\d]*$)/: { Matcher m, Project p -> m.replaceAll("${(m[0][1] as int) + 1}${m[0][2]}") }
+        ]
+        
+    gitConfig {
+        requireBranch = System.getProperty('BRANCH', 'develop')
+        pushToRemote = 'origin' // needs to be def as can be boolean or string
+        password = System.getProperty('SCM_PASSWORD')
+        user = System.getProperty('SCM_USER')
+    }
+        
+    //Android only
+    signingProperties {
+        all {
+            propertiesFile = project.file("debug_signing.properties")
+        }
+        release {
+            propertiesFile = project.file("signing.properties")
+            storeFileField = "storeFile"
+            storePasswordField = "storePassword"
+            keyAliasField = "keyAlias"
+            keyAliasPasswordField = "keyAliasPassword"
+        }
+    }    
+}
+```
+
+don't forget to configure your own signing.properties file outside of your git repository. It should look like this :
+
+```java
+
+storeFile=/path/to/my/store.jks
+storePassword=myStorePassword
+keyAlias=myAlias
+keyAliasPassword=myAliasPass
+
+```
+## Usage
+
+Delivery will generate two main tasks :
+
+- *delivery* will create a release branch unsnapshot your version build and archive your release artifacts
+- *validateDelivery* will merge your release branch to master tag with the version pattern and merge and increment the new version number to your develop branch
+
+
+To archive snapshot version you can use *upload{variantName}Artifacts* tasks. They will build the project variants you need and archive them to maven
+
+
+You can use system properties to override default behaviour. Here is the list of all properties supported :
+
+- *VERSION* //version that will be used to release
+- *VERSION_CODE* //version code that will be used to release
+- *NEW_VERSION* //new version to use after the release
+- *BRANCH* //develop branch name
+- *SCM_PASSWORD* //git password
+- *SCM_USER* //git user
+
+
+## License
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
