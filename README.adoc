@@ -39,10 +39,7 @@ apply plugin: 'delivery'
 
 Current version is 
 
-[source,java]
-----
 include::gradle.properties[]
-----
 
 Configure the delivery gradle extension in your build.gradle to fit your need
 

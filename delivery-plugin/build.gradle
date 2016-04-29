@@ -34,5 +34,11 @@ test{
 
 
 
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allJava
+}
 
-
+artifacts {
+    archives sourcesJar
+}

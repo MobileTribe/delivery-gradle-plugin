@@ -51,7 +51,6 @@ nb-configuration.xml
 ## Gradle
 .gradle
 build/
-/gradle.properties
 velocity.log
 crashlytics-build.properties
 container_plugins
