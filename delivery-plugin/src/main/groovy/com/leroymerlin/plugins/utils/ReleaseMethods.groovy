@@ -47,7 +47,7 @@ public class ReleaseMethods {
     public def unSnapVersion() {
         def version = project.version
 
-        if (version.endsWith('-SNAPSHOT')) {
+        if (version.toString().endsWith('-SNAPSHOT')) {
             version -= '-SNAPSHOT'
             parent.logger.info("New version name will be " + version)
             project.version = version;
@@ -59,10 +59,9 @@ public class ReleaseMethods {
     public def updateVersionsFile() {
         def ant = new AntBuilder()
 
-        File f = project.file(project.versionfilepath);
-        ant.propertyfile(file: f.absolutePath) {
-            entry(key: "version", value: project.version)
-            entry(key: "versioncode", value: project.versioncode)
+        ant.propertyfile(file: parent.versionFile) {
+            entry(key: parent.versionKey, value: project.version)
+            entry(key: parent.versionIdKey, value: project.versionId)
         }
     }
 
@@ -85,17 +84,16 @@ public class ReleaseMethods {
         if (newVersion) {
             newVersion -= '-SNAPSHOT'
             newVersion += '-SNAPSHOT'
-            def versionCode = "" + (Integer.parseInt(project.versioncode) + 1)
+            def versionId = "" + (Integer.parseInt(project.versionId) + 1)
 
-            parent.setProjectProperty('version', newVersion)
-
-            parent.setProjectProperty('versioncode', versionCode)
+            parent.setProjectProperty(parent.versionKey, newVersion)
+            parent.setProjectProperty(parent.versionIdKey, versionId)
 
             updateVersionsFile()
-            this.parent.scmFlowMethods.basicCommit("updates version to $versionCode-$newVersion")
+            this.parent.scmFlowMethods.basicCommit("updates version to $versionId-$newVersion")
 
         } else {
-            throw new GradleException("Failed to increase version [$version] - unknown pattern")
+            throw new GradleException("Failed to increase version [$project.version] - unknown pattern")
         }
     }
 

@@ -32,7 +32,7 @@ class EnvironnementTest extends BasePluginTest {
 
     @Test
     public void testCheckProperties() {
-        Utils.setPropertyInFile(project.file('delivery.properties'), ['versionfilepath': 'custom.properties'])
+        Utils.setPropertyInFile(project.file('delivery.properties'), ['versionFilePath': 'custom.properties'])
         setupProject()
         project.evaluate()
 
@@ -45,7 +45,7 @@ class EnvironnementTest extends BasePluginTest {
 
 
         System.setProperty("VERSION", "13.3.8")
-        System.setProperty("VERSION_CODE", "1338")
+        System.setProperty("VERSION_ID", "1338")
 
         setupProject()
 
@@ -58,7 +58,7 @@ class EnvironnementTest extends BasePluginTest {
 
 
         Assert.assertEquals("13.3.8", project.version)
-        Assert.assertEquals("1338", project.versioncode)
+        Assert.assertEquals("1338", project.versionId)
 
 
     }

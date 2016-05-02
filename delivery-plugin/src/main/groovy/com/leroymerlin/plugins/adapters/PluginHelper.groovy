@@ -10,15 +10,12 @@
 
 package com.leroymerlin.plugins.adapters
 
-import groovy.text.SimpleTemplateEngine
 import com.leroymerlin.plugins.DeliveryPluginExtension
 import com.leroymerlin.plugins.adapters.cli.Executor
-import org.apache.tools.ant.BuildException
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-
 
 class PluginHelper {
 
@@ -69,27 +66,6 @@ class PluginHelper {
         }
     }
 
-    File findPropertiesFile() {
-        File propertiesFile = project.file(extension.versionPropertyFile)
-        if (!propertiesFile.file) {
-            if (!isVersionDefined()) {
-                project.version = useAutomaticVersion() ? '1.0' : readLine('Version property not set, please set it now:', '1.0')
-            }
-            boolean createIt = project.hasProperty('version') && promptYesOrNo("[$propertiesFile.canonicalPath] not found, create it with version = ${project.version}")
-            if (createIt) {
-                propertiesFile.append("version=${project.version}")
-            } else {
-                log.debug "[$propertiesFile.canonicalPath] was not found, and user opted out of it being created. Throwing exception."
-                throw new GradleException("[$propertiesFile.canonicalPath] not found and you opted out of it being created,\n please create it manually and and specify the version property.")
-            }
-        }
-        propertiesFile
-    }
-
-    boolean isVersionDefined() {
-        project.version && 'unspecified' != project.version
-    }
-
     void warnOrThrow(boolean doThrow, String message) {
         if (doThrow) {
             throw new GradleException(message)
@@ -101,65 +77,6 @@ class PluginHelper {
 
     String findProperty(String key, String defaultVal = "") {
         System.properties[key] ?: project.properties[key] ?: defaultVal
-    }
-
-    /**
-     * Updates properties file (<code>gradle.properties</code> by default) with new version specified.
-     * If configured in plugin convention then updates other properties in file additionally to <code>version</code> property
-     *
-     * @param newVersion new version to store in the file
-     */
-    void updateVersionProperty(String newVersion) {
-        def oldVersion = "${project.version}"
-        if (oldVersion != newVersion) {
-            project.version = newVersion
-            project.ext.set('versionModified', true)
-            project.subprojects?.each { Project subProject ->
-                subProject.version = newVersion
-            }
-            def versionProperties = extension.versionProperties + 'version'
-            def propFile = findPropertiesFile()
-            versionProperties.each { prop ->
-                try {
-                    project.ant.propertyfile(file: propFile) {
-                        entry(key: prop, value: project.version)
-                    }
-                } catch (BuildException be) {
-                    throw new GradleException('Unable to update version property.', be)
-                }
-            }
-        }
-    }
-
-    void incrementVersionCodeProperty(int code) {
-
-        project.versioncode = code
-        project.subprojects?.each { Project subProject ->
-            subProject.versioncode = code
-        }
-        def versionProperties = 'versioncode'
-
-        def propFile = findPropertiesFile()
-
-        try {
-            project.ant.propertyfile(file: propFile) {
-                entry(key: versionProperties, value: code)
-            }
-        } catch (BuildException be) {
-            throw new GradleException('Unable to update versioncode property.', be)
-        }
-
-
-    }
-
-    /**
-     * Capitalizes first letter of the String specified.
-     *
-     * @param s String to capitalize
-     * @return String specified with first letter capitalized
-     */
-    protected static String capitalize(String s) {
-        s[0].toUpperCase() + (s.size() > 1 ? s[1..-1] : '')
     }
 
     /**

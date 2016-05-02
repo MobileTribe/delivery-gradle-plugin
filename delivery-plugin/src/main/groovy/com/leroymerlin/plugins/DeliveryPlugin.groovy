@@ -29,6 +29,12 @@ public class DeliveryPlugin implements Plugin<Project> {
     def tasksInitRelease = []
     def tasksValidateRelease = []
 
+
+    def versionKey = 'version'
+    def versionIdKey = 'versionId'
+    def projectNameKey = 'projectName'
+    File versionFile
+
     void apply(Project project) {
         this.project = project
         this.project.apply plugin: 'com.github.dcendents.android-maven'
@@ -51,15 +57,14 @@ public class DeliveryPlugin implements Plugin<Project> {
         this.scmFlowMethods = new ScmFlowMethods(project, this)
         this.buildMethods = new BuildMethods(project, this)
 
-        this.applyPropertiesFiles()
-
+        applyPropertiesFiles()
         checkProperties()
 
         if (System.getProperty("VERSION")) {
-            setProjectProperty('version', System.getProperty("VERSION"))
+            setProjectProperty(versionKey, System.getProperty("VERSION"))
         }
-        if (System.getProperty("VERSION_CODE")) {
-            setProjectProperty('versioncode', System.getProperty("VERSION_CODE"))
+        if (System.getProperty("VERSION_ID")) {
+            setProjectProperty(versionIdKey, System.getProperty("VERSION_ID"))
         }
 
         def isAndroidApp = project.plugins.hasPlugin("com.android.application")
@@ -68,7 +73,7 @@ public class DeliveryPlugin implements Plugin<Project> {
             project.android {
                 defaultConfig {
                     versionName project.version
-                    versionCode Integer.parseInt(project.versioncode)
+                    versionCode Integer.parseInt(project.versionId)
                 }
 
                 buildTypes.all {
@@ -87,6 +92,23 @@ public class DeliveryPlugin implements Plugin<Project> {
             //Check the properties file once the build.gradle is read
             this.checkConfig()
             this.buildMethods.createTasksArchiveAPKs()
+        }
+    }
+
+    public void applyVersionKeys() {
+        if (project.hasProperty('versionFilePath')) {
+            versionFile = project.file(project.versionFilePath);
+        } else {
+            versionFile = project.file('version.properties')
+        }
+        if (project.hasProperty('versionIdKey')) {
+            versionIdKey = project.versionIdKey
+        }
+        if (project.hasProperty('versionKey')) {
+            versionKey = project.versionKey
+        }
+        if (project.hasProperty('projectNameKey')) {
+            projectNameKey = project.projectNameKey
         }
     }
 
@@ -193,18 +215,13 @@ public class DeliveryPlugin implements Plugin<Project> {
 
 
     void checkProperties() {
-
-        File refPropFile = project.file(project.ext.versionfilepath)
-
-        //check version - versioncode - projectname exit and are applied
-        checkProperty('version', '0.0.1-SNAPSHOT', refPropFile, true);
-        checkProperty('versioncode', '2', refPropFile, true);
-        checkProperty('projectname', project.name, refPropFile, false);
+        checkProperty(versionKey, '0.0.1-SNAPSHOT', versionFile, true);
+        checkProperty(versionIdKey, '2', versionFile, true);
+        checkProperty(projectNameKey, project.name, versionFile, false);
     }
 
 
     private void checkProperty(String name, String defaultValue, File file, boolean shouldContain) {
-
         if (!project.hasProperty(name) || !file.exists() || (shouldContain && Utils.readProperty(file, name) == null)) {
             Utils.setPropertyInFile(file, ["${name}": defaultValue]);
             throw new GradleException("property $name not found in your project. It has been added in ${file.path} with value $defaultValue. Please try to resync !")
@@ -219,10 +236,10 @@ public class DeliveryPlugin implements Plugin<Project> {
         String version = project.version
         if (isAndroidApp) {
             if (!(project.android.defaultConfig.versionName == version)) {
-                throw new GradleException("app versionName is ${project.android.defaultConfig.versionName} but should be $version. Please set: android.defaultConfig.versionName version")
+                throw new GradleException("app versionName is ${project.android.defaultConfig.versionName} but should be $version. Please set: android.defaultConfig.versionName $versionKey")
             }
-            if (!(project.android.defaultConfig.versionCode == Integer.parseInt(project.versioncode))) {
-                throw new GradleException("app versionCode is ${project.android.defaultConfig.versionCode} but should be ${project.versioncode}. Please set: android.defaultConfig.versionCode Integer.parseInt(versioncode)")
+            if (!(project.android.defaultConfig.versionCode == Integer.parseInt(project.versionId))) {
+                throw new GradleException("app versionCode is ${project.android.defaultConfig.versionCode} but should be ${project.versionId}. Please set: android.defaultConfig.versionCode Integer.parseInt($versionIdKey)")
             }
 
             if (project.android.defaultConfig.applicationId)
@@ -249,14 +266,11 @@ public class DeliveryPlugin implements Plugin<Project> {
         if (deliveryProperties.exists())
             applyPropertiesOnProject(deliveryProperties);
 
-        if (!project.hasProperty('versionfilepath')) {
-            project.ext.versionfilepath = 'version.properties';
-        }
-        logger.info("Checking the Properties files : " + project.versionfilepath)
-        File refPropFile = project.file(project.versionfilepath)
+        applyVersionKeys()
 
-        if (refPropFile.exists())
-            applyPropertiesOnProject(refPropFile)
+        if(versionFile.exists()){
+            applyPropertiesOnProject(versionFile)
+        }
     }
 
 
@@ -269,6 +283,14 @@ public class DeliveryPlugin implements Plugin<Project> {
     }
 
     public void setProjectProperty(def key, def value) {
+        if(key == versionKey && key != 'version'){
+            setProjectProperty('version', value)
+        }else if(key == versionIdKey && key != 'versionId'){
+            setProjectProperty('versionId', value)
+        }else if(key == projectNameKey && key != 'projectName' ){
+            setProjectProperty('projectName', value)
+        }
+
         project.ext.set(key, value);
         if (key == 'version')
             project.setProperty(key, value);

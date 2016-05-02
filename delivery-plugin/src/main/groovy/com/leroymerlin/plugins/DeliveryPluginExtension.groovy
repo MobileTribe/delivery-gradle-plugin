@@ -24,9 +24,9 @@ class DeliveryPluginExtension {
     //commit text
     def newVersionCommitPattern = 'chore (version) : Update version to $version'
 
-    def releaseTagPattern = '$appname-$versioncode-$version'
+    def releaseTagPattern = '$projectName-$versionId-$version'
 
-    def releaseBranchPattern = 'release/$versioncode-$version'
+    def releaseBranchPattern = 'release/$versionId-$version'
 
     def archiveRepositories = project.ext.properties.containsKey('archiveRepositories')?project.ext.archiveRepositories : {}
 

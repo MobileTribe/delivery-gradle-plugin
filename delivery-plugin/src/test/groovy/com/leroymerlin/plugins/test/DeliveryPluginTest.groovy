@@ -70,22 +70,19 @@ class DeliveryPluginTest extends BasePluginTest {
     @Test
     public void testBasicTagName() {
         project.evaluate()
-        def version = project.ext.version
-        def versioncode = project.ext.versioncode;
-        Assert.assertEquals(project.name +"-"+ versioncode + "-" + version, Utils.tagName(this.project, this.project.extensions['delivery'] as DeliveryPluginExtension))
+        Assert.assertEquals(project.projectName +"-"+ project.versionId + "-" + project.version, Utils.tagName(this.project, this.project.extensions['delivery'] as DeliveryPluginExtension))
     }
 
 
     @Test
     public void testCustomTagName() {
         project.delivery {
-            releaseTagPattern = '$appname(v$version)'
+            releaseTagPattern = '$projectName(v$version)'
         }
 
         project.evaluate()
-        def version = project.ext.version
 
-        String string = "${project.name}(v" + version + ")"
+        String string = "${project.name}(v" + project.version + ")"
         String name = Utils.tagName(this.project, this.project.extensions['delivery'] as DeliveryPluginExtension)
         Assert.assertEquals(string, name)
     }
@@ -93,10 +90,9 @@ class DeliveryPluginTest extends BasePluginTest {
     @Test
     public void testBasicReleaseBranchName() {
         project.evaluate()
-        def version = project.ext.version
-        def versioncode = project.ext.versioncode
+        def version = project.version
 
-        String string = "release/$versioncode-$version"
+        String string = "release/$project.versionId-$version"
 
         String branchName = Utils.releaseBranchName(this.project, this.project.extensions['delivery'] as DeliveryPluginExtension)
         assert string.equals(branchName)
@@ -106,7 +102,7 @@ class DeliveryPluginTest extends BasePluginTest {
     @Test
     public void testCustomReleaseBranchName() {
         project.delivery {
-            releaseBranchPattern = '$appname(v$version)'
+            releaseBranchPattern = '$projectName(v$version)'
         }
 
         project.evaluate()
@@ -127,14 +123,12 @@ class DeliveryPluginTest extends BasePluginTest {
     @Test
     public void testCustomReleaseMessage() {
         project.delivery {
-            newVersionCommitPattern = 'new version commit $version $versioncode'
+            newVersionCommitPattern = 'new version commit $version $versionId'
         }
 
         project.evaluate()
-        def version = project.ext.version
-        def versioncode = project.ext.versioncode
 
-        Assert.assertEquals("new version commit " + version + " " + versioncode, Utils.newVersionCommitMessage(this.project, this.project.extensions['delivery'] as DeliveryPluginExtension))
+        Assert.assertEquals("new version commit " + project.version + " " + project.versionId, Utils.newVersionCommitMessage(this.project, this.project.extensions['delivery'] as DeliveryPluginExtension))
     }
 
 

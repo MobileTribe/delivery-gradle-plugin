@@ -180,7 +180,6 @@ class SvnAdapter extends BaseScmAdapter {
     }
 
     void revert() {
-        svnExec(['revert', findPropertiesFile().name], errorMessage: 'Error reverting changes made by the release plugin.', errorPatterns: [ERROR])
     }
 
     /**

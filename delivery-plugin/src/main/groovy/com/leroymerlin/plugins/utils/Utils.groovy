@@ -8,13 +8,10 @@ public class Utils {
 
     public final static String tagName(Project project, DeliveryPluginExtension extension) {
         def tagName
-        def version = project.version
-        def versionCode = project.versioncode
-        def appname = project.ext.projectname
         SimpleTemplateEngine engine = new SimpleTemplateEngine()
 
         def text = extension.releaseTagPattern
-        def binding = ["version":version, "versioncode": versionCode, "appname": appname]
+        def binding = ["version":project.version, "versionId": project.versionId, "projectName": project.projectName]
 
         //TODO Vérifier que le tag est correctement défini par l'utilisateur ?
         tagName = engine.createTemplate(text).make(binding)
@@ -24,13 +21,10 @@ public class Utils {
 
     public final static String releaseBranchName(Project project, DeliveryPluginExtension extension) {
         def branchName
-        def version = project.version
-        def versionCode = project.versioncode
-        def appname = project.projectname
         SimpleTemplateEngine engine = new SimpleTemplateEngine()
 
         def text = extension.releaseBranchPattern
-        def binding = ["version":version, "versioncode": versionCode, "appname": appname]
+        def binding = ["version":project.version, "versionId": project.versionId, "projectName": project.projectName]
 
         //TODO Vérifier que le tag est correctement défini par l'utilisateur ?
         branchName = engine.createTemplate(text).make(binding)
@@ -39,13 +33,9 @@ public class Utils {
 
     public final static String newVersionCommitMessage(Project project, DeliveryPluginExtension extension) {
         def branchName
-        def version = project.version
-        def versionCode = project.versioncode
-        def appname = project.projectname
         SimpleTemplateEngine engine = new SimpleTemplateEngine()
-
         def text = extension.newVersionCommitPattern
-        def binding = ["version":version, "versioncode": versionCode, "appname": appname]
+        def binding = ["version":project.version, "versionId": project.versionId, "projectName": project.projectName]
 
         //TODO Vérifier que le tag est correctement défini par l'utilisateur ?
         branchName = engine.createTemplate(text).make(binding)

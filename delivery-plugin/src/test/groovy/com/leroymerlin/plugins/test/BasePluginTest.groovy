@@ -57,7 +57,7 @@ class BasePluginTest {
         project = null;
 
         System.clearProperty("VERSION")
-        System.clearProperty("VERSION_CODE")
+        System.clearProperty("VERSION_ID")
     }
 
 
@@ -96,8 +96,8 @@ class BasePluginTest {
                 targetSdkVersion 23
                 //  multiDexEnabled true
                 applicationId 'com.leroymerlin.plugin.testapp'
-                versionName  project.ext.version
-                versionCode  Integer.parseInt(project.ext.versioncode)
+                versionName  project.version
+                versionCode  Integer.parseInt(project.versionId)
 
             }
 

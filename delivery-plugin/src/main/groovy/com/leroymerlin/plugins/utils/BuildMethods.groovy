@@ -36,6 +36,10 @@ public class BuildMethods {
         } else {
             //for library or java code we use the standard plugin
             uploadArtifactTasks.add("uploadArchives")
+
+            project.uploadArchives{
+                repositories parent.extension.archiveRepositories
+            }
         }
 
         project.task('runBuildTasks', group: DeliveryPlugin.TASK_GROUP, description: 'Runs the build process in a separate gradle run.', type: GradleBuild) {
@@ -56,7 +60,7 @@ public class BuildMethods {
     }
 
     private void handleVariant(variant, uploadArtifactTasks) {
-        String flavorName = project.projectname.toString().split(' ').collect({ m -> return m.toLowerCase().capitalize() }).join("") + variant.flavorName.capitalize();
+        String flavorName = project.projectName.toString().split(' ').collect({ m -> return m.toLowerCase().capitalize() }).join("") + variant.flavorName.capitalize();
         flavorName = flavorName[0].toLowerCase() + flavorName.substring(1)
         def uploadTask = "upload${flavorName.capitalize()}Artifacts"
         def configurationName = flavorName + "Config";

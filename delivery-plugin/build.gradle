@@ -1,6 +1,16 @@
 apply plugin: 'groovy'
 apply plugin: 'com.github.dcendents.android-maven'
 
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allJava
+}
+
+artifacts {
+    archives sourcesJar
+}
+
 uploadArchives {
     repositories project.ext.properties.containsKey('bintrayRepositories')?project.ext.bintrayRepositories : {}
 }
@@ -33,12 +43,3 @@ test{
 }
 
 
-
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allJava
-}
-
-artifacts {
-    archives sourcesJar
-}

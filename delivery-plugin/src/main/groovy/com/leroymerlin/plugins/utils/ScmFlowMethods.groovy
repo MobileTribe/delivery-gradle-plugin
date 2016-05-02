@@ -107,7 +107,7 @@ public class ScmFlowMethods {
         File f = project.file("delivery.properties");
         ant.propertyfile(file: f.absolutePath) {
             entry(key: "releaseVersion", value: project.version - '-SNAPSHOT')
-            entry(key: "releaseVersionCode", value: project.versioncode)
+            entry(key: "releaseVersionId", value: project.versionId)
             entry(key: "releaseDate", value: sdf.format(date))
         }
     }

@@ -45,9 +45,9 @@ delivery {
 
     newVersionCommitPattern = 'chore (version) : Update version to $version'
     
-    releaseTagPattern = '$appname-$versioncode-$version'
+    releaseTagPattern = '$projectName-$versionId-$version'
     
-    releaseBranchPattern = 'release/$versioncode-$version'
+    releaseBranchPattern = 'release/$versionId-$version'
     
     //please refer to https://docs.gradle.org/current/userguide/maven_plugin.html[Maven plugin]
     archiveRepositories = {

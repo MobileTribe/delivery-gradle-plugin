@@ -1,4 +1,3 @@
-
 buildscript {
     repositories {
         jcenter()
@@ -10,8 +9,8 @@ buildscript {
     }
 }
 
-allprojects{
-    repositories{
+allprojects {
+    repositories {
         mavenCentral()
         mavenLM()
     }
@@ -22,6 +21,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'delivery'
 
 
+
 buildscript {
     repositories {
         mavenLocal()
@@ -29,8 +29,13 @@ buildscript {
         mavenLM()
     }
     dependencies {
+        Properties props = new Properties()
+        props.load(new FileInputStream(project.file("../gradle.properties")))
+        def versionPlugin = props.getProperty('version')
+
+
         classpath 'com.android.tools.build:gradle:1.5.0'
-        classpath 'com.leroymerlin.plugins:delivery:2.0.0-SNAPSHOT'
+        classpath "com.leroymerlin.plugins:delivery-plugin:${versionPlugin}"
     }
 }
 
@@ -45,7 +50,7 @@ android {
         targetSdkVersion 23
     }
     buildTypes {
-        debug{
+        debug {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
@@ -62,8 +67,8 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.2.1'
 }
 
-delivery{
-    archiveRepositories = project.ext.has('testArchiveRepositories')?project.ext.testArchiveRepositories : {}
+delivery {
+    archiveRepositories = {}
 
     signingProperties {
         all {
