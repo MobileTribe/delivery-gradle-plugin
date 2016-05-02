@@ -185,7 +185,7 @@ class DeliveryPluginTest extends BasePluginTest {
         Assert.assertNotNull(project.tasks['uploadTestQualifArtifacts'])
 
 
-        Assert.assertEquals(6, project.configurations.testQualifConfig.allArtifacts.size())
+        Assert.assertEquals(9, project.configurations.testQualifConfig.allArtifacts.size())
 
         project.tasks['tasks'].execute()
 

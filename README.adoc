@@ -6,11 +6,11 @@ image:https://api.bintray.com/packages/mobiletribe/maven/com.leroymerlin.plugins
 
 ## Note
 
-This plugin is compatible with java, groovy, android and android-library project. It handles the following part of your continuous delivery process :
+This plugin is compatible with java, groovy, android and android-library projects. It handles the following parts of your continuous delivery process :
 
 - git release workflow (http://nvie.com/posts/a-successful-git-branching-model/)
 - apk signing configuration with external properties
-- artifacts upload to maven (jar, aar, apk-debug, apk-test, apk-release, mapping.txt) 
+- artifacts upload to maven (jar, aar, apk-debug, apk-test, apk-release, mapping.txt, sources)
 
 
 This plugin is based on 2 others plugins :
@@ -21,7 +21,7 @@ This plugin is based on 2 others plugins :
 
 ## Configuration
 
-To use delivery, just apply the plugin in your java / android / android-library project.
+To use delivery, you just have to apply the plugin in your java / android / android-library project.
 
 ```java
 buildscript {
@@ -36,6 +36,11 @@ buildscript {
 
 apply plugin: 'delivery'
 ```
+
+Create *version.properties* in your module. This file will contain your module *version*, *versionId* and *projectName* the plugin needs.
+
+NOTE: You can override the version.properties file path with *versionFilePath* property. This property has to be in *gradle.properties* or eventually in *delivery.properties*. You could also override other properties name with *versionKey*, *versionIdKey* and *projectNameKey*.
+
 
 Configure the delivery gradle extension in your build.gradle to fit your need
 
@@ -91,7 +96,8 @@ delivery {
 }
 ```
 
-don't forget to configure your own signing.properties file outside of your git repository. It should look like this :
+For Android applications, don't forget to configure your own signing.properties file outside of your git repository.
+Here is an example :
 
 ```java
 
@@ -105,11 +111,11 @@ keyAliasPassword=myAliasPass
 
 Delivery will generate two main tasks :
 
-- *delivery* will create a release branch unsnapshot your version build and archive your release artifacts
-- *validateDelivery* will merge your release branch to master tag with the version pattern and merge and increment the new version number to your develop branch
+- *delivery* will create a release branch, unsnapshot your version, build and archive your release artifacts
+- *validateDelivery* will merge your release branch to master, tag with the version pattern and merge and increment the new version number to your develop branch
 
 
-To archive snapshot version you can use *upload{variantName}Artifacts* tasks. They will build the project variants you need and archive them to maven
+NOTE: To archive a "snapshot" version you can use *upload{variantName}Artifacts* tasks. It will build the project variants you need and archive them to maven
 
 
 You can use system properties to override default behaviour. Here is the list of all properties supported :

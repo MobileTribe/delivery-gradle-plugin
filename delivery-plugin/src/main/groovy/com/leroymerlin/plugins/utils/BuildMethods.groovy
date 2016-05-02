@@ -8,6 +8,7 @@ import org.gradle.api.artifacts.PublishArtifact
 import org.gradle.api.tasks.GradleBuild
 import org.gradle.api.tasks.TaskDependency
 import org.gradle.api.tasks.Upload
+import org.gradle.api.tasks.bundling.Jar
 
 /**
  * Created by fduhen on 22/02/16.
@@ -28,21 +29,45 @@ public class BuildMethods {
 
         def uploadArtifactTasks = [];
 
-        def hasAppPlugin = project.plugins.hasPlugin("com.android.application")
-        if (hasAppPlugin) {
+
+        if (project.plugins.hasPlugin("com.android.application")) {
             project.android.applicationVariants.all { variant ->
-                handleVariant(variant, uploadArtifactTasks)
+                handleAPKVariant(variant, uploadArtifactTasks)
             }
+
         } else {
+
+            if (project.plugins.hasPlugin("com.android.library")) {
+                project.android.libraryVariants.all { variant ->
+                    def name = variant.buildType.name
+                    if (name.equals('release')) {
+                        def sourcesJar = project.task("sources${variant.name.capitalize()}Jar", type: Jar) {
+                            classifier = 'sources'
+                            from variant.javaCompile.destinationDir
+                        }
+                        sourcesJar.dependsOn variant.javaCompile
+                        project.artifacts.add('archives', sourcesJar);
+                    }
+                }
+            }
+            def sourcesJar = project.task('sourcesJar', type: Jar) {
+                classifier = 'sources'
+                from project.sourceSets.main.allJava;
+            }
+            project.artifacts.add('archives', sourcesJar);
+
             //for library or java code we use the standard plugin
             uploadArtifactTasks.add("uploadArchives")
 
-            project.uploadArchives{
+            project.uploadArchives {
                 repositories parent.extension.archiveRepositories
             }
+
         }
 
-        project.task('runBuildTasks', group: DeliveryPlugin.TASK_GROUP, description: 'Runs the build process in a separate gradle run.', type: GradleBuild) {
+
+        project.task('runBuildTasks', group: DeliveryPlugin.TASK_GROUP, description:
+                'Runs the build process in a separate gradle run.', type: GradleBuild) {
             startParameter = project.getGradle().startParameter.newInstance()
             tasks = [
                     'beforeReleaseBuild',
@@ -50,16 +75,20 @@ public class BuildMethods {
                     'afterReleaseBuild'
             ]
         }
-        project.task('beforeReleaseBuild', group: DeliveryPlugin.TASK_GROUP, description: 'Runs immediately before the build when doing a release') {
+        project.task('beforeReleaseBuild', group: DeliveryPlugin.TASK_GROUP, description:
+                'Runs immediately before the build when doing a release') {
         }
-        project.task('afterReleaseBuild', group: DeliveryPlugin.TASK_GROUP, description: 'Runs immediately after the build when doing a release') {
+        project.task('afterReleaseBuild', group: DeliveryPlugin.TASK_GROUP, description:
+                'Runs immediately after the build when doing a release') {
         }
-        project.task("uploadArtifacts", dependsOn: uploadArtifactTasks, group: DeliveryPlugin.TASK_GROUP);
+        project.task("uploadArtifacts", dependsOn: uploadArtifactTasks, group:
+                DeliveryPlugin.TASK_GROUP);
 
 
     }
 
-    private void handleVariant(variant, uploadArtifactTasks) {
+
+    private void handleAPKVariant(variant, uploadArtifactTasks) {
         String flavorName = project.projectName.toString().split(' ').collect({ m -> return m.toLowerCase().capitalize() }).join("") + variant.flavorName.capitalize();
         flavorName = flavorName[0].toLowerCase() + flavorName.substring(1)
         def uploadTask = "upload${flavorName.capitalize()}Artifacts"
@@ -86,6 +115,16 @@ public class BuildMethods {
             if (variant.mappingFile) {
                 addArtifacts(variant.mappingFile, variant.assemble, configurationName, flavorLowerCase, "mapping-" + classifier, "txt")
             }
+
+
+            def sourcesJar = project.task("sources${variant.name.capitalize()}Jar", type: Jar) {
+                classifier = 'sources'
+                from variant.javaCompile.destinationDir
+            }
+
+            sourcesJar.dependsOn variant.javaCompile
+            addArtifacts(sourcesJar.outputs.getFiles().getSingleFile(), sourcesJar, configurationName, flavorLowerCase,  "sources-" +classifier, "jar")
+
         } else {
             parent.warnOrThrow(false, "$classifier has no valid signing config and will not be archived")
         }
@@ -137,4 +176,5 @@ public class BuildMethods {
                 }
         );
     }
+
 }

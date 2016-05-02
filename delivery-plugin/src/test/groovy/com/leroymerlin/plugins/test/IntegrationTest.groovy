@@ -44,6 +44,12 @@ class IntegrationTest {
         }
     }
 
+
+    @Test
+    public void testInstall() {
+        testTask("install")
+    }
+
     @Test
     public void testUpload() {
         testTask("uploadArtifacts")
