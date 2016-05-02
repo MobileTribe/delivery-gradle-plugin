@@ -49,13 +49,13 @@ public class BuildMethods {
                         project.artifacts.add('archives', sourcesJar);
                     }
                 }
+            } else {
+                def sourcesJar = project.task('sourcesJar', type: Jar) {
+                    classifier = 'sources'
+                    from project.sourceSets.main.allJava;
+                }
+                project.artifacts.add('archives', sourcesJar);
             }
-            def sourcesJar = project.task('sourcesJar', type: Jar) {
-                classifier = 'sources'
-                from project.sourceSets.main.allJava;
-            }
-            project.artifacts.add('archives', sourcesJar);
-
             //for library or java code we use the standard plugin
             uploadArtifactTasks.add("uploadArchives")
 
@@ -123,7 +123,7 @@ public class BuildMethods {
             }
 
             sourcesJar.dependsOn variant.javaCompile
-            addArtifacts(sourcesJar.outputs.getFiles().getSingleFile(), sourcesJar, configurationName, flavorLowerCase,  "sources-" +classifier, "jar")
+            addArtifacts(sourcesJar.outputs.getFiles().getSingleFile(), sourcesJar, configurationName, flavorLowerCase, "sources-" + classifier, "jar")
 
         } else {
             parent.warnOrThrow(false, "$classifier has no valid signing config and will not be archived")
