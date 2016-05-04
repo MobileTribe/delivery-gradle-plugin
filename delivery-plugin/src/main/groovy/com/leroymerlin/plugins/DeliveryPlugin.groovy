@@ -136,10 +136,10 @@ public class DeliveryPlugin implements Plugin<Project> {
         project.task("releaseScmAdapter", description:  "Release Scm Adapter", group:  TASK_GROUP) << scmFlowMethods.&releaseScmAdapter
         project.task("releaseScmAdapterForValidation", description:  "Release Scm Adapter for validation", group:  TASK_GROUP) << scmFlowMethods.&releaseScmAdapter
 
+        project.task("checkSnapshotDependencies", description:  "Looks for Snapshot dependencies", group:  TASK_GROUP) << releaseMethods.&checkSnapshotDependencies
+
 
         this.tasksInitRelease = [
-                //Vérifie qu'il n'y a pas de dépendences qui sont en version Snapshot
-                new Taskdroid("checkSnapshotDependencies", "Looks for Snapshot dependencies", TASK_GROUP, releaseMethods.&checkSnapshotDependencies),
                 //Création d'une branche de release avec le numéro de version
                 new Taskdroid("createReleaseBranch", "Creates a release branch", TASK_GROUP, scmFlowMethods.&createReleaseBranch, ['prepareScmAdapter']),
                 new Taskdroid("updateVersionsFile", "Apply the new version number and the new version code passed in params", TASK_GROUP, releaseMethods.&updateVersionsFile),

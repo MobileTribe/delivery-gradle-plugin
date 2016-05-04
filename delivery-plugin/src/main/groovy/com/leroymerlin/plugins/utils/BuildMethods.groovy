@@ -70,6 +70,7 @@ public class BuildMethods {
                 'Runs the build process in a separate gradle run.', type: GradleBuild) {
             startParameter = project.getGradle().startParameter.newInstance()
             tasks = [
+                    'checkSnapshotDependencies',
                     'beforeReleaseBuild',
                     'uploadArtifacts',
                     'afterReleaseBuild'
