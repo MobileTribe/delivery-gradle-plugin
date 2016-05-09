@@ -27,7 +27,7 @@ public class BuildMethods {
     public createTasksArchiveAPKs() {
         parent.logger.info("Archives the APKs on the choosen file manager")
 
-        def uploadArtifactTasks = [];
+        def uploadArtifactTasks = ['check'];
 
 
         if (project.plugins.hasPlugin("com.android.application")) {
