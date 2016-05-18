@@ -39,6 +39,25 @@ apply plugin: 'delivery'
 
 Create *version.properties* in your module. This file will contain your module *version*, *versionId* and *projectName* the plugin needs.
 
+```java
+version=2.0.0-SNAPSHOT
+projectName=MyAwesomeApp
+versionId=200
+```
+
+and don't forget to use those values in your build.gradle
+
+```java
+android {
+    ...
+
+    defaultConfig {
+        ...
+        versionCode Integer.valueOf(versionId)
+        versionName version
+    }
+```
+
 NOTE: You can override the version.properties file path with *versionFilePath* property. This property has to be in *gradle.properties* or eventually in *delivery.properties*. You could also override other properties name with *versionKey*, *versionIdKey* and *projectNameKey*.
 
 
