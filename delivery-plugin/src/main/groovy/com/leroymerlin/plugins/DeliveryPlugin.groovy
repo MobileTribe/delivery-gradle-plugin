@@ -46,8 +46,8 @@ public class DeliveryPlugin implements Plugin<Project> {
             name , adapterClass ->
                 BaseScmAdapter adapter = adapterClass.newInstance(this.project);
                 def config =  adapter.createNewConfig()
-                DeliveryPluginExtension.metaClass."${name}Config" = config
-                DeliveryPluginExtension.metaClass."$name" << { closure ->
+                extension.metaClass."${name}Config" = config
+                extension.metaClass."$name" << { closure ->
                     closure.setDelegate(config)
                     closure.run()
                 }
