@@ -114,6 +114,10 @@ public class BuildMethods {
                 addArtifacts(variant.testVariant.outputs.get(0).outputFile, variant.testVariant.assemble, configurationName, flavorLowerCase, "test-" + classifier, "apk")
             }
             if (variant.mappingFile) {
+                if (!variant.mappingFile.exists()) {
+                    variant.mappingFile.parentFile.mkdirs()
+                    variant.mappingFile.createNewFile()
+                }
                 addArtifacts(variant.mappingFile, variant.assemble, configurationName, flavorLowerCase, "mapping-" + classifier, "txt")
             }
 
