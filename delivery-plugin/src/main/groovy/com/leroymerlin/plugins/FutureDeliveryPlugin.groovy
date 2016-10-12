@@ -1,13 +1,5 @@
 package com.leroymerlin.plugins
 
-import com.leroymerlin.plugins.adapters.BaseScmAdapter
-import com.leroymerlin.plugins.entities.Taskdroid
-import com.leroymerlin.plugins.internal.SigningProperty
-import com.leroymerlin.plugins.utils.BuildMethods
-import com.leroymerlin.plugins.utils.ReleaseMethods
-import com.leroymerlin.plugins.utils.ScmFlowMethods
-import com.leroymerlin.plugins.utils.Utils
-import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.GradleBuild
