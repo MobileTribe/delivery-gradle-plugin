@@ -22,7 +22,7 @@ class BasePluginTest {
 
     @Before
     public void setUp() {
-        project = ProjectBuilder.builder().withProjectDir(new File("delivery-plugin/src/test/resources/android-app")).build()
+        project = ProjectBuilder.builder().withProjectDir(new File("delivery-plugin-old/src/test/resources/android-app")).build()
         project.buildDir = new File("../../../../build")
         project.ant.copy(
                 file: versionFile,

@@ -13,7 +13,7 @@ class IntegrationTest {
     @Before
     public void setUp() {
         GradleConnector connector = GradleConnector.newConnector()
-        connector.forProjectDirectory(new File("delivery-plugin"))
+        connector.forProjectDirectory(new File("delivery-plugin-old"))
         ProjectConnection connection = connector.connect()
         try {
             BuildLauncher launcher = connection.newBuild()

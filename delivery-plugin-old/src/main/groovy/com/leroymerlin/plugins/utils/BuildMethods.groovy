@@ -110,6 +110,8 @@ public class BuildMethods {
         def classifier = variant.buildType.name
         if (variant.signingReady) {
             addArtifacts(variant.outputs.get(0).outputFile, variant.assemble, configurationName, flavorLowerCase, classifier, "apk")
+
+
             if (variant.testVariant) {
                 addArtifacts(variant.testVariant.outputs.get(0).outputFile, variant.testVariant.assemble, configurationName, flavorLowerCase, "test-" + classifier, "apk")
             }
