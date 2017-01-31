@@ -18,7 +18,7 @@ allprojects {
 
 
 apply plugin: 'com.android.application'
-apply plugin: 'delivery'
+apply plugin: 'com.leroymerlin.delivery'
 
 
 
@@ -67,7 +67,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.2.1'
 }
 
-delivery {
+/*delivery {
     archiveRepositories = {}
 
     signingProperties {
@@ -75,4 +75,4 @@ delivery {
             propertiesFile = project.file("signing.properties")
         }
     }
-}
+}*/

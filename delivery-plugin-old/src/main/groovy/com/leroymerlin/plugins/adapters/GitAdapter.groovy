@@ -81,7 +81,7 @@ class GitAdapter extends BaseScmAdapter {
 
             def branch = gitCurrentBranch()
             if (branch != extension.gitConfig.requireBranch) {
-                throw new GradleException("Current Git branch is \"$branch\" and not \"${extension.gitConfig.requireBranch}\".")
+                throw new GradleException("Current Git branch is \"$branch\" and not \"${extension.gitConfig.requireBranch}\".") as Throwable
             }
         }
     }

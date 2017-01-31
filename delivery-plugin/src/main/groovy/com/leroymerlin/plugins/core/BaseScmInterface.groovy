@@ -1,7 +1,16 @@
 package com.leroymerlin.plugins.core
 
 /**
- * Created by nextoo on 31/01/2017.
+ * Created by alexandre on 31/01/2017.
  */
-class BaseScmInterface {
+interface BaseScmInterface {
+    void initReleaseBranch()
+
+    void prepareReleaseFiles()
+
+    void commitChanges()
+
+    void runBuild()
+
+    void makeRelease()
 }

@@ -14,18 +14,18 @@ class BasePluginTest {
     Project project
 
     @Before
-    public void setUp() {
+    void setUp() {
         project = ProjectBuilder.builder().withProjectDir(new File("delivery-plugin/src/test/resources/android-app")).build()
         project.buildDir = new File("../../../../build")
     }
 
     @After
-    public void tearDown() {
+    void tearDown() {
         project = null;
     }
 
 
-    public void setupProject() {
+    void setupProject() {
         def manager = project.pluginManager
 
         project.buildscript {
@@ -83,6 +83,4 @@ class BasePluginTest {
         }
 
     }
-
-
 }

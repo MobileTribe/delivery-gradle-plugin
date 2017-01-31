@@ -7,11 +7,12 @@ import org.gradle.api.Project
 class DeliveryPluginExtension {
 
     Project project
-    ProjectConfigurator mConfigurator;
-    BaseScmAdapter scmAdapter;
+    ProjectConfigurator mConfigurator
+    BaseScmAdapter scmAdapter
 
     DeliveryPluginExtension(Project project) {
-        this.project = project;
+        this.project = project
+        this.scmAdapter = new BaseScmAdapter()
     }
 
     def archiveRepositories = project.ext.properties.containsKey('archiveRepositories') ? project.ext.archiveRepositories : {
@@ -30,7 +31,6 @@ class DeliveryPluginExtension {
     }
 
     ProjectConfigurator getConfigurator() {
-        return mConfigurator;
+        return mConfigurator
     }
-
 }

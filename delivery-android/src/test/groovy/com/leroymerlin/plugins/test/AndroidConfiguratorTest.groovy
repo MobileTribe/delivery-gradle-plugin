@@ -1,6 +1,9 @@
 package com.leroymerlin.plugins.test
 
 import com.leroymerlin.plugins.AndroidConfigurator
+import org.gradle.tooling.BuildLauncher
+import org.gradle.tooling.GradleConnector
+import org.gradle.tooling.ProjectConnection
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -11,9 +14,20 @@ import org.junit.Test
 class AndroidConfiguratorTest extends BasePluginTest {
 
     @Before
-    public void setUp() {
+    void setUp() {
         super.setUp()
         setupProject()
+
+        GradleConnector connector = GradleConnector.newConnector()
+        connector.forProjectDirectory(new File(""))
+        ProjectConnection connection = connector.connect()
+        try {
+            BuildLauncher launcher = connection.newBuild()
+            launcher.forTasks("install")
+            launcher.run()
+        } finally {
+            connection.close()
+        }
 
         project.delivery {
             configurator = AndroidConfigurator.class
@@ -21,7 +35,7 @@ class AndroidConfiguratorTest extends BasePluginTest {
     }
 
     @After
-    public void tearDown() {
+    void tearDown() {
         super.tearDown()
     }
 
@@ -31,11 +45,24 @@ class AndroidConfiguratorTest extends BasePluginTest {
      *
      */
 
+    private static void testTask(String... tasks) {
+        GradleConnector connector = GradleConnector.newConnector()
+        connector.forProjectDirectory(new File("delivery-test"))
+        ProjectConnection connection = connector.connect()
+        try {
+            BuildLauncher launcher = connection.newBuild()
+            launcher.forTasks(tasks)
+            launcher.setStandardOutput(System.out)
+            launcher.run()
+        } finally {
+            connection.close()
+        }
+    }
 
     @Test
-    public void testBuildTaskGeneration() {
+    void testBuildTaskGeneration() {
         project.evaluate()
-
+        testTask("initReleaseBranch")
 
         /*project.delivery {
             git {
@@ -48,6 +75,4 @@ class AndroidConfiguratorTest extends BasePluginTest {
         Assert.assertEquals("banane", project.delivery.gitConfig.requireBranch)
         Assert.assertEquals("origin", project.delivery.gitConfig.pushToRemote)*/
     }
-
-
 }
