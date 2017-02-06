@@ -11,7 +11,7 @@ class BaseScmAdapter extends Executor implements BaseScmInterface {
 
     Project project
     DeliveryPluginExtension extension
-    String name, version, comment
+    String name, version, comment, releaseBranchName
     Map params = ['directory': 'delivery-test', 'errorMessage': 'An error occured']
 
     void setup(Project project, DeliveryPluginExtension extension, String comment) {
@@ -20,34 +20,43 @@ class BaseScmAdapter extends Executor implements BaseScmInterface {
         this.name = project.properties["projectName"]
         this.version = project.properties["version"]
         this.comment = comment
+        this.releaseBranchName = this.name + "-" + this.version
     }
 
     @Override
     void initReleaseBranch() {
         if (!new File("delivery-test/.git").exists())
-            exec(params, ["git", "init"])
+            println exec(params, ["git", "init"])
 
-        exec(params, ["git", "checkout", "-B", "\"" + name + "_" + version + "\""])
-    }
-
-    @Override
-    void prepareReleaseFiles() {
+        println exec(params, ["git", "checkout", "-b", releaseBranchName, "develop"])
     }
 
     @Override
     void commitChanges() {
-        exec(params, ['git', 'add', '.'])
-        exec(params, ['git', 'commit', '-am', "\"" + comment + "\""])
+        println exec(params, ['git', 'commit', '-am', "\"" + comment + "\""])
+    }
+
+    @Override
+    void prepareReleaseFiles() {
+        println exec(params, ['git', 'checkout', 'master'])
+        println exec(params, ['git', 'merge', '--no-ff', releaseBranchName])
+        println exec(params, ['git', 'tag', '-a', version])
+        println exec(params, ['git', 'checkout', 'develop'])
+        println exec(params, ['git', 'merge', '--no-ff', releaseBranchName])
     }
 
     @Override
     void runBuild() {
-        exec(['directory': ''], ['./gradlew', 'build'])
+        println exec(['directory': ''], ['./gradlew', 'build'])
     }
 
     @Override
     void makeRelease() {
-        exec(params, ['git', 'tag', '-a', "\"" + version + "\"", '-m', "\"" + comment + "\""])
-        exec(params, ['git', 'push'])
+        println exec(params, ['git', 'checkout', 'master'])
+        println exec(params, ['git', 'push'])
+        println exec(params, ['git', 'checkout', 'develop'])
+        println exec(params, ['git', 'push'])
+        println exec(params, ['git', 'checkout', releaseBranchName])
+        println exec(params, ['git', 'push'])
     }
 }

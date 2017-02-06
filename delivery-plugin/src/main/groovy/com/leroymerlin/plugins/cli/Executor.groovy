@@ -16,7 +16,7 @@ class Executor {
         this.logger = logger
     }
 
-    void exec(
+    String exec(
             Map options = [:],
             List<String> commands
     ) {
@@ -40,7 +40,7 @@ class Executor {
             if (options['failOnStderr'] as boolean) {
                 throw new GradleException(message)
             } else {
-                logger?.warn(message)
+                logger?.warning(message)
             }
         }
 
@@ -52,6 +52,6 @@ class Executor {
             throw new GradleException("${options['errorMessage'] ? options['errorMessage'] as String : 'Failed to run [' + commands.join(' ') + ']'} - [$out][$err]")
         }
 
-        println(out.toString())
+        return out.toString()
     }
 }
