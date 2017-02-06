@@ -10,13 +10,13 @@ import java.util.logging.Logger
 
 class Executor {
 
-    private Logger logger
+    static private Logger logger
 
     Executor(Logger logger = null) {
         this.logger = logger
     }
 
-    String exec(
+    static String exec(
             Map options = [:],
             List<String> commands
     ) {

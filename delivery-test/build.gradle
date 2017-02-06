@@ -67,6 +67,35 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.2.1'
 }
 
+
+/*delivery{
+
+    releaseFlo property"bomMBU" ? endRelease : totoFlow
+
+scmFlow{
+
+
+
+
+
+    totoFlow{
+        branch "release$version"
+        merge "develop"
+        task toto
+        commit '*'
+
+
+    }
+    endRelease{
+        branch "release$version"
+        tag "tag blabla"
+        branch "master"
+        merge 'release'
+    }
+}
+
+}*/
+
 /*delivery {
     archiveRepositories = {}
 

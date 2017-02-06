@@ -5,8 +5,6 @@ import com.leroymerlin.plugins.core.ProjectConfigurator
 import com.leroymerlin.plugins.utils.PropertiesFileUtils
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.Task
-import org.gradle.api.tasks.GradleBuild
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -30,7 +28,7 @@ class DeliveryPlugin implements Plugin<Project> {
             BaseScmAdapter scmAdapter = deliveryExtension.scmAdapter
             scmAdapter.setup(this.project, this.deliveryExtension, "init release")
 
-            project.task("initReleaseBranch", description: "Creates or switch to the release branch").doFirst(scmAdapter.&initReleaseBranch)
+            project.task("initReleaseBranch", description: "Creates or switch to the release branch").doFirst(scmAdapter.gitBranchTask.&initGit)
 
             /*project.task("prepareReleaseFiles", description: "Prepare project file for release", dependsOn: "initReleaseBranch").doFirst(scmAdapter.&prepareReleaseFiles)
             project.task("commitReleaseFiles", description: "Changes the version with the one given in parameters or Unsnapshots the current one", dependsOn: "initReleaseBranch") << this.&changeAndCommitReleaseVersion
