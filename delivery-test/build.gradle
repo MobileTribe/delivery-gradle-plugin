@@ -50,6 +50,9 @@ android {
         targetSdkVersion 23
     }
     buildTypes {
+        all{
+            minifyEnabled false
+        }
         debug {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -68,33 +71,30 @@ dependencies {
 }
 
 
-/*delivery{
+delivery {
+    //releaseFlo property"bomMBU" ? endRelease : totoFlow
 
-    releaseFlo property"bomMBU" ? endRelease : totoFlow
+    /*beginFlow totoFlow
+    endFlow (--)? endRelease : totoFlow*/
 
-scmFlow{
+    scmFlow {
 
+        all{
 
-
-
-
-    totoFlow{
-        branch "release$version"
-        merge "develop"
-        task toto
-        commit '*'
-
-
-    }
-    endRelease{
-        branch "release$version"
-        tag "tag blabla"
-        branch "master"
-        merge 'release'
+        }
+        pandroidFlow {
+            tag "tag blabla"
+            preCommit 'doc/.*'
+            piug
+        }
+        endRelease {
+            branch "release$version"
+            tag "tag blablablablabla"
+            branch "master"
+            merge 'release'
+        }
     }
 }
-
-}*/
 
 /*delivery {
     archiveRepositories = {}

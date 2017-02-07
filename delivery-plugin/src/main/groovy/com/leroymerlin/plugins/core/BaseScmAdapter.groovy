@@ -1,7 +1,6 @@
 package com.leroymerlin.plugins.core
 
 import com.leroymerlin.plugins.DeliveryPluginExtension
-import com.leroymerlin.plugins.tasks.GitBranchTask
 import org.gradle.api.Project
 
 /**
@@ -12,7 +11,6 @@ class BaseScmAdapter {
     Project project
     DeliveryPluginExtension extension
     String name, version, comment, releaseBranchName
-    GitBranchTask gitBranchTask
 
     void setup(Project project, DeliveryPluginExtension extension, String comment) {
         this.project = project

@@ -2,7 +2,10 @@ package com.leroymerlin.plugins
 
 import com.leroymerlin.plugins.core.BaseScmAdapter
 import com.leroymerlin.plugins.core.ProjectConfigurator
+import com.leroymerlin.plugins.tasks.ScmBranchTask
+import com.leroymerlin.plugins.tasks.ScmInitTask
 import com.leroymerlin.plugins.utils.PropertiesFileUtils
+import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.slf4j.Logger
@@ -16,7 +19,6 @@ class DeliveryPlugin implements Plugin<Project> {
     Project project
     DeliveryPluginExtension deliveryExtension
 
-
     void apply(Project project) {
         this.project = project
         this.deliveryExtension = project.extensions.create(TASK_GROUP, DeliveryPluginExtension, project)
@@ -24,11 +26,19 @@ class DeliveryPlugin implements Plugin<Project> {
 
         project.afterEvaluate {
 
+            NamedDomainObjectContainer<Flow> productContainer = project.container(Flow)
+
+            println(productContainer)
+
             ProjectConfigurator configurator = deliveryExtension.configurator
             BaseScmAdapter scmAdapter = deliveryExtension.scmAdapter
             scmAdapter.setup(this.project, this.deliveryExtension, "init release")
 
-            project.task("initReleaseBranch", description: "Creates or switch to the release branch").doFirst(scmAdapter.gitBranchTask.&initGit)
+            project.task('initTask', description: 'Init git', type: ScmInitTask)
+
+            project.task('changeBranch', description: 'Change the actual branch', dependsOn: 'initTask', type: ScmBranchTask) {
+                branch = 'test'
+            }
 
             /*project.task("prepareReleaseFiles", description: "Prepare project file for release", dependsOn: "initReleaseBranch").doFirst(scmAdapter.&prepareReleaseFiles)
             project.task("commitReleaseFiles", description: "Changes the version with the one given in parameters or Unsnapshots the current one", dependsOn: "initReleaseBranch") << this.&changeAndCommitReleaseVersion
