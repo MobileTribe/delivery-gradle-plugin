@@ -19,9 +19,6 @@ class DeliveryPluginExtension {
     def archiveRepositories = project.ext.properties.containsKey('archiveRepositories') ? project.ext.archiveRepositories : {
     }
 
-    def scmFlow = project.ext.properties.containsKey('scmFlow') ? project.ext.scmFlow : {
-    }
-
     void setConfigurator(Class<? extends ProjectConfigurator> configuratorClass) {
         setConfigurator(configuratorClass.newInstance())
     }

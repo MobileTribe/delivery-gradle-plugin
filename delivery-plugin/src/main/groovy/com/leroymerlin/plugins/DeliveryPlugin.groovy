@@ -23,24 +23,22 @@ class DeliveryPlugin implements Plugin<Project> {
     void apply(Project project) {
         this.project = project
         this.deliveryExtension = project.extensions.create(TASK_GROUP, DeliveryPluginExtension, project)
-
-        project.delivery.extensions.flows = project.container(Flow) { String name ->
-            return project.gradle.services.get(Instantiator).newInstance(Flow, name, project)
-        }
-
-        project.task('displayConfigs') << {
-            println "$project.delivery.message"
-            project.delivery.flows.each() { flow ->
-                println "$flow.name"
-                flow.steps.each() { step ->
-                    println "$step.tag"
-                }
-            }
-        }
-
         setupProperties()
 
         project.afterEvaluate {
+
+            println "$project.delivery.message"
+            project.delivery.flows.each() { flow ->
+                println flow.name
+                flow.steps.each() { step ->
+                    println("Name : " + (step.name != null ? step.name : "No name defined"))
+                    println("Tag : " + (step.tag != null ? step.tag : "No tag defined"))
+                    println("Branch : " + (step.branch != null ? step.branch : "No branch defined"))
+                    println("Description : " + (step.desc != null ? step.desc : "No description"))
+                    println("Depends on : " + (step.dependsOn != null ? step.dependsOn : "Not set"))
+                }
+            }
+
             ProjectConfigurator configurator = deliveryExtension.configurator
             BaseScmAdapter scmAdapter = deliveryExtension.scmAdapter
             scmAdapter.setup(this.project, this.deliveryExtension, "init release")
@@ -105,5 +103,9 @@ class DeliveryPlugin implements Plugin<Project> {
         project.ext.versionId = project.ext."${project.ext.versionIdKey}"
         project.ext.version = project.ext."${project.ext.versionKey}"
         project.version = project.ext."${project.ext.versionKey}"
+
+        project.delivery.extensions.flows = project.container(Flow) { String name ->
+            return project.gradle.services.get(Instantiator).newInstance(Flow, name, project)
+        }
     }
 }

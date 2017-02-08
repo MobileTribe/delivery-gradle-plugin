@@ -77,9 +77,13 @@ delivery {
     flows {
         "scmFlow" {
             step {
+                name = "step1"
                 tag = "startRealease"
+                branch = "master"
+                desc = "this is a description for step1"
             }
             step {
+                name = "step2"
                 tag = "endRelease"
                 branch = "release $version"
             }
