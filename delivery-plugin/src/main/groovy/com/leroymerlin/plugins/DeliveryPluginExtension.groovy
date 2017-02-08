@@ -9,6 +9,7 @@ class DeliveryPluginExtension {
     Project project
     ProjectConfigurator mConfigurator
     BaseScmAdapter scmAdapter
+    String message
 
     DeliveryPluginExtension(Project project) {
         this.project = project

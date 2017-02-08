@@ -50,7 +50,7 @@ android {
         targetSdkVersion 23
     }
     buildTypes {
-        all{
+        all {
             minifyEnabled false
         }
         debug {
@@ -70,32 +70,22 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.2.1'
 }
 
-
 delivery {
-    //releaseFlo property"bomMBU" ? endRelease : totoFlow
-
     /*beginFlow totoFlow
     endFlow (--)? endRelease : totoFlow*/
-
-    scmFlow {
-
-        all{
-
-        }
-        pandroidFlow {
-            tag "tag blabla"
-            preCommit 'doc/.*'
-            piug
-        }
-        endRelease {
-            branch "release$version"
-            tag "tag blablablablabla"
-            branch "master"
-            merge 'release'
+    message = "Hello World!"
+    flows {
+        "scmFlow" {
+            step {
+                tag = "startRealease"
+            }
+            step {
+                tag = "endRelease"
+                branch = "release $version"
+            }
         }
     }
 }
-
 /*delivery {
     archiveRepositories = {}
 

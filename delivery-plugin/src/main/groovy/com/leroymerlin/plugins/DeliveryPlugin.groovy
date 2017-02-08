@@ -2,12 +2,13 @@ package com.leroymerlin.plugins
 
 import com.leroymerlin.plugins.core.BaseScmAdapter
 import com.leroymerlin.plugins.core.ProjectConfigurator
+import com.leroymerlin.plugins.entities.Flow
 import com.leroymerlin.plugins.tasks.ScmBranchTask
 import com.leroymerlin.plugins.tasks.ScmInitTask
 import com.leroymerlin.plugins.utils.PropertiesFileUtils
-import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.internal.reflect.Instantiator
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -22,14 +23,24 @@ class DeliveryPlugin implements Plugin<Project> {
     void apply(Project project) {
         this.project = project
         this.deliveryExtension = project.extensions.create(TASK_GROUP, DeliveryPluginExtension, project)
+
+        project.delivery.extensions.flows = project.container(Flow) { String name ->
+            return project.gradle.services.get(Instantiator).newInstance(Flow, name, project)
+        }
+
+        project.task('displayConfigs') << {
+            println "$project.delivery.message"
+            project.delivery.flows.each() { flow ->
+                println "$flow.name"
+                flow.steps.each() { step ->
+                    println "$step.tag"
+                }
+            }
+        }
+
         setupProperties()
 
         project.afterEvaluate {
-
-            NamedDomainObjectContainer<Flow> productContainer = project.container(Flow)
-
-            println(productContainer)
-
             ProjectConfigurator configurator = deliveryExtension.configurator
             BaseScmAdapter scmAdapter = deliveryExtension.scmAdapter
             scmAdapter.setup(this.project, this.deliveryExtension, "init release")
