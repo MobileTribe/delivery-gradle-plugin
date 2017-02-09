@@ -27,7 +27,7 @@ class DeliveryPlugin implements Plugin<Project> {
 
         project.afterEvaluate {
 
-            println "$project.delivery.message"
+            println project.delivery.message
             project.delivery.flows.each() { flow ->
                 println flow.name
                 flow.steps.each() { step ->

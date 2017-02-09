@@ -71,9 +71,12 @@ dependencies {
 }
 
 delivery {
+    params {
+        branchName = 'Toto'
+    }
     /*beginFlow totoFlow
     endFlow (--)? endRelease : totoFlow*/
-    message = "Hello World!"
+    message = "delivery message"
     flows {
         "scmFlow" {
             step {

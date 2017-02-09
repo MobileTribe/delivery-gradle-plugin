@@ -36,10 +36,6 @@ class ScmHandler extends Executor {
         return exec(params, ['git', 'tag', '-a', annotation, '-m', '\'' + message + '\''])
     }
 
-    String merge(String branchToBeMerged) {
-        return exec(params, ['git', 'merge', '--no-ff', branchToBeMerged])
-    }
-
     String merge(String branchToBeMerged, String mergeInto) {
         exec(params, ['git', 'checkout', mergeInto])
         return exec(params, ['git', 'merge', '--no-ff', branchToBeMerged])
