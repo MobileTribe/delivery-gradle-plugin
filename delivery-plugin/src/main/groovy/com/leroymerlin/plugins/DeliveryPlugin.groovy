@@ -31,6 +31,8 @@ class DeliveryPlugin implements Plugin<Project> {
             println(project.delivery.handler in GitHandler)
             println project.delivery.branchName
 
+            println(PropertiesFileUtils.getGitCredentials())
+
             project.delivery.flows.each() { flow ->
                 println flow.name
                 flow.steps.each() { step ->
