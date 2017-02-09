@@ -5,7 +5,7 @@ import com.leroymerlin.plugins.cli.Executor
 /**
  * Created by alexandre on 06/02/2017.
  */
-class ScmHandler extends Executor {
+class GitHandler extends Executor {
     Map params = ['directory': 'delivery-test', 'errorMessage': 'An error occured']
 
     String init() {
@@ -45,22 +45,3 @@ class ScmHandler extends Executor {
         return exec(params, ['git', 'push'])
     }
 }
-
-/*
-
-delivery{
-
-    scmAdapter Git
-
-}
-
-
-
-class Git{
-
-    Class<com.leroymerlin.plugins.core.ScmHandler> getScmBranchTaskType(){
-        return ScmBranchTask.class
-    }
-
-
-}*/

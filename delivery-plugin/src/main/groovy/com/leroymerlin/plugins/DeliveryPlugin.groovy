@@ -1,6 +1,7 @@
 package com.leroymerlin.plugins
 
 import com.leroymerlin.plugins.core.BaseScmAdapter
+import com.leroymerlin.plugins.core.GitHandler
 import com.leroymerlin.plugins.core.ProjectConfigurator
 import com.leroymerlin.plugins.entities.Flow
 import com.leroymerlin.plugins.tasks.ScmBranchTask
@@ -27,7 +28,9 @@ class DeliveryPlugin implements Plugin<Project> {
 
         project.afterEvaluate {
 
-            println project.delivery.message
+            println(project.delivery.handler in GitHandler)
+            println project.delivery.branchName
+
             project.delivery.flows.each() { flow ->
                 println flow.name
                 flow.steps.each() { step ->

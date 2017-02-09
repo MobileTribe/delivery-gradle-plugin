@@ -71,12 +71,11 @@ dependencies {
 }
 
 delivery {
-    params {
-        branchName = 'Toto'
-    }
     /*beginFlow totoFlow
     endFlow (--)? endRelease : totoFlow*/
-    message = "delivery message"
+    handler = com.leroymerlin.plugins.core.GitHandler
+    branchName = 'Toto'
+
     flows {
         "scmFlow" {
             step {
@@ -92,13 +91,14 @@ delivery {
             }
         }
     }
-}
-/*delivery {
-    archiveRepositories = {}
 
-    signingProperties {
+    archiveRepositories = {
+
+    }
+
+    /*signingProperties {
         all {
             propertiesFile = project.file("signing.properties")
         }
-    }
-}*/
+    }*/
+}

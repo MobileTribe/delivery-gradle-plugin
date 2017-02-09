@@ -9,7 +9,8 @@ class DeliveryPluginExtension {
     Project project
     ProjectConfigurator mConfigurator
     BaseScmAdapter scmAdapter
-    String message
+    String branchName
+    def handler
 
     DeliveryPluginExtension(Project project) {
         this.project = project
