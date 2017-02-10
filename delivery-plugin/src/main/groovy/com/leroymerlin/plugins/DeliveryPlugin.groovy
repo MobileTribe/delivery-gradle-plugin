@@ -4,7 +4,6 @@ import com.leroymerlin.plugins.core.BaseScmAdapter
 import com.leroymerlin.plugins.core.GitHandler
 import com.leroymerlin.plugins.core.ProjectConfigurator
 import com.leroymerlin.plugins.entities.Flow
-import com.leroymerlin.plugins.tasks.*
 import com.leroymerlin.plugins.utils.PropertiesFileUtils
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -36,10 +35,17 @@ class DeliveryPlugin implements Plugin<Project> {
                 println flow.name
                 flow.steps.each() { step ->
                     println("Name : " + (step.name != null ? step.name : "No name defined"))
-                    println("Tag : " + (step.tag != null ? step.tag : "No tag defined"))
                     println("Branch : " + (step.branch != null ? step.branch : "No branch defined"))
                     println("Description : " + (step.desc != null ? step.desc : "No description"))
-                    println("Depends on : " + (step.dependsOn != null ? step.dependsOn : "Not set"))
+                    println("Depends on : " + (step.depends != null ? step.depends : "Not set"))
+                    project.task(step.name, description: step.desc, dependsOn: step.depends, type: step.task) {
+                        try {
+                            branch = step.branch
+                        }
+                        catch (MissingPropertyException ignored) {
+                            println(step.branch + " can't be set, it has been ignored")
+                        }
+                    }
                 }
             }
 
@@ -47,7 +53,7 @@ class DeliveryPlugin implements Plugin<Project> {
             BaseScmAdapter scmAdapter = deliveryExtension.scmAdapter
             scmAdapter.setup(this.project, this.deliveryExtension, "init release")
 
-            project.task('init', description: 'Init git', type: InitTask)
+            /*project.task('init', description: 'Init git', type: InitTask)
             project.task('checkout', description: 'Change the actual branch', type: CheckoutTask) {
                 branch = 'This is the branch name'
             }
@@ -69,7 +75,7 @@ class DeliveryPlugin implements Plugin<Project> {
             project.task('tag', description: 'Tag commit', type: TagTask) {
                 annotation = 'This is the annotation'
                 message = 'This is the message'
-            }
+            }*/
 
             /*project.task("prepareReleaseFiles", description: "Prepare project file for release", dependsOn: "initReleaseBranch").doFirst(scmAdapter.&prepareReleaseFiles)
             project.task("commitReleaseFiles", description: "Changes the version with the one given in parameters or Unsnapshots the current one", dependsOn: "initReleaseBranch") << this.&changeAndCommitReleaseVersion

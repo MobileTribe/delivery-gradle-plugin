@@ -79,15 +79,18 @@ delivery {
     flows {
         "scmFlow" {
             step {
-                name = "step1"
-                tag = "startRealease"
-                branch = "master"
-                desc = "this is a description for step1"
+                name = 'step1'
+                branch = 'master'
+                desc = 'this is a description for step1'
+                task = com.leroymerlin.plugins.tasks.InitTask
             }
+
             step {
-                name = "step2"
-                tag = "endRelease"
-                branch = "release $version"
+                name = 'step2'
+                branch = 'master'
+                depends = 'step1'
+                desc = 'this is a description for step1'
+                task = com.leroymerlin.plugins.tasks.InitTask
             }
         }
     }
