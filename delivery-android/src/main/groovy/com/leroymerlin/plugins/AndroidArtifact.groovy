@@ -8,12 +8,12 @@ import org.gradle.api.tasks.TaskDependency
  * Created by florian on 30/01/2017.
  */
 class AndroidArtifact implements PublishArtifact {
-    String name;
-    String extension;
-    String classifier;
-    File file;
-    Date date;
-    Task dependencyTask;
+    String name
+    String extension
+    String classifier
+    File file
+    Date date
+    Task dependencyTask
 
     AndroidArtifact(String name, String extension, String classifier, File file, Task dependencyTask) {
         this.name = name

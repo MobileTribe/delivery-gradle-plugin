@@ -5,7 +5,7 @@ import org.gradle.api.tasks.TaskAction
 /**
  * Created by alexandre on 06/02/2017.
  */
-class ScmInitTask extends ScmBaseTask {
+class InitTask extends ScmBaseTask {
 
     @TaskAction
     init() {
