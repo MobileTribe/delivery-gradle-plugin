@@ -13,19 +13,19 @@ class GitHandler extends Executor {
     }
 
     String addAllFiles() {
-        return exec(params, ['git', 'add', '.'])
+        return println(exec(params, ['git', 'add', '.']))
     }
 
     String commit(String comment) {
-        return exec(params, ['git', 'commit', '-m', "\'" + comment + "\'"])
+        return println(exec(params, ['git', 'commit', '-am', "\'" + comment + "\'"]))
     }
 
     String deleteBranch(String branchName) {
-        return exec(params, ['git', 'branch', '-d', branchName])
+        return println(exec(params, ['git', 'branch', '-d', branchName]))
     }
 
     String createBranch(String branchName) {
-        return exec(params, ['git', 'checkout', '-b', branchName])
+        return println(exec(params, ['git', 'checkout', '-B', branchName]))
     }
 
     String goToBranch(String branchName) {
@@ -33,15 +33,15 @@ class GitHandler extends Executor {
     }
 
     String tag(String annotation, String message) {
-        return exec(params, ['git', 'tag', '-a', annotation, '-m', '\'' + message + '\''])
+        return println(exec(params, ['git', 'tag', '-a', annotation, '-m', '\'' + message + '\'']))
     }
 
     String merge(String branchToBeMerged, String mergeInto) {
-        exec(params, ['git', 'checkout', mergeInto])
-        return exec(params, ['git', 'merge', '--no-ff', branchToBeMerged])
+        println(exec(params, ['git', 'checkout', mergeInto]))
+        return println(exec(params, ['git', 'merge', '--no-ff', branchToBeMerged]))
     }
 
     String push() {
-        return exec(params, ['git', 'push'])
+        return println(exec(params, ['git', 'push']))
     }
 }

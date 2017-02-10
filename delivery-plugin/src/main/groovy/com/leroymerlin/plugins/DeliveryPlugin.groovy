@@ -38,7 +38,7 @@ class DeliveryPlugin implements Plugin<Project> {
                     println("Branch : " + (step.branch != null ? step.branch : "No branch defined"))
                     println("Description : " + (step.desc != null ? step.desc : "No description"))
                     println("Depends on : " + (step.depends != null ? step.depends : "Not set"))
-                    project.task(step.name, description: step.desc, dependsOn: step.depends, type: step.task) {
+                    project.task(step.name as String, description: step.desc, dependsOn: step.depends, type: step.task) {
                         try {
                             branch = step.branch
                         }

@@ -61,7 +61,7 @@ class AndroidConfiguratorTest extends BasePluginTest {
 
     @Test
     void testBuildTaskGeneration() {
-        testTask("step2")
+        testTask("commit")
 
         /*project.delivery {
             git {

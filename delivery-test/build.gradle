@@ -79,18 +79,32 @@ delivery {
     flows {
         "scmFlow" {
             step {
-                name = 'step1'
-                branch = 'master'
-                desc = 'this is a description for step1'
+                name = 'init'
+                branch = 'test'
+                desc = 'this is a description for init'
                 task = com.leroymerlin.plugins.tasks.InitTask
             }
 
             step {
-                name = 'step2'
-                branch = 'master'
-                depends = 'step1'
-                desc = 'this is a description for step1'
-                task = com.leroymerlin.plugins.tasks.InitTask
+                name = 'create'
+                branch = 'test'
+                depends = 'init'
+                desc = 'this is a description for create'
+                task = com.leroymerlin.plugins.tasks.CreateTask
+            }
+            step {
+                name = 'add'
+                branch = 'test'
+                depends = 'create'
+                desc = 'this is a description for add'
+                task = com.leroymerlin.plugins.tasks.AddFilesTask
+            }
+            step {
+                name = 'commit'
+                branch = 'test'
+                depends = 'add'
+                desc = 'this is a description for commit'
+                task = com.leroymerlin.plugins.tasks.CommitTask
             }
         }
     }
