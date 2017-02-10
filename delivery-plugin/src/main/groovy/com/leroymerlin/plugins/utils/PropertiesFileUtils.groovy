@@ -20,9 +20,14 @@ class PropertiesFileUtils extends Executor {
         if (!file.exists()) {
             file.createNewFile()
         }
-        def stream = new FileOutputStream(file)
-        properties.store(stream, "")
-        stream.close()
+        FileOutputStream out = new FileOutputStream(file)
+        ByteArrayOutputStream arrayOut = new ByteArrayOutputStream()
+        properties.store(arrayOut, null)
+        String string = new String(arrayOut.toByteArray(), "8859_1")
+        String sep = System.getProperty("line.separator")
+        String content = string.substring(string.indexOf(sep) + sep.length())
+        out.write(content.getBytes("8859_1"))
+        out.close()
     }
 
     static Properties readAndApplyPropertiesFile(Project project, File file) {
