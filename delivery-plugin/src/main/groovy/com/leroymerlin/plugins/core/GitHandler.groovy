@@ -44,4 +44,18 @@ class GitHandler extends Executor {
     String push() {
         return println(exec(params, ['git', 'push']))
     }
+
+    static void purgeGitCredentials() {
+        ["bash", "-c", "git credential-osxkeychain erase"].execute()
+    }
+
+    static Map<String, String> getGitCredentials() {
+        Map credentials = new HashMap()
+        if (System.getProperty('os.name').contains('Mac')) {
+            String[] git = ["bash", "-c", "echo | git credential-osxkeychain get"].execute().text.split("=")
+            credentials.put("password", git[1].substring(0, git[1].indexOf("\n")))
+            credentials.put("username", git[2].substring(0, git[2].indexOf("\n")))
+        }
+        return credentials
+    }
 }

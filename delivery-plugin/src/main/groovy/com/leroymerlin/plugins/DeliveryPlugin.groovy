@@ -29,7 +29,7 @@ class DeliveryPlugin implements Plugin<Project> {
             println(project.delivery.handler in GitHandler)
             println project.delivery.branchName
 
-            println(PropertiesFileUtils.getGitCredentials().get("username"))
+            println(GitHandler.getGitCredentials().get("username"))
 
             project.delivery.flows.each() { flow ->
                 println flow.name
