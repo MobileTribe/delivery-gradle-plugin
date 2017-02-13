@@ -1,5 +1,6 @@
 package com.leroymerlin.plugins.entities
 
+import com.leroymerlin.plugins.tasks.CheckoutTask
 import org.gradle.api.Project
 
 /**
@@ -8,16 +9,30 @@ import org.gradle.api.Project
 class Flow {
     String name
     Project project
-    List<Step> steps = []
 
     Flow(String name, Project project) {
         this.name = name
         this.project = project
+        //taskFlow = project.task("start"+name).dependsOn
     }
 
-    void step(Closure closure) {
-        Step step = new Step()
-        project.configure(step, closure)
-        steps.add(step)
+    //def tasksName[];
+    def lastTask
+    def methodMissing(String methodName, args) {
+
+
+        switch (methodName){
+            case "branch":
+                project.task(name+methodName.capitalize(), type:CheckoutTask){
+                    branch args[0]
+                }.dependsOn taskName
+
+                taskName += name+methodName.capitalize()
+                break
+        }
+
+
+        taskFlow.dependeOn tasksName
+        return null
     }
 }

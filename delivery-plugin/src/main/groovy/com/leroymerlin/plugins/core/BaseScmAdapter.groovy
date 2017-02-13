@@ -10,14 +10,13 @@ class BaseScmAdapter {
 
     Project project
     DeliveryPluginExtension extension
-    String name, version, comment, releaseBranchName
+    String name, version, releaseBranchName
 
-    void setup(Project project, DeliveryPluginExtension extension, String comment) {
+    void setup(Project project, DeliveryPluginExtension extension) {
         this.project = project
         this.extension = extension
         this.name = project.properties["projectName"]
         this.version = project.properties["version"]
-        this.comment = comment
         this.releaseBranchName = this.name + "-" + this.version
     }
 }

@@ -73,44 +73,32 @@ dependencies {
 delivery {
     /*beginFlow totoFlow
     endFlow (--)? endRelease : totoFlow*/
-    handler = com.leroymerlin.plugins.core.GitHandler
-    branchName = 'Toto'
 
     flows {
-        "scmFlow" {
-            step {
-                name = 'init'
-                branch = 'test'
-                desc = 'this is a description for init'
-                task = com.leroymerlin.plugins.tasks.InitTask
-            }
+        "customStartFlow" {
+            task asciidoc
+            moveTo 3
+            commitFiles
+            push
+        }
+        "beginReleaseFlow" {
+            branch delivery.var.release
+            skip tag "toto"
+            //changeVersion (System.getProperty("VERSION")? version)-"-SNAPSHOT" versionId+1
 
-            step {
-                name = 'create'
-                branch = 'test'
-                depends = 'init'
-                desc = 'this is a description for create'
-                task = com.leroymerlin.plugins.tasks.CreateTask
-            }
-            step {
-                name = 'add'
-                branch = 'test'
-                depends = 'create'
-                desc = 'this is a description for add'
-                task = com.leroymerlin.plugins.tasks.AddFilesTask
-            }
-            step {
-                name = 'commit'
-                branch = 'test'
-                depends = 'add'
-                desc = 'this is a description for commit'
-                task = com.leroymerlin.plugins.tasks.CommitTask
-            }
+            commitFiles ".*"
+            tag "toto"
+            push
+        }
+        "endReleaseFlow" {
+            branch delivery.var.release
         }
     }
 
-    archiveRepositories = {
-
+    ext {
+        developBranch 'develop'
+        masterBranch 'master'
+        releaseBranch "release/+$version..."
     }
 
     /*signingProperties {

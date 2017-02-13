@@ -7,9 +7,13 @@ import org.gradle.api.tasks.TaskAction
  */
 class PushTask extends ScmBaseTask {
 
-    static String description = 'Push files'
     @TaskAction
     push() {
         return scmHandler.push()
+    }
+
+    @Override
+    String getDescription() {
+        return 'Push files'
     }
 }

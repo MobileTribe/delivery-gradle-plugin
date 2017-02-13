@@ -8,7 +8,6 @@ import org.gradle.api.tasks.TaskAction
 class CommitTask extends ScmBaseTask {
 
     String comment
-    static String description = 'Commit files'
 
     @TaskAction
     commit() {

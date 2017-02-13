@@ -1,10 +1,8 @@
 package com.leroymerlin.plugins
 
 import com.leroymerlin.plugins.core.BaseScmAdapter
-import com.leroymerlin.plugins.core.GitHandler
 import com.leroymerlin.plugins.core.ProjectConfigurator
 import com.leroymerlin.plugins.entities.Flow
-import com.leroymerlin.plugins.tasks.*
 import com.leroymerlin.plugins.utils.PropertiesFileUtils
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -26,59 +24,13 @@ class DeliveryPlugin implements Plugin<Project> {
         setupProperties()
 
         project.afterEvaluate {
-
-            println(project.delivery.handler in GitHandler)
-            println project.delivery.branchName
-
-            println(GitHandler.getGitCredentials().get("username"))
-
-            project.delivery.flows.each() { flow ->
-                println flow.name
-                flow.steps.each() { step ->
-                    println("Name : " + (step.name != null ? step.name : "No name defined"))
-                    println("Branch : " + (step.branch != null ? step.branch : "No branch defined"))
-                    println("Description : " + (step.desc != null ? step.desc : "No description"))
-                    println("Depends on : " + (step.depends != null ? step.depends : "Not set"))
-                    project.task(step.name as String, description: step.desc, dependsOn: step.depends, type: step.task) {
-                        try {
-                            branch = step.branch
-                        }
-                        catch (MissingPropertyException ignored) {
-                            println(step.branch + " can't be set, it has been ignored")
-                        }
-                    }
-                }
-            }
-
             ProjectConfigurator configurator = deliveryExtension.configurator
             BaseScmAdapter scmAdapter = deliveryExtension.scmAdapter
-            scmAdapter.setup(this.project, this.deliveryExtension, 'init release')
+            scmAdapter.setup(this.project, this.deliveryExtension)
 
-            project.task(InitTask.class.getSimpleName(), description: InitTask.description, type: InitTask)
-            project.task(AddFilesTask.class.getSimpleName(), description: AddFilesTask.description, type: AddFilesTask)
-            project.task(CheckoutTask.class.getSimpleName(), description: CheckoutTask.description, type: CheckoutTask) {
-                branch = 'This is the branch name'
+            project.delivery.flows.each() { flow ->
+                println(flow.name)
             }
-            project.task(CommitTask.class.getSimpleName(), description: CommitTask.description, type: CommitTask) {
-                comment = 'This is a comment'
-            }
-            project.task(CreateTask.class.getSimpleName(), description: CreateTask.description, type: CreateTask) {
-                branch = 'This is  the branch name'
-            }
-            project.task(DeleteTask.class.getSimpleName(), description: DeleteTask.description, type: DeleteTask) {
-                branch = 'This is the branch name'
-            }
-            project.task(MergeTask.class.getSimpleName(), description: MergeTask.description, type: MergeTask) {
-                branchToBeMerged = 'This is the name of the branch to be merged'
-                mergeInto = 'This is the name of the branch to merge into'
-            }
-            project.task(PushTask.class.getSimpleName(), description: PushTask.description, type: PushTask)
-            project.task(TagTask.class.getSimpleName(), description: TagTask.description, type: TagTask) {
-                annotation = 'This is the annotation'
-                message = 'This is the message'
-            }
-
-            println(project.tasks.toListString())
 
             /*project.task("prepareReleaseFiles", description: "Prepare project file for release", dependsOn: "initReleaseBranch").doFirst(scmAdapter.&prepareReleaseFiles)
             project.task("commitReleaseFiles", description: "Changes the version with the one given in parameters or Unsnapshots the current one", dependsOn: "initReleaseBranch") << this.&changeAndCommitReleaseVersion

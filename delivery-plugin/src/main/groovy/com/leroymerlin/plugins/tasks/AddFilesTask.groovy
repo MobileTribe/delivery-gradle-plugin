@@ -7,8 +7,6 @@ import org.gradle.api.tasks.TaskAction
  */
 class AddFilesTask extends ScmBaseTask {
 
-    static String description = 'Add files to be commited'
-
     @TaskAction
     addAllFiles() {
         return scmHandler.addAllFiles()

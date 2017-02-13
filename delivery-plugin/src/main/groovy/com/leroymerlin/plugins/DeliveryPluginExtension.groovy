@@ -2,6 +2,8 @@ package com.leroymerlin.plugins
 
 import com.leroymerlin.plugins.core.BaseScmAdapter
 import com.leroymerlin.plugins.core.ProjectConfigurator
+import com.leroymerlin.plugins.entities.Flow
+import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 
 class DeliveryPluginExtension {
@@ -9,16 +11,13 @@ class DeliveryPluginExtension {
     Project project
     ProjectConfigurator mConfigurator
     BaseScmAdapter scmAdapter
-    String branchName
-    def handler
 
     DeliveryPluginExtension(Project project) {
         this.project = project
         this.scmAdapter = new BaseScmAdapter()
     }
 
-    def archiveRepositories = project.ext.properties.containsKey('archiveRepositories') ? project.ext.archiveRepositories : {
-    }
+    //NamedDomainObjectContainer<Flow> flows = project.flows
 
     void setConfigurator(Class<? extends ProjectConfigurator> configuratorClass) {
         setConfigurator(configuratorClass.newInstance())

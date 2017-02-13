@@ -8,7 +8,6 @@ import org.gradle.api.tasks.TaskAction
 class CreateTask extends ScmBaseTask {
 
     String branch
-    static String description = 'Create branch'
 
     @TaskAction
     createBranch() {
