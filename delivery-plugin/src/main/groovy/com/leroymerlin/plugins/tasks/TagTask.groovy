@@ -8,6 +8,7 @@ import org.gradle.api.tasks.TaskAction
 class TagTask extends ScmBaseTask {
 
     String annotation, message
+    static String description = 'Tag commit'
 
     @TaskAction
     tag() {

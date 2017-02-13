@@ -46,7 +46,12 @@ class GitHandler extends Executor {
     }
 
     static void purgeGitCredentials() {
-        ["bash", "-c", "git credential-osxkeychain erase"].execute()
+        if (System.getProperty('os.name').contains('Mac')) {
+            ["bash", "-c", "git credential-osxkeychain erase"].execute()
+            println('Git credentials purged')
+        }
+        else
+            println('Git command not found')
     }
 
     static Map<String, String> getGitCredentials() {

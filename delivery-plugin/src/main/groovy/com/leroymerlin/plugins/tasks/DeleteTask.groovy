@@ -8,6 +8,7 @@ import org.gradle.api.tasks.TaskAction
 class DeleteTask extends ScmBaseTask {
 
     String branch
+    static String description = 'Delete branch'
 
     @TaskAction
     deleteBranch() {

@@ -4,6 +4,7 @@ import com.leroymerlin.plugins.core.BaseScmAdapter
 import com.leroymerlin.plugins.core.GitHandler
 import com.leroymerlin.plugins.core.ProjectConfigurator
 import com.leroymerlin.plugins.entities.Flow
+import com.leroymerlin.plugins.tasks.*
 import com.leroymerlin.plugins.utils.PropertiesFileUtils
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -51,31 +52,31 @@ class DeliveryPlugin implements Plugin<Project> {
 
             ProjectConfigurator configurator = deliveryExtension.configurator
             BaseScmAdapter scmAdapter = deliveryExtension.scmAdapter
-            scmAdapter.setup(this.project, this.deliveryExtension, "init release")
+            scmAdapter.setup(this.project, this.deliveryExtension, 'init release')
 
-            /*project.task('init', description: 'Init git', type: InitTask)
-            project.task('checkout', description: 'Change the actual branch', type: CheckoutTask) {
+            project.task(InitTask.name, description: InitTask.description, type: InitTask)
+            project.task(AddFilesTask.name, description: AddFilesTask.description, type: AddFilesTask)
+            project.task(CheckoutTask.name, description: CheckoutTask.description, type: CheckoutTask) {
                 branch = 'This is the branch name'
             }
-            project.task('add', description: 'Add new files for future commit', type: AddFilesTask)
-            project.task('commit', description: 'Commit files', type: CommitTask) {
+            project.task(CommitTask.name, description: CommitTask.description, type: CommitTask) {
                 comment = 'This is a comment'
             }
-            project.task('create', description: 'Create new branch', type: CreateTask) {
+            project.task(CreateTask.name, description: CreateTask.description, type: CreateTask) {
                 branch = 'This is  the branch name'
             }
-            project.task('delete', description: 'Delete branch', type: DeleteTask) {
+            project.task(DeleteTask.name, description: DeleteTask.description, type: DeleteTask) {
                 branch = 'This is the branch name'
             }
-            project.task('merge', description: 'Merge branch', type: MergeTask) {
+            project.task(MergeTask.name, description: MergeTask.description, type: MergeTask) {
                 branchToBeMerged = 'This is the name of the branch to be merged'
                 mergeInto = 'This is the name of the branch to merge into'
             }
-            project.task('push', description: 'Push files', type: PushTask)
-            project.task('tag', description: 'Tag commit', type: TagTask) {
+            project.task(PushTask.name, description: PushTask.description, type: PushTask)
+            project.task(TagTask.name, description: TagTask.description, type: TagTask) {
                 annotation = 'This is the annotation'
                 message = 'This is the message'
-            }*/
+            }
 
             /*project.task("prepareReleaseFiles", description: "Prepare project file for release", dependsOn: "initReleaseBranch").doFirst(scmAdapter.&prepareReleaseFiles)
             project.task("commitReleaseFiles", description: "Changes the version with the one given in parameters or Unsnapshots the current one", dependsOn: "initReleaseBranch") << this.&changeAndCommitReleaseVersion

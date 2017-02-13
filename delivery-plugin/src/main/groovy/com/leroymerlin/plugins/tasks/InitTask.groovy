@@ -7,6 +7,8 @@ import org.gradle.api.tasks.TaskAction
  */
 class InitTask extends ScmBaseTask {
 
+    static String description = 'Init git'
+
     @TaskAction
     init() {
         return scmHandler.init()

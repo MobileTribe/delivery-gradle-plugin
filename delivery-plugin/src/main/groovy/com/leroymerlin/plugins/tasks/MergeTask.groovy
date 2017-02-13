@@ -8,6 +8,7 @@ import org.gradle.api.tasks.TaskAction
 class MergeTask extends ScmBaseTask {
 
     String branchToBeMerged, mergeInto
+    static String description = 'Merge branch'
 
     @TaskAction
     mergeToNewBranch() {

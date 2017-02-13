@@ -8,6 +8,7 @@ import org.gradle.api.tasks.TaskAction
 class CheckoutTask extends ScmBaseTask {
 
     String branch
+    static String description = 'Change branch'
 
     @TaskAction
     goToBranch() {
