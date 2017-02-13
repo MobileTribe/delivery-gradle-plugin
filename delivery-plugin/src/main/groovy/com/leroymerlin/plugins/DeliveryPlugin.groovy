@@ -54,29 +54,31 @@ class DeliveryPlugin implements Plugin<Project> {
             BaseScmAdapter scmAdapter = deliveryExtension.scmAdapter
             scmAdapter.setup(this.project, this.deliveryExtension, 'init release')
 
-            project.task(InitTask.name, description: InitTask.description, type: InitTask)
-            project.task(AddFilesTask.name, description: AddFilesTask.description, type: AddFilesTask)
-            project.task(CheckoutTask.name, description: CheckoutTask.description, type: CheckoutTask) {
+            project.task(InitTask.class.getSimpleName(), description: InitTask.description, type: InitTask)
+            project.task(AddFilesTask.class.getSimpleName(), description: AddFilesTask.description, type: AddFilesTask)
+            project.task(CheckoutTask.class.getSimpleName(), description: CheckoutTask.description, type: CheckoutTask) {
                 branch = 'This is the branch name'
             }
-            project.task(CommitTask.name, description: CommitTask.description, type: CommitTask) {
+            project.task(CommitTask.class.getSimpleName(), description: CommitTask.description, type: CommitTask) {
                 comment = 'This is a comment'
             }
-            project.task(CreateTask.name, description: CreateTask.description, type: CreateTask) {
+            project.task(CreateTask.class.getSimpleName(), description: CreateTask.description, type: CreateTask) {
                 branch = 'This is  the branch name'
             }
-            project.task(DeleteTask.name, description: DeleteTask.description, type: DeleteTask) {
+            project.task(DeleteTask.class.getSimpleName(), description: DeleteTask.description, type: DeleteTask) {
                 branch = 'This is the branch name'
             }
-            project.task(MergeTask.name, description: MergeTask.description, type: MergeTask) {
+            project.task(MergeTask.class.getSimpleName(), description: MergeTask.description, type: MergeTask) {
                 branchToBeMerged = 'This is the name of the branch to be merged'
                 mergeInto = 'This is the name of the branch to merge into'
             }
-            project.task(PushTask.name, description: PushTask.description, type: PushTask)
-            project.task(TagTask.name, description: TagTask.description, type: TagTask) {
+            project.task(PushTask.class.getSimpleName(), description: PushTask.description, type: PushTask)
+            project.task(TagTask.class.getSimpleName(), description: TagTask.description, type: TagTask) {
                 annotation = 'This is the annotation'
                 message = 'This is the message'
             }
+
+            println(project.tasks.toListString())
 
             /*project.task("prepareReleaseFiles", description: "Prepare project file for release", dependsOn: "initReleaseBranch").doFirst(scmAdapter.&prepareReleaseFiles)
             project.task("commitReleaseFiles", description: "Changes the version with the one given in parameters or Unsnapshots the current one", dependsOn: "initReleaseBranch") << this.&changeAndCommitReleaseVersion
