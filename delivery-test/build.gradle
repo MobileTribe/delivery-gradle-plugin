@@ -75,11 +75,14 @@ delivery {
         developBranch = 'develop'
         masterBranch = 'master'
         releaseBranch = "release/$version"
+        customBranch = 'custom'
     }
 
     flows {
         customStartFlow {
+            branch delivery.ext.customBranch
             commitFiles 'this is a comment'
+            tag 'this is an annotation', 'this is a message'
             push ''
         }
         beginReleaseFlow {

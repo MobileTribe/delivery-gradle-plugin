@@ -26,9 +26,9 @@ class Flow {
             println(arg)
         switch (methodName) {
             case "branch":
-                /*task = project.task(taskName, type: GoToTask) {
+                task = project.task(taskName, type: GoToTask) {
                     branch args[0]
-                }*/
+                }
                 break
             case 'commitFiles':
                 project.task(name + 'ADDFILES', type: AddFilesTask) {}
