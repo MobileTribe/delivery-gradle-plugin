@@ -2,8 +2,6 @@ package com.leroymerlin.plugins
 
 import com.leroymerlin.plugins.core.BaseScmAdapter
 import com.leroymerlin.plugins.core.ProjectConfigurator
-import com.leroymerlin.plugins.entities.Flow
-import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 
 class DeliveryPluginExtension {

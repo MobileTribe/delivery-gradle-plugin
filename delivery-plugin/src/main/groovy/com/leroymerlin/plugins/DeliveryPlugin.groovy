@@ -24,13 +24,20 @@ class DeliveryPlugin implements Plugin<Project> {
         setupProperties()
 
         project.afterEvaluate {
+            project.task('hello') {
+                doLast {
+                    project.delivery.flows.each() { flow ->
+                        //println flow.name
+                        //println flow.branch
+                    }
+                }
+            }
+
             ProjectConfigurator configurator = deliveryExtension.configurator
             BaseScmAdapter scmAdapter = deliveryExtension.scmAdapter
             scmAdapter.setup(this.project, this.deliveryExtension)
 
-            project.delivery.flows.each() { flow ->
-                println(flow.name)
-            }
+
 
             /*project.task("prepareReleaseFiles", description: "Prepare project file for release", dependsOn: "initReleaseBranch").doFirst(scmAdapter.&prepareReleaseFiles)
             project.task("commitReleaseFiles", description: "Changes the version with the one given in parameters or Unsnapshots the current one", dependsOn: "initReleaseBranch") << this.&changeAndCommitReleaseVersion

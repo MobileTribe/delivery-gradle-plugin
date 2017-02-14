@@ -5,7 +5,7 @@ import org.gradle.api.tasks.TaskAction
 /**
  * Created by alexandre on 06/02/2017.
  */
-class CheckoutTask extends ScmBaseTask {
+class GoToTask extends ScmBaseTask {
 
     String branch
 

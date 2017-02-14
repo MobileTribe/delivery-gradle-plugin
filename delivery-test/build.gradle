@@ -71,34 +71,27 @@ dependencies {
 }
 
 delivery {
-    /*beginFlow totoFlow
-    endFlow (--)? endRelease : totoFlow*/
-
-    flows {
-        "customStartFlow" {
-            task asciidoc
-            moveTo 3
-            commitFiles
-            push
-        }
-        "beginReleaseFlow" {
-            branch delivery.var.release
-            skip tag "toto"
-            //changeVersion (System.getProperty("VERSION")? version)-"-SNAPSHOT" versionId+1
-
-            commitFiles ".*"
-            tag "toto"
-            push
-        }
-        "endReleaseFlow" {
-            branch delivery.var.release
-        }
+    ext {
+        developBranch = 'develop'
+        masterBranch = 'master'
+        releaseBranch = "release/$version"
     }
 
-    ext {
-        developBranch 'develop'
-        masterBranch 'master'
-        releaseBranch "release/+$version..."
+    flows {
+        customStartFlow {
+            commitFiles 'this is a comment'
+            push ''
+        }
+        beginReleaseFlow {
+            branch delivery.ext.releaseBranch
+            //changeVersion (System.getProperty("VERSION")? version)-"-SNAPSHOT" versionId+1
+            commitFiles 'this is a comment'
+            tag 'toto'
+            push ''
+        }
+        endReleaseFlow {
+            branch delivery.ext.releaseBranch
+        }
     }
 
     /*signingProperties {
