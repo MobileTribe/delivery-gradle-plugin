@@ -36,7 +36,7 @@ class GitHandler extends Executor {
         return println(exec(params, ['git', 'tag', '-a', annotation, '-m', '\'' + message + '\'']))
     }
 
-    String merge(String branchToBeMerged, String mergeInto) {
+    String merge(String from, String to) {
         println(exec(params, ['git', 'checkout', mergeInto]))
         return println(exec(params, ['git', 'merge', '--no-ff', branchToBeMerged]))
     }

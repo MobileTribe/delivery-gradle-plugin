@@ -86,7 +86,7 @@ delivery {
             branch delivery.ext.releaseBranch
             //changeVersion (System.getProperty("VERSION")? version)-"-SNAPSHOT" versionId+1
             commitFiles 'this is a comment'
-            tag 'toto'
+            tag 'this is an annotation', 'this is a message'
             push ''
         }
         endReleaseFlow {

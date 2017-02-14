@@ -27,8 +27,6 @@ class DeliveryPlugin implements Plugin<Project> {
             project.task('hello') {
                 doLast {
                     project.delivery.flows.each() { flow ->
-                        //println flow.name
-                        //println flow.branch
                     }
                 }
             }

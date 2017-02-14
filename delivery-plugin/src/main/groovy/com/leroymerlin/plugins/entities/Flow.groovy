@@ -9,46 +9,60 @@ import org.gradle.api.Project
 class Flow {
     String name, lastTaskName
     Project project
-    ArrayList<String> tasksName = new ArrayList<>()
+    ArrayList<String> tasksList = new ArrayList<>()
+    def taskFlow
 
     Flow(String name, Project project) {
         this.name = name
         this.project = project
-        //taskFlow = project.task("start"+name).dependsOn
+        taskFlow = project.task("start" + name)
     }
 
     def methodMissing(String methodName, args) {
-        lastTaskName = methodName
+        def task
+        String taskName = name + methodName.capitalize()
+        println(methodName)
+        for (def arg : args)
+            println(arg)
         switch (methodName) {
+            case "branch":
+                /*task = project.task(taskName, type: GoToTask) {
+                    branch args[0]
+                }*/
+                break
             case 'commitFiles':
                 project.task(name + 'ADDFILES', type: AddFilesTask) {}
-                project.task(name + methodName.capitalize(), type: CommitTask) {
+                task = project.task(taskName, type: CommitTask) {
                     comment args[0]
-                }.dependsOn(lastTaskName)
-                break
-            case "branch":
-                project.task(name + methodName.capitalize(), type: GoToTask) {
-                    branch args[0]
-                }.dependsOn(lastTaskName)
+                }
                 break
             case 'tag':
-                project.task(name + methodName.capitalize(), type: TagTask) {
-                    branch args[0]
-                }.dependsOn(lastTaskName)
+                task = project.task(taskName, type: TagTask) {
+                    annotation args[0]
+                    message args[1]
+                }
+                break
+            case 'merge':
+                task = project.task(taskName, type: MergeTask) {
+                    from args[0]
+                    to args[1]
+                }
                 break
             case 'push':
-                project.task(name + methodName.capitalize(), type: PushTask) {
-                    branch args[0]
-                }.dependsOn(lastTaskName)
+                task = project.task(taskName, type: PushTask) {}
                 break
             case 'delete':
-                project.task(name + methodName.capitalize(), type: DeleteTask) {
+                task = project.task(taskName, type: DeleteTask) {
                     branch args[0]
-                }.dependsOn(lastTaskName)
+                }
+                break
         }
-        tasksName.add(name + methodName.capitalize())
+        if (task != null && lastTaskName != null)
+            task.dependsOn(lastTaskName)
 
-        //taskFlow.dependeOn tasksName
+        lastTaskName = methodName
+        tasksList.add(name + methodName.capitalize())
+        taskFlow.dependsOn(tasksList)
         return null
     }
 }
