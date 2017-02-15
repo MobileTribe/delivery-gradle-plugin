@@ -24,13 +24,6 @@ class DeliveryPlugin implements Plugin<Project> {
         setupProperties()
 
         project.afterEvaluate {
-            project.task('hello') {
-                doLast {
-                    project.delivery.flows.each() { flow ->
-                    }
-                }
-            }
-
             ProjectConfigurator configurator = deliveryExtension.configurator
             BaseScmAdapter scmAdapter = deliveryExtension.scmAdapter
             scmAdapter.setup(this.project, this.deliveryExtension)
@@ -63,7 +56,7 @@ class DeliveryPlugin implements Plugin<Project> {
 
 
     void setupProperties() {
-        PropertiesFileUtils.readAndApplyPropertiesFile(project, project.file(DELIVERY_CONF_FILE));
+        PropertiesFileUtils.readAndApplyPropertiesFile(project, project.file(DELIVERY_CONF_FILE))
         File versionFile
 
         if (project.hasProperty('versionFilePath')) {

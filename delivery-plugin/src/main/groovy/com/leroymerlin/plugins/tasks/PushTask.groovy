@@ -9,11 +9,6 @@ class PushTask extends ScmBaseTask {
 
     @TaskAction
     push() {
-        return scmHandler.push()
-    }
-
-    @Override
-    String getDescription() {
-        return 'Push files'
+        return scmAdapter.push()
     }
 }

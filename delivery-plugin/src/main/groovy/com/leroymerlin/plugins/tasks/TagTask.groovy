@@ -11,6 +11,6 @@ class TagTask extends ScmBaseTask {
 
     @TaskAction
     tag() {
-        return scmHandler.tag(annotation, message)
+        return scmAdapter.tag(annotation, message)
     }
 }

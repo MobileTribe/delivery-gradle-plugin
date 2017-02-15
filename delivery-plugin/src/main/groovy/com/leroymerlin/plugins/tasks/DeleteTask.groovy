@@ -11,6 +11,6 @@ class DeleteTask extends ScmBaseTask {
 
     @TaskAction
     deleteBranch() {
-        scmHandler.deleteBranch(branch)
+        scmAdapter.deleteBranch(branch)
     }
 }

@@ -7,10 +7,10 @@ import org.gradle.api.tasks.TaskAction
  */
 class MergeTask extends ScmBaseTask {
 
-    String from, to
+    String from
 
     @TaskAction
     mergeToNewBranch() {
-        return scmHandler.merge(from, to)
+        return scmAdapter.merge(from)
     }
 }

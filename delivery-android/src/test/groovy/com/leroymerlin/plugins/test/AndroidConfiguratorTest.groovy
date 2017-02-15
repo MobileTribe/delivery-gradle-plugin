@@ -1,7 +1,6 @@
 package com.leroymerlin.plugins.test
 
 import com.leroymerlin.plugins.AndroidConfigurator
-import com.leroymerlin.plugins.tasks.InitTask
 import org.gradle.tooling.BuildLauncher
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
@@ -62,9 +61,7 @@ class AndroidConfiguratorTest extends BasePluginTest {
 
     @Test
     void testBuildTaskGeneration() {
-        project.evaluate()
-        testTask('hello')
-        //testTask(InitTask.class.getSimpleName())
+        testTask('startCustomStartFlow')
 
         /*project.delivery {
             git {

@@ -13,11 +13,11 @@ abstract class ProjectConfigurator {
     DeliveryPluginExtension extension
 
     void setup(Project project, DeliveryPluginExtension extension) {
-        this.project = project;
-        this.extension = extension;
+        this.project = project
+        this.extension = extension
     }
 
     abstract void configureBuildTasks(Task buildTask, Task archiveTask)
 
-    abstract void applyVersion(String version, String versionId, String projectName);
+    abstract void applyVersion(String version, String versionId, String projectName)
 }

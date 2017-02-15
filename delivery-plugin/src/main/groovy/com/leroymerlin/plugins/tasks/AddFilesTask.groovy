@@ -9,6 +9,6 @@ class AddFilesTask extends ScmBaseTask {
 
     @TaskAction
     addAllFiles() {
-        return scmHandler.addAllFiles()
+        return scmAdapter.addAllFiles()
     }
 }

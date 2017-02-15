@@ -1,6 +1,8 @@
 package com.leroymerlin.plugins
 
 import com.leroymerlin.plugins.core.BaseScmAdapter
+import com.leroymerlin.plugins.core.GitHandler
+import com.leroymerlin.plugins.core.GitHandlerTest
 import com.leroymerlin.plugins.core.ProjectConfigurator
 import org.gradle.api.Project
 
@@ -12,10 +14,8 @@ class DeliveryPluginExtension {
 
     DeliveryPluginExtension(Project project) {
         this.project = project
-        this.scmAdapter = new BaseScmAdapter()
+        this.scmAdapter = new GitHandlerTest()
     }
-
-    //NamedDomainObjectContainer<Flow> flows = project.flows
 
     void setConfigurator(Class<? extends ProjectConfigurator> configuratorClass) {
         setConfigurator(configuratorClass.newInstance())

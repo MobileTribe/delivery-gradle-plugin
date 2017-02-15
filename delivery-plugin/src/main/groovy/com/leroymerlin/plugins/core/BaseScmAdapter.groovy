@@ -6,17 +6,23 @@ import org.gradle.api.Project
 /**
  * Created by florian on 30/01/2017.
  */
-class BaseScmAdapter {
+interface BaseScmAdapter {
 
-    Project project
-    DeliveryPluginExtension extension
-    String name, version, releaseBranchName
+    void setup(Project project, DeliveryPluginExtension extension)
 
-    void setup(Project project, DeliveryPluginExtension extension) {
-        this.project = project
-        this.extension = extension
-        this.name = project.properties["projectName"]
-        this.version = project.properties["version"]
-        this.releaseBranchName = this.name + "-" + this.version
-    }
+    void release()
+
+    String addAllFiles() throws ScmException
+
+    String commit(String comment) throws ScmException
+
+    String deleteBranch(String branchName) throws ScmException
+
+    String switchBranch(String branchName, boolean createIfNeeded) throws ScmException
+
+    String tag(String annotation, String message) throws ScmException
+
+    String merge(String from) throws ScmException
+
+    String push() throws ScmException
 }

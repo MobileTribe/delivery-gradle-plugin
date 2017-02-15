@@ -10,10 +10,16 @@ class PropertiesFileUtils extends Executor {
 
     static void setDefaultProperty(File file, String key, String value) {
         Properties properties = readPropertiesFile(file)
-        if (!properties.hasProperty(key)) {
+        if (properties.getProperty(key) == null) {
             properties.setProperty(key, value)
             writePropertiesFile(file, properties)
         }
+    }
+
+    static void setProperty(File file, String key, String value) {
+        Properties properties = readPropertiesFile(file)
+        properties.setProperty(key, value)
+        writePropertiesFile(file, properties)
     }
 
     static void writePropertiesFile(File file, Properties properties) {

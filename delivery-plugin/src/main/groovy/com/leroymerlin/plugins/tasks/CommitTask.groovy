@@ -11,6 +11,6 @@ class CommitTask extends ScmBaseTask {
 
     @TaskAction
     commit() {
-        return scmHandler.commit(comment)
+        return scmAdapter.commit(comment)
     }
 }
