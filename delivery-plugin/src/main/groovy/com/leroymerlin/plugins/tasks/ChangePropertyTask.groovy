@@ -6,7 +6,7 @@ import org.gradle.api.Project
 import org.gradle.api.tasks.TaskAction
 
 /**
- * Created by nextoo on 15/02/2017.
+ * Created by alexandre on 15/02/2017.
  */
 class ChangePropertyTask extends DefaultTask {
 

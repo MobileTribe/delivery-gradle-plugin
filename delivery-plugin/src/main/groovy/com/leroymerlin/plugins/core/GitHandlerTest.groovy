@@ -2,26 +2,38 @@ package com.leroymerlin.plugins.core
 
 import com.leroymerlin.plugins.DeliveryPluginExtension
 import com.leroymerlin.plugins.cli.Executor
+import org.gradle.api.GradleException
 import org.gradle.api.Project
 
 /**
  * Created by alexandre on 06/02/2017.
  */
 class GitHandlerTest extends Executor implements BaseScmAdapter {
-    Map params = ['directory': 'delivery-test', 'errorMessage': 'An error occured']
 
     @Override
     void setup(Project project, DeliveryPluginExtension extension) {
-        println("git --version".execute().text)
-        if (!new File('.git').exists())
-            println('create')
-        //recuperation des credentials
+        if ("git --version".execute().text == null) {
+            throw new GradleException("Git not found, install Git before continue")
+        } else {
+            if (!new File('.git').exists())
+                println('Init Git on the folder')
+
+            System.setProperty('SCM_PASSWORD', 'Test')
+            System.setProperty('SCM_USER', 'Test')
+
+            String password = System.getProperty('SCM_PASSWORD')
+            String user = System.getProperty('SCM_USER')
+            if (password == null || user == null) {
+                throw new GradleException('Please login')
+            } else {
+                println('Use git cache')
+            }
+        }
     }
 
     @Override
     void release() {
         println('release')
-        //enlever les infos git
     }
 
     @Override
@@ -58,4 +70,5 @@ class GitHandlerTest extends Executor implements BaseScmAdapter {
     String push() throws ScmException {
         return println('push')
     }
+
 }
