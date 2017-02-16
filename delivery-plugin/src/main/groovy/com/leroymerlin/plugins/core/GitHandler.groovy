@@ -10,6 +10,8 @@ import org.gradle.api.Project
  */
 class GitHandler extends Executor implements BaseScmAdapter {
 
+    URI baseUri
+
     @Override
     void setup(Project project, DeliveryPluginExtension extension) {
         if ("git --version".execute().text == null) {
@@ -24,6 +26,10 @@ class GitHandler extends Executor implements BaseScmAdapter {
                 throw new GradleException('Add credentials to continue')
             } else {
                 println(exec(['git', 'config', 'credential.helper', 'cache']))
+                baseUri = new URI(exec(['git', 'config', '--local', '--get', 'remote.origin.url'], errorMessage: "Fail to read origin url").readLines()[0])
+
+                String domain = baseUri.getHost() + baseUri.path
+                String credential = "${baseUri.getScheme()}://$user:$password@$domain"
             }
         }
     }

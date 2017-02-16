@@ -80,23 +80,23 @@ delivery {
 
     flows {
         customStartFlow {
-            branch delivery.ext.customBranch, false
-            merge delivery.ext.developBranch
-            commitFiles 'this is a comment'
+            switchBranch(delivery.ext.customBranch,false)
+            commitFiles('this is a comment')
+            tag('an annotation', 'a message')
+            merge(delivery.ext.developBranch)
+            push()
             //flow beginReleaseFlow
-            tag 'this is an annotation', 'this is a message'
-            push ''
             //build ''
             //task "toto"
             //task "startReleaseFlow"
         }
         beginReleaseFlow {
-            branch delivery.ext.releaseBranch, false
+            /*branch delivery.ext.releaseBranch, false
             changeVersion '2.0.2-SNAPSHOT'
             changeVersionId((versionId as int) + 1)
             commitFiles 'this is a comment'
             tag 'this is an annotation', 'this is a message'
-            push ''
+            push ''*/
         }
     }
 
@@ -106,6 +106,3 @@ delivery {
         }
     }*/
 }
-
-
-task "toto"

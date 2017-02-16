@@ -1,7 +1,6 @@
 package com.leroymerlin.plugins
 
 import com.leroymerlin.plugins.core.BaseScmAdapter
-import com.leroymerlin.plugins.core.GitHandler
 import com.leroymerlin.plugins.core.GitHandlerTest
 import com.leroymerlin.plugins.core.ProjectConfigurator
 import org.gradle.api.Project

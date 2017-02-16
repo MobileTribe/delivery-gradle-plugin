@@ -8,11 +8,11 @@ import org.gradle.api.Project
  * Created by alexandre on 08/02/2017.
  */
 class Flow {
-    String name, lastTaskName, taskName
+    String name, taskName, lastTaskName
     Project project
     ArrayList<String> tasksList = new ArrayList<>()
     BaseScmAdapter adapter
-    def taskFlow, task
+    def task, taskFlow
 
     Flow(String name, Project project) {
         this.name = name
@@ -21,67 +21,128 @@ class Flow {
         taskFlow = project.task("start" + name.capitalize())
     }
 
-    def methodMissing(String methodName, args) {
-        taskName = 'Step' + tasksList.size() + '/' + name + methodName.capitalize()
-        switch (methodName) {
-            case "branch":
-                task = project.task(taskName, type: SwitchTask) {
-                    scmAdapter adapter
-                    branch args[0]
-                    createIfNeeded args[1]
-                }
-                break
-            case 'commitFiles':
-                task = project.task(name + 'AddFiles', type: AddFilesTask) {
-                    scmAdapter adapter
-                }
-                if (lastTaskName != null)
-                    task.dependsOn(lastTaskName)
+    void switchBranch(String branchName, boolean create) {
+        taskName = 'Step' + tasksList.size() + '/' + name + 'SwitchBranch'
 
-                task = project.task(taskName, type: CommitTask) {
-                    scmAdapter adapter
-                    comment args[0]
-                }.dependsOn(task.name)
-                break
-            case 'tag':
-                task = project.task(taskName, type: TagTask) {
-                    scmAdapter adapter
-                    annotation args[0]
-                    message args[1]
-                }
-                break
-            case 'merge':
-                task = project.task(taskName, type: MergeTask) {
-                    scmAdapter adapter
-                    from args[0]
-                }
-                break
-            case 'push':
-                task = project.task(taskName, type: PushTask) {
-                    scmAdapter adapter
-                }
-                break
-            case 'delete':
-                task = project.task(taskName, type: DeleteTask) {
-                    scmAdapter adapter
-                    branch args[0]
-                }
-                break
-            case 'changeVersion':
-            case 'changeVersionId':
-                task = project.task(taskName, type: ChangePropertyTask) {
-                    key methodName
-                    value args[0] as String
-                    myProject project
-                }
-                break
+        task = project.task(taskName, type: SwitchTask) {
+            scmAdapter adapter
+            branch branchName
+            createIfNeeded create
         }
-        if (task != null && lastTaskName != null)
+
+        if (lastTaskName != null)
             task.dependsOn(lastTaskName)
 
         lastTaskName = taskName
+
         tasksList.add(taskName)
         taskFlow.dependsOn(tasksList)
-        return null
+    }
+
+    void commitFiles(String com) {
+        task = project.task(name + 'AddFiles', type: AddFilesTask) {
+            scmAdapter adapter
+        }
+
+        if (lastTaskName != null)
+            task.dependsOn(lastTaskName)
+
+        taskName = 'Step' + tasksList.size() + '/' + name + 'CommitFiles'
+
+        task = project.task(taskName, type: CommitTask) {
+            scmAdapter adapter
+            comment com
+        }.dependsOn(name + 'AddFiles')
+
+        lastTaskName = taskName
+
+        tasksList.add(taskName)
+        taskFlow.dependsOn(tasksList)
+    }
+
+    void tag(String annot, String mess) {
+        taskName = 'Step' + tasksList.size() + '/' + name + 'Tag'
+
+        task = project.task(taskName, type: TagTask) {
+            scmAdapter adapter
+            annotation annot
+            message mess
+        }
+
+        if (lastTaskName != null)
+            task.dependsOn(lastTaskName)
+
+        lastTaskName = taskName
+
+        tasksList.add(taskName)
+        taskFlow.dependsOn(tasksList)
+    }
+
+    void merge(String branch) {
+        taskName = 'Step' + tasksList.size() + '/' + name + 'Merge'
+
+        task = project.task(taskName, type: MergeTask) {
+            scmAdapter adapter
+            from branch
+        }
+
+        if (lastTaskName != null)
+            task.dependsOn(lastTaskName)
+
+        lastTaskName = taskName
+
+        tasksList.add(taskName)
+        taskFlow.dependsOn(tasksList)
+    }
+
+    void push() {
+        taskName = 'Step' + tasksList.size() + '/' + name + 'Push'
+
+        task = project.task(taskName, type: PushTask) {
+            scmAdapter adapter
+        }
+
+        if (lastTaskName != null)
+            task.dependsOn(lastTaskName)
+
+        lastTaskName = taskName
+
+        tasksList.add(taskName)
+        taskFlow.dependsOn(tasksList)
+    }
+
+    void delete(String branchName) {
+        taskName = 'Step' + tasksList.size() + '/' + name + 'Delete'
+
+        task = project.task(taskName, type: DeleteTask) {
+            scmAdapter adapter
+            branch branchName
+        }
+
+        if (lastTaskName != null)
+            task.dependsOn(lastTaskName)
+
+        lastTaskName = taskName
+
+        tasksList.add(taskName)
+        taskFlow.dependsOn(tasksList)
+    }
+
+    void changeVersion(String method, String val) {
+        taskName = 'Step' + tasksList.size() + '/' + name + 'ChangeVersion'
+
+        task = project.task(taskName, type: ChangePropertyTask) {
+            key method
+            value val
+            myProject project
+        }
+
+        if (lastTaskName != null)
+            task.dependsOn(lastTaskName)
+
+        lastTaskName = taskName
+
+        tasksList.add(taskName)
+        taskFlow.dependsOn(tasksList)
     }
 }
