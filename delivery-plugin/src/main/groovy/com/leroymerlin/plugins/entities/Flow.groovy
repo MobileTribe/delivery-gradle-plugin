@@ -1,8 +1,10 @@
 package com.leroymerlin.plugins.entities
 
+import com.leroymerlin.plugins.DeliveryPluginExtension
 import com.leroymerlin.plugins.core.BaseScmAdapter
 import com.leroymerlin.plugins.tasks.*
 import org.gradle.api.Project
+import org.gradle.api.Task
 
 /**
  * Created by alexandre on 08/02/2017.
@@ -12,13 +14,39 @@ class Flow {
     Project project
     ArrayList<String> tasksList = new ArrayList<>()
     BaseScmAdapter adapter
-    def task, taskFlow
+    def taskFlow
+    DeliveryPluginExtension delivery
 
-    Flow(String name, Project project) {
+    Flow(String name, DeliveryPluginExtension extension) {
         this.name = name
-        this.project = project
-        this.adapter = project.delivery.scmAdapter
-        taskFlow = project.task("start" + name.capitalize())
+        this.project = extension.project
+        this.delivery = extension
+        this.adapter = this.delivery.scmAdapter
+        taskFlow = project.task("Start" + name.capitalize())
+    }
+
+    void flow(String flowName) {
+        taskName = 'Step' + tasksList.size() + '/' + name + 'Flow'
+
+        task = project.task(taskName, type: FlowTask) {
+            scmAdapter adapter
+            flowTitle flowName
+        }
+
+        if (lastTaskName != null)
+            task.dependsOn(lastTaskName)
+
+        lastTaskName = taskName
+
+        tasksList.add(taskName)
+        taskFlow.dependsOn(tasksList)
+    }
+
+    void task(String taskIdentifier) {
+        lastTaskName = taskName
+
+        tasksList.add(taskName)
+        taskFlow.dependsOn(tasksList)
     }
 
     void switchBranch(String branchName, boolean create) {
@@ -39,43 +67,40 @@ class Flow {
         taskFlow.dependsOn(tasksList)
     }
 
-    void commitFiles(String com) {
-        task = project.task(name + 'AddFiles', type: AddFilesTask) {
-            scmAdapter adapter
-        }
+    void commitFiles(String commitComment, Closure closure) {
+        registerTask(
+                project.task(formatTaskName(AddFilesTask.simpleName), type: AddFilesTask) {
+                    scmAdapter adapter
+                }
+        )
+        registerTask(
+                project.task(formatTaskName(CommitTask.simpleName), type: CommitTask) {
+                    scmAdapter adapter
+                    comment commitComment
+                }
+        )
+    }
 
+    void tag(String tagMessage, String tagAnnotation) {
+        registerTask
+        (project.task(formatTaskName(TagTask.simpleName), type: TagTask) {
+            scmAdapter adapter
+            annotation tagAnnotation
+            message tagMessage
+        }
+        )
+    }
+
+    def registerTask(Task task) {
         if (lastTaskName != null)
             task.dependsOn(lastTaskName)
-
-        taskName = 'Step' + tasksList.size() + '/' + name + 'CommitFiles'
-
-        task = project.task(taskName, type: CommitTask) {
-            scmAdapter adapter
-            comment com
-        }.dependsOn(name + 'AddFiles')
-
-        lastTaskName = taskName
-
-        tasksList.add(taskName)
+        lastTaskName = task.name
+        tasksList.add(task.name)
         taskFlow.dependsOn(tasksList)
     }
 
-    void tag(String annot, String mess) {
-        taskName = 'Step' + tasksList.size() + '/' + name + 'Tag'
-
-        task = project.task(taskName, type: TagTask) {
-            scmAdapter adapter
-            annotation annot
-            message mess
-        }
-
-        if (lastTaskName != null)
-            task.dependsOn(lastTaskName)
-
-        lastTaskName = taskName
-
-        tasksList.add(taskName)
-        taskFlow.dependsOn(tasksList)
+    private String formatTaskName(String baseName) {
+        "${name}_step${tasksList.size()}_${baseName}"
     }
 
     void merge(String branch) {
@@ -95,7 +120,7 @@ class Flow {
         taskFlow.dependsOn(tasksList)
     }
 
-    void push() {
+    def push() {
         taskName = 'Step' + tasksList.size() + '/' + name + 'Push'
 
         task = project.task(taskName, type: PushTask) {
@@ -109,6 +134,19 @@ class Flow {
 
         tasksList.add(taskName)
         taskFlow.dependsOn(tasksList)
+    }
+
+    def propertyMissing(String name) {
+        switch (name) {
+            case 'push':
+                push()
+                break
+        }
+        return null
+    }
+
+    def propertyMissing(String name, arg) {
+
     }
 
     void delete(String branchName) {

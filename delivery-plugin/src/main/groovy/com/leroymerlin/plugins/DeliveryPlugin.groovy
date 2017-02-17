@@ -84,9 +84,5 @@ class DeliveryPlugin implements Plugin<Project> {
         project.ext.versionId = project.ext."${project.ext.versionIdKey}"
         project.ext.version = project.ext."${project.ext.versionKey}"
         project.version = project.ext."${project.ext.versionKey}"
-
-        project.delivery.extensions.flows = project.container(Flow) { String name ->
-            return project.gradle.services.get(Instantiator).newInstance(Flow, name, project)
-        }
     }
 }

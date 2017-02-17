@@ -61,7 +61,7 @@ class AndroidConfiguratorTest extends BasePluginTest {
 
     @Test
     void testBuildTaskGeneration() {
-        testTask('startCustomStartFlow')
+        testTask('StartCustomStartFlow')
 
         /*project.delivery {
             git {

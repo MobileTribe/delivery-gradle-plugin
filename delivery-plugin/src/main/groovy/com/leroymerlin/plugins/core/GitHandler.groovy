@@ -14,29 +14,31 @@ class GitHandler extends Executor implements BaseScmAdapter {
 
     @Override
     void setup(Project project, DeliveryPluginExtension extension) {
-        if ("git --version".execute().text == null) {
+        if (!"git --version".execute().text.contains('git version')) {
             throw new GradleException("Git not found, install Git before continue")
         } else {
-            if (!new File('.git').exists())
-                println('Init Git on the folder')
-
             String password = System.getProperty('SCM_PASSWORD')
             String user = System.getProperty('SCM_USER')
             if (password == null || user == null) {
                 throw new GradleException('Add credentials to continue')
-            } else {
-                println(exec(['git', 'config', 'credential.helper', 'cache']))
-                baseUri = new URI(exec(['git', 'config', '--local', '--get', 'remote.origin.url'], errorMessage: "Fail to read origin url").readLines()[0])
+            }
 
+            if (!new File('.git').exists()) {
+                println(exec(['git', 'init'], directory: 'delivery-test', errorMessage: "Failed to init Git", errorPatterns: ['[rejected]', 'error: ', 'fatal: ']))
+            } else {
+                baseUri = new URI(exec(['git', 'config', '--local', '--get', 'remote.origin.url'], errorMessage: "Fail to read origin url").readLines()[0])
                 String domain = baseUri.getHost() + baseUri.path
                 String credential = "${baseUri.getScheme()}://$user:$password@$domain"
+                exec(['git', 'remote', 'rm', 'origin'], errorMessage: "Fail to remove origin")
+                exec(['git', 'remote', 'add', 'origin', credential], errorMessage: "Fail to add origin")
             }
         }
     }
 
     @Override
     void release() {
-        println(exec(['git', 'credential-cache', 'exit']))
+        System.clearProperty('SCM_PASSWORD')
+        System.clearProperty('SCM_USER')
     }
 
     @Override

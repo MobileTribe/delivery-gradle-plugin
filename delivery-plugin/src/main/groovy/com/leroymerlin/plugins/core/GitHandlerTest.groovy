@@ -12,7 +12,7 @@ class GitHandlerTest extends Executor implements BaseScmAdapter {
 
     @Override
     void setup(Project project, DeliveryPluginExtension extension) {
-        if ("git --version".execute().text == null) {
+        if (!"git --version".execute().text.contains('git version')) {
             throw new GradleException("Git not found, install Git before continue")
         } else {
             if (!new File('.git').exists())
