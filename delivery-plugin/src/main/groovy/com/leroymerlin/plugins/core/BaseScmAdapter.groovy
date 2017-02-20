@@ -12,17 +12,17 @@ interface BaseScmAdapter {
 
     void release()
 
-    String addAllFiles() throws ScmException
+    String addAllFiles()
 
-    String commit(String comment) throws ScmException
+    String commit(String comment)
 
-    String deleteBranch(String branchName) throws ScmException
+    String deleteBranch(String branchName)
 
-    String switchBranch(String branchName, boolean createIfNeeded) throws ScmException
+    String switchBranch(String branchName, boolean createIfNeeded)
 
-    String tag(String annotation, String message) throws ScmException
+    String tag(String annotation, String message)
 
-    String merge(String from) throws ScmException
+    String merge(String from)
 
-    String push() throws ScmException
+    String push()
 }

@@ -39,6 +39,7 @@ class GitHandler extends Executor implements BaseScmAdapter {
     void release() {
         System.clearProperty('SCM_PASSWORD')
         System.clearProperty('SCM_USER')
+        exec(['git', 'remote', 'rm', 'origin'], errorMessage: "Fail to remove origin")
     }
 
     @Override

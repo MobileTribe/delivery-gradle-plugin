@@ -30,12 +30,12 @@ class Flow {
         "${name}_step${tasksList.size()}_${baseName}"
     }
 
-    def createTask(Class className, HashMap<String, ?> parameters) {
+    private void createTask(Class className, HashMap<String, Object> parameters) {
         Task task = project.task(formatTaskName(className.simpleName), type: className) {
             scmAdapter adapter
         }
         if (parameters != null) {
-            for (Map.Entry<String, ?> entry : parameters.entrySet()) {
+            for (Map.Entry<String, Object> entry : parameters.entrySet()) {
                 task.setProperty(entry.getKey(), entry.getValue())
             }
         }
@@ -83,11 +83,19 @@ class Flow {
         createTask(DeleteTask, parameters)
     }
 
-    def changeVersion(String method, String val) {
+    def changeVersion(String value) {
         parameters.clear()
-        parameters.put('key', method)
-        parameters.put('value', val)
-        parameters.put('myProject', project)
+        parameters.put('key', 'changeVersion')
+        parameters.put('value', value)
+        parameters.put('project', project)
+        createTask(ChangePropertyTask, parameters)
+    }
+
+    def changeVersionId(String value) {
+        parameters.clear()
+        parameters.put('key', 'changeVersionId')
+        parameters.put('value', value)
+        parameters.put('project', project)
         createTask(ChangePropertyTask, parameters)
     }
 
@@ -123,7 +131,10 @@ class Flow {
                 delete(arg[0])
                 break
             case 'changeVersion':
-                changeVersion(arg[0], arg[1])
+                changeVersion(arg[0])
+                break
+            case 'changeVersionId':
+                changeVersion(arg[0])
                 break
             case 'task':
                 task(arg[0])

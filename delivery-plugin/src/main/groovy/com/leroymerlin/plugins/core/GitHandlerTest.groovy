@@ -37,37 +37,37 @@ class GitHandlerTest extends Executor implements BaseScmAdapter {
     }
 
     @Override
-    String addAllFiles() throws ScmException {
+    String addAllFiles() {
         return println('addAllFiles')
     }
 
     @Override
-    String commit(String comment) throws ScmException {
+    String commit(String comment) {
         return println('commmit ' + comment)
     }
 
     @Override
-    String deleteBranch(String branchName) throws ScmException {
+    String deleteBranch(String branchName) {
         return println('deleteBranch ' + branchName)
     }
 
     @Override
-    String switchBranch(String branchName, boolean createIfNeeded) throws ScmException {
+    String switchBranch(String branchName, boolean createIfNeeded) {
         return println('switchBranch ' + branchName + createIfNeeded)
     }
 
     @Override
-    String tag(String annotation, String message) throws ScmException {
+    String tag(String annotation, String message) {
         return println('tag ' + annotation + message)
     }
 
     @Override
-    String merge(String from) throws ScmException {
+    String merge(String from) {
         return println('merge ' + from)
     }
 
     @Override
-    String push() throws ScmException {
+    String push() {
         return println('push')
     }
 

@@ -8,19 +8,19 @@ import org.gradle.api.tasks.TaskAction
 /**
  * Created by alexandre on 15/02/2017.
  */
-class ChangePropertyTask extends DefaultTask {
+class ChangePropertyTask extends ScmBaseTask {
 
     String key, value
-    Project myProject
+    Project project
 
     @TaskAction
     changeProperty() {
         File versionFile
 
-        if (myProject.hasProperty('versionFilePath')) {
-            versionFile = myProject.file(myProject.property('versionFilePath'))
+        if (project.hasProperty('versionFilePath')) {
+            versionFile = project.file(project.property('versionFilePath'))
         } else {
-            versionFile = myProject.file('version.properties')
+            versionFile = project.file('version.properties')
         }
 
         switch (key) {
@@ -31,6 +31,6 @@ class ChangePropertyTask extends DefaultTask {
                 PropertiesFileUtils.setProperty(versionFile, 'versionId', value)
                 break
         }
-        PropertiesFileUtils.readAndApplyPropertiesFile(myProject, versionFile)
+        PropertiesFileUtils.readAndApplyPropertiesFile(project, versionFile)
     }
 }

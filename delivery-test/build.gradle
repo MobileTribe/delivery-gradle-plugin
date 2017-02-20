@@ -86,6 +86,7 @@ delivery {
             merge delivery.developBranch
             push
             task 'clean'
+            changeVersion '1.0'
         }
         beginReleaseFlow {
             switchBranch delivery.customBranch, false
