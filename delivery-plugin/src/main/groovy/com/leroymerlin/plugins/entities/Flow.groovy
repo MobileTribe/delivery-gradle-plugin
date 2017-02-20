@@ -10,11 +10,12 @@ import org.gradle.api.Task
  * Created by alexandre on 08/02/2017.
  */
 class Flow {
-    String name, taskName, lastTaskName
+    String name, lastTaskName
     Project project
     ArrayList<String> tasksList = new ArrayList<>()
+    HashMap<String, Object> parameters = new HashMap<>()
     BaseScmAdapter adapter
-    def taskFlow
+    Task taskFlow
     DeliveryPluginExtension delivery
 
     Flow(String name, DeliveryPluginExtension extension) {
@@ -22,76 +23,22 @@ class Flow {
         this.project = extension.project
         this.delivery = extension
         this.adapter = this.delivery.scmAdapter
-        taskFlow = project.task("Start" + name.capitalize())
+        taskFlow = project.task("init" + name.capitalize())
     }
 
-    void flow(String flowName) {
-        taskName = 'Step' + tasksList.size() + '/' + name + 'Flow'
+    private String formatTaskName(String baseName) {
+        "${name}_step${tasksList.size()}_${baseName}"
+    }
 
-        task = project.task(taskName, type: FlowTask) {
+    def createTask(Class className, HashMap<String, ?> parameters) {
+        Task task = project.task(formatTaskName(className.simpleName), type: className) {
             scmAdapter adapter
-            flowTitle flowName
         }
-
-        if (lastTaskName != null)
-            task.dependsOn(lastTaskName)
-
-        lastTaskName = taskName
-
-        tasksList.add(taskName)
-        taskFlow.dependsOn(tasksList)
-    }
-
-    void task(String taskIdentifier) {
-        lastTaskName = taskName
-
-        tasksList.add(taskName)
-        taskFlow.dependsOn(tasksList)
-    }
-
-    void switchBranch(String branchName, boolean create) {
-        taskName = 'Step' + tasksList.size() + '/' + name + 'SwitchBranch'
-
-        task = project.task(taskName, type: SwitchTask) {
-            scmAdapter adapter
-            branch branchName
-            createIfNeeded create
+        if (parameters != null) {
+            for (Map.Entry<String, ?> entry : parameters.entrySet()) {
+                task.setProperty(entry.getKey(), entry.getValue())
+            }
         }
-
-        if (lastTaskName != null)
-            task.dependsOn(lastTaskName)
-
-        lastTaskName = taskName
-
-        tasksList.add(taskName)
-        taskFlow.dependsOn(tasksList)
-    }
-
-    void commitFiles(String commitComment, Closure closure) {
-        registerTask(
-                project.task(formatTaskName(AddFilesTask.simpleName), type: AddFilesTask) {
-                    scmAdapter adapter
-                }
-        )
-        registerTask(
-                project.task(formatTaskName(CommitTask.simpleName), type: CommitTask) {
-                    scmAdapter adapter
-                    comment commitComment
-                }
-        )
-    }
-
-    void tag(String tagMessage, String tagAnnotation) {
-        registerTask
-        (project.task(formatTaskName(TagTask.simpleName), type: TagTask) {
-            scmAdapter adapter
-            annotation tagAnnotation
-            message tagMessage
-        }
-        )
-    }
-
-    def registerTask(Task task) {
         if (lastTaskName != null)
             task.dependsOn(lastTaskName)
         lastTaskName = task.name
@@ -99,88 +46,88 @@ class Flow {
         taskFlow.dependsOn(tasksList)
     }
 
-    private String formatTaskName(String baseName) {
-        "${name}_step${tasksList.size()}_${baseName}"
+    def switchBranch(String branchName, boolean create) {
+        parameters.clear()
+        parameters.put('branch', branchName)
+        parameters.put('createIfNeeded', create)
+        createTask(SwitchTask, parameters)
     }
 
-    void merge(String branch) {
-        taskName = 'Step' + tasksList.size() + '/' + name + 'Merge'
+    def commitFiles(String commitComment) {
+        parameters.clear()
+        parameters.put('comment', commitComment)
+        createTask(AddFilesTask, null)
+        createTask(CommitTask, parameters)
+    }
 
-        task = project.task(taskName, type: MergeTask) {
-            scmAdapter adapter
-            from branch
-        }
+    def tag(String tagMessage, String tagAnnotation) {
+        parameters.clear()
+        parameters.put('annotation', tagAnnotation)
+        parameters.put('message', tagMessage)
+        createTask(TagTask, parameters)
+    }
 
-        if (lastTaskName != null)
-            task.dependsOn(lastTaskName)
-
-        lastTaskName = taskName
-
-        tasksList.add(taskName)
-        taskFlow.dependsOn(tasksList)
+    def merge(String branch) {
+        parameters.clear()
+        parameters.put('from', branch)
+        createTask(MergeTask, parameters)
     }
 
     def push() {
-        taskName = 'Step' + tasksList.size() + '/' + name + 'Push'
-
-        task = project.task(taskName, type: PushTask) {
-            scmAdapter adapter
-        }
-
-        if (lastTaskName != null)
-            task.dependsOn(lastTaskName)
-
-        lastTaskName = taskName
-
-        tasksList.add(taskName)
-        taskFlow.dependsOn(tasksList)
+        createTask(PushTask, null)
     }
 
-    def propertyMissing(String name) {
+    def delete(String branchName) {
+        parameters.clear()
+        parameters.put('branch', branchName)
+        createTask(DeleteTask, parameters)
+    }
+
+    def changeVersion(String method, String val) {
+        parameters.clear()
+        parameters.put('key', method)
+        parameters.put('value', val)
+        parameters.put('myProject', project)
+        createTask(ChangePropertyTask, parameters)
+    }
+
+    def task(String taskName) {
+        Task task = project.getTasksByName(taskName, false)[0]
+        if (task != null) {
+            if (lastTaskName != null)
+                task.dependsOn(lastTaskName)
+            lastTaskName = task.name
+            tasksList.add(task.name)
+            taskFlow.dependsOn(tasksList)
+        }
+    }
+
+    def propertyMissing(String name, arg) {
         switch (name) {
             case 'push':
                 push()
                 break
+            case 'switchBranch':
+                switchBranch(arg[0], arg[1])
+                break
+            case 'commitFiles':
+                commitFiles(arg[0])
+                break
+            case 'tag':
+                tag(arg[0], arg[1])
+                break
+            case 'merge':
+                merge(arg[0])
+                break
+            case 'delete':
+                delete(arg[0])
+                break
+            case 'changeVersion':
+                changeVersion(arg[0], arg[1])
+                break
+            case 'task':
+                task(arg[0])
+                break
         }
-        return null
-    }
-
-    def propertyMissing(String name, arg) {
-
-    }
-
-    void delete(String branchName) {
-        taskName = 'Step' + tasksList.size() + '/' + name + 'Delete'
-
-        task = project.task(taskName, type: DeleteTask) {
-            scmAdapter adapter
-            branch branchName
-        }
-
-        if (lastTaskName != null)
-            task.dependsOn(lastTaskName)
-
-        lastTaskName = taskName
-
-        tasksList.add(taskName)
-        taskFlow.dependsOn(tasksList)
-    }
-
-    void changeVersion(String method, String val) {
-        taskName = 'Step' + tasksList.size() + '/' + name + 'ChangeVersion'
-
-        task = project.task(taskName, type: ChangePropertyTask) {
-            key method
-            value val
-            myProject project
-        }
-
-        if (lastTaskName != null)
-            task.dependsOn(lastTaskName)
-
-        lastTaskName = taskName
-
-        tasksList.add(taskName)
-        taskFlow.dependsOn(tasksList)
     }
 }

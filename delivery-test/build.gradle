@@ -70,8 +70,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.2.1'
 }
 
-def toto = "100FIERFK"
-
 delivery {
     ext {
         developBranch = 'develop'
@@ -82,21 +80,15 @@ delivery {
 
     flows {
         customStartFlow {
-
-
-            switchBranch "eeee", false
-            commitFiles('this is a comment')
-            tag('an annotation', 'a message')
-            merge(delivery.developBranch)
+            switchBranch "eeee", true
+            commitFiles 'this is a comment'
+            tag 'an annotation', 'a message'
+            merge delivery.developBranch
             push
-            //task('clean')
-            //flow('beginReleaseFlow')
-            //build ''
-            //task "toto"
-            //task "startReleaseFlow"
+            task 'clean'
         }
         beginReleaseFlow {
-            switchBranch(delivery.customBranch,false)
+            switchBranch delivery.customBranch, false
             /*branch delivery.ext.releaseBranch, false
             changeVersion '2.0.2-SNAPSHOT'
             changeVersionId((versionId as int) + 1)

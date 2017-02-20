@@ -15,10 +15,6 @@ class DeliveryPluginExtension {
     BaseScmAdapter scmAdapter
     NamedDomainObjectContainer<Flow> flowsContainer
 
-    /*project.delivery.extensions.flows = project.container(Flow) { String name ->
-        return project.gradle.services.get(Instantiator).newInstance(Flow, name, project)
-    }*/
-
     DeliveryPluginExtension(Project project) {
         this.project = project
         this.scmAdapter = new GitHandlerTest()
