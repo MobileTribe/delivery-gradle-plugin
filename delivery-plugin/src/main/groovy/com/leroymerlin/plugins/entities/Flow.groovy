@@ -13,7 +13,6 @@ class Flow {
     String name, lastTaskName
     Project project
     ArrayList<String> tasksList = new ArrayList<>()
-    HashMap<String, Object> parameters = new HashMap<>()
     BaseScmAdapter adapter
     Task taskFlow
     DeliveryPluginExtension delivery
@@ -47,30 +46,20 @@ class Flow {
     }
 
     def switchBranch(String branchName, boolean create) {
-        parameters.clear()
-        parameters.put('branch', branchName)
-        parameters.put('createIfNeeded', create)
-        createTask(SwitchTask, parameters)
+        createTask(SwitchTask, [branch: branchName, createIfNeeded: create])
     }
 
     def commitFiles(String commitComment) {
-        parameters.clear()
-        parameters.put('comment', commitComment)
         createTask(AddFilesTask, null)
-        createTask(CommitTask, parameters)
+        createTask(CommitTask, [comment: commitComment])
     }
 
     def tag(String tagMessage, String tagAnnotation) {
-        parameters.clear()
-        parameters.put('annotation', tagAnnotation)
-        parameters.put('message', tagMessage)
-        createTask(TagTask, parameters)
+        createTask(TagTask, [annotation: tagAnnotation, message: tagMessage])
     }
 
     def merge(String branch) {
-        parameters.clear()
-        parameters.put('from', branch)
-        createTask(MergeTask, parameters)
+        createTask(MergeTask, [from: branch])
     }
 
     def push() {
@@ -78,25 +67,15 @@ class Flow {
     }
 
     def delete(String branchName) {
-        parameters.clear()
-        parameters.put('branch', branchName)
-        createTask(DeleteTask, parameters)
+        createTask(DeleteTask, [branch: branchName])
     }
 
-    def changeVersion(String value) {
-        parameters.clear()
-        parameters.put('key', 'changeVersion')
-        parameters.put('value', value)
-        parameters.put('project', project)
-        createTask(ChangePropertyTask, parameters)
+    def changeVersion(value) {
+        createTask(ChangePropertyTask, [key: 'changeVersion', value: value, project: project])
     }
 
-    def changeVersionId(String value) {
-        parameters.clear()
-        parameters.put('key', 'changeVersionId')
-        parameters.put('value', value)
-        parameters.put('project', project)
-        createTask(ChangePropertyTask, parameters)
+    def changeVersionId(value) {
+        createTask(ChangePropertyTask, [key: 'changeVersionId', value: value, project: project])
     }
 
     def task(String taskName) {
@@ -134,7 +113,7 @@ class Flow {
                 changeVersion(arg[0])
                 break
             case 'changeVersionId':
-                changeVersion(arg[0])
+                changeVersionId(arg[0])
                 break
             case 'task':
                 task(arg[0])

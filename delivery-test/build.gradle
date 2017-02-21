@@ -76,6 +76,7 @@ delivery {
         masterBranch = 'master'
         releaseBranch = "release/$version"
         customBranch = 'custom'
+        versionId = (versionId as int) + 1
     }
 
     flows {
@@ -86,7 +87,8 @@ delivery {
             merge delivery.developBranch
             push
             task 'clean'
-            changeVersion '1.0'
+            changeVersion '2.0.0-SNAPSHOT'
+            changeVersionId delivery.versionId
         }
         beginReleaseFlow {
             switchBranch delivery.customBranch, false
