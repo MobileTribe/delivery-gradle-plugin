@@ -72,7 +72,7 @@ dependencies {
 
 delivery {
     ext {
-        developBranch = 'develop'
+        developBranch = 'developTest'
         masterBranch = 'master'
         releaseBranch = "release/$version"
         customBranch = 'custom'
@@ -81,14 +81,11 @@ delivery {
 
     flows {
         customStartFlow {
-            switchBranch "eeee", true
+            switchBranch delivery.developBranch, true
             commitFiles 'this is a comment'
             tag 'an annotation', 'a message'
             merge delivery.developBranch
             push
-            task 'clean'
-            changeVersion '2.0.0-SNAPSHOT'
-            changeVersionId delivery.versionId
         }
         beginReleaseFlow {
             switchBranch delivery.customBranch, false

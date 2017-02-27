@@ -17,6 +17,8 @@ class GitHandler extends Executor implements BaseScmAdapter {
         if (!"git --version".execute().text.contains('git version')) {
             throw new GradleException("Git not found, install Git before continue")
         } else {
+            System.setProperty('SCM_EMAIL', 'test@test.fr')
+            System.setProperty('SCM_USER', 'test')
             email = System.getProperty('SCM_EMAIL')
             username = System.getProperty('SCM_USER')
             if (email == null || username == null) {
