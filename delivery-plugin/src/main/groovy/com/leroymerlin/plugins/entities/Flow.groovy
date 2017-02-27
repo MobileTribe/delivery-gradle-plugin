@@ -90,34 +90,6 @@ class Flow {
     }
 
     def propertyMissing(String name, arg) {
-        switch (name) {
-            case 'push':
-                push()
-                break
-            case 'switchBranch':
-                switchBranch(arg[0], arg[1])
-                break
-            case 'commitFiles':
-                commitFiles(arg[0])
-                break
-            case 'tag':
-                tag(arg[0], arg[1])
-                break
-            case 'merge':
-                merge(arg[0])
-                break
-            case 'delete':
-                delete(arg[0])
-                break
-            case 'changeVersion':
-                changeVersion(arg[0])
-                break
-            case 'changeVersionId':
-                changeVersionId(arg[0])
-                break
-            case 'task':
-                task(arg[0])
-                break
-        }
+        this."$name"()
     }
 }
