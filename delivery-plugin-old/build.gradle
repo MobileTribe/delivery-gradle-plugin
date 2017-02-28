@@ -12,7 +12,7 @@ artifacts {
 }
 
 uploadArchives {
-    repositories project.ext.properties.containsKey('bintrayRepositories')?project.ext.bintrayRepositories : {}
+    repositories project.ext.properties.containsKey('bintrayRepositories') ? project.ext.bintrayRepositories : {}
 }
 
 repositories {
@@ -39,7 +39,7 @@ task(copyLocalProperties, type: Copy) {
 }
 classes.finalizedBy copyLocalProperties
 
-test{
+test {
     workingDir project.projectDir.getParentFile()
 }
 

@@ -11,10 +11,10 @@
 package com.leroymerlin.plugins.adapters
 
 import com.leroymerlin.plugins.utils.Utils
+import org.gradle.api.GradleException
 import org.gradle.api.Project
 
 import java.util.regex.Matcher
-import org.gradle.api.GradleException
 
 class SvnAdapter extends BaseScmAdapter {
 
@@ -45,7 +45,7 @@ class SvnAdapter extends BaseScmAdapter {
     @Override
     boolean isSupported(File directory) {
         if (!directory.list().grep('.svn')) {
-            return directory.parentFile? isSupported(directory.parentFile) : false
+            return directory.parentFile ? isSupported(directory.parentFile) : false
         }
 
         true
@@ -67,7 +67,7 @@ class SvnAdapter extends BaseScmAdapter {
     }
 
     @Override
-    void createNewReleaseBranchIfNeeded(){
+    void createNewReleaseBranchIfNeeded() {
 
     }
 
@@ -107,14 +107,15 @@ class SvnAdapter extends BaseScmAdapter {
     }
 
     @Override
-    void merge(String branchFrom, String branchTo, boolean shouldPush){
+    void merge(String branchFrom, String branchTo, boolean shouldPush) {
 
     }
 
     @Override
-    void commitBranch(String branch, String message){
+    void commitBranch(String branch, String message) {
 
     }
+
     @Override
     void checkUpdateNeeded() {
         def props = project.properties
@@ -156,7 +157,8 @@ class SvnAdapter extends BaseScmAdapter {
     void createReleaseTag(String message) {
         def props = project.properties
         String svnUrl = props.releaseSvnUrl
-        String svnRev = props.releaseSvnRev ?: props.initialSvnRev //release set by commit below when needed, no commit => initial
+        String svnRev = props.releaseSvnRev ?: props.initialSvnRev
+        //release set by commit below when needed, no commit => initial
         String svnRoot = props.releaseSvnRoot
         String svnTag = Utils.tagName()
 
@@ -190,8 +192,8 @@ class SvnAdapter extends BaseScmAdapter {
      * @return
      */
     private String svnExec(
-        Map options = [:],
-        List<String> commands
+            Map options = [:],
+            List<String> commands
     ) {
         if (extension.svnConfig.username) {
             if (extension.svnConfig.password) {

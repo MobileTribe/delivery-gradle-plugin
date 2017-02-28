@@ -25,13 +25,13 @@ public class FutureDeliveryPlugin implements Plugin<Project> {
                     'uploadArtifacts'
             ]
         }
-        project.task("startRelease", description: "Prepares release branch, change version, builds the app", group: TASK_GROUP, dependsOn:"runBuildTasks")
+        project.task("startRelease", description: "Prepares release branch, change version, builds the app", group: TASK_GROUP, dependsOn: "runBuildTasks")
 
 
         project.task("mergeAndTagRelease", description: "Merge on the main Branch and tag", mustRunAfter: "startRelease") << this.&mergeAndTagRelease
-        project.task("changeAndCommitNewVersion", description: "Changes the version with the one given in parameters or Snapshots the next one", dependsOn:"mergeAndTagRelease") << this.&changeAndCommitNewVersion
-        project.task("mergeOnWorkingBranch", description: "Merge on the default branch or on the develop branch by default", dependsOn:"changeAndCommitNewVersion") << this.&mergeOnWorkingBranch
-        project.task("endRelease", description: "Merge on master, Tags, change version, merge on develop", group: TASK_GROUP,dependsOn: "mergeOnWorkingBranch", mustRunAfter: "startRelease")
+        project.task("changeAndCommitNewVersion", description: "Changes the version with the one given in parameters or Snapshots the next one", dependsOn: "mergeAndTagRelease") << this.&changeAndCommitNewVersion
+        project.task("mergeOnWorkingBranch", description: "Merge on the default branch or on the develop branch by default", dependsOn: "changeAndCommitNewVersion") << this.&mergeOnWorkingBranch
+        project.task("endRelease", description: "Merge on master, Tags, change version, merge on develop", group: TASK_GROUP, dependsOn: "mergeOnWorkingBranch", mustRunAfter: "startRelease")
         project.task("delivery", description: "Performs a full release of your app", group: TASK_GROUP, dependsOn: ["startRelease", "endRelease"])
 
         //Build tasks

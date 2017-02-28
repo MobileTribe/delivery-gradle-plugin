@@ -22,14 +22,16 @@ class Executor {
     }
 
     String exec(
-        Map options = [:],
-        List<String> commands
+            Map options = [:],
+            List<String> commands
     ) {
         StringBuffer out = new StringBuffer()
         StringBuffer err = new StringBuffer()
 
         File directory = options['directory'] ? options['directory'] as File : null
-        List processEnv = options['env'] ? ((options['env'] as Map) << System.getenv()).collect { "$it.key=$it.value" } : null
+        List processEnv = options['env'] ? ((options['env'] as Map) << System.getenv()).collect {
+            "$it.key=$it.value"
+        } : null
 
         logger?.info("Running $commands in [$directory]")
         Process process = commands.execute(processEnv, directory)
@@ -47,8 +49,12 @@ class Executor {
             }
         }
 
-        if (options['errorPatterns'] && [out, err]*.toString().any { String s -> (options['errorPatterns'] as List<String>).any { s.contains(it) } }) {
-            throw new GradleException("${ options['errorMessage'] ? options['errorMessage'] as String : 'Failed to run [' + commands.join(' ') + ']' } - [$out][$err]")
+        if (options['errorPatterns'] && [out, err]*.toString().any { String s ->
+            (options['errorPatterns'] as List<String>).any {
+                s.contains(it)
+            }
+        }) {
+            throw new GradleException("${options['errorMessage'] ? options['errorMessage'] as String : 'Failed to run [' + commands.join(' ') + ']'} - [$out][$err]")
         }
 
         out.toString()

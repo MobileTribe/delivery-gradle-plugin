@@ -11,7 +11,7 @@ public class Utils {
         SimpleTemplateEngine engine = new SimpleTemplateEngine()
 
         def text = extension.releaseTagPattern
-        def binding = ["version":project.version, "versionId": project.versionId, "projectName": project.projectName]
+        def binding = ["version": project.version, "versionId": project.versionId, "projectName": project.projectName]
 
         //TODO Vérifier que le tag est correctement défini par l'utilisateur ?
         tagName = engine.createTemplate(text).make(binding)
@@ -24,7 +24,7 @@ public class Utils {
         SimpleTemplateEngine engine = new SimpleTemplateEngine()
 
         def text = extension.releaseBranchPattern
-        def binding = ["version":project.version, "versionId": project.versionId, "projectName": project.projectName]
+        def binding = ["version": project.version, "versionId": project.versionId, "projectName": project.projectName]
 
         //TODO Vérifier que le tag est correctement défini par l'utilisateur ?
         branchName = engine.createTemplate(text).make(binding)
@@ -35,7 +35,7 @@ public class Utils {
         def branchName
         SimpleTemplateEngine engine = new SimpleTemplateEngine()
         def text = extension.newVersionCommitPattern
-        def binding = ["version":project.version, "versionId": project.versionId, "projectName": project.projectName]
+        def binding = ["version": project.version, "versionId": project.versionId, "projectName": project.projectName]
 
         //TODO Vérifier que le tag est correctement défini par l'utilisateur ?
         branchName = engine.createTemplate(text).make(binding)
@@ -44,7 +44,7 @@ public class Utils {
     }
 
 
-    public static String readProperty(File f, String key){
+    public static String readProperty(File f, String key) {
         Properties properties = new Properties();
         def propStream = new FileInputStream(f.absolutePath);
         properties.load(propStream)

@@ -6,6 +6,7 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.After
 import org.junit.Before
+
 /**
  * Created by florian on 17/12/15.
  */
@@ -61,8 +62,6 @@ class BasePluginTest {
     }
 
 
-
-
     public void setupProject() {
         def manager = project.pluginManager
 
@@ -85,7 +84,6 @@ class BasePluginTest {
         manager.apply('com.android.application')
         manager.apply(DeliveryPlugin.class)
 
-
         //project.apply from: 'local.properties'
         project.android {
             compileSdkVersion 23
@@ -96,8 +94,8 @@ class BasePluginTest {
                 targetSdkVersion 23
                 //  multiDexEnabled true
                 applicationId 'com.leroymerlin.plugin.testapp'
-                versionName  project.version
-                versionCode  Integer.parseInt(project.versionId)
+                versionName project.version
+                versionCode Integer.parseInt(project.versionId)
 
             }
 
@@ -112,7 +110,7 @@ class BasePluginTest {
                     minifyEnabled true
                     proguardFiles getDefaultProguardFile('proguard-android.txt')
                 }
-                minify{
+                minify {
                     minifyEnabled true
                     proguardFiles getDefaultProguardFile('proguard-android.txt')
                     debuggable true
@@ -129,7 +127,6 @@ class BasePluginTest {
         adapter.exec(['git', 'branch', 'develop'])
         adapter.exec(['git', 'checkout', 'develop'], errorMessage: "Fail to checkout develop")
     }
-
 
 
 }

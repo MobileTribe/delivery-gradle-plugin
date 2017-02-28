@@ -43,9 +43,9 @@ public class DeliveryPlugin implements Plugin<Project> {
         this.extension = this.project.extensions.create("delivery", DeliveryPluginExtension, this.project, this, signingProperties)
         // create SCM method and apply closure on them
         extension.scmAdapters.each {
-            name , adapterClass ->
+            name, adapterClass ->
                 BaseScmAdapter adapter = adapterClass.newInstance(this.project);
-                def config =  adapter.createNewConfig()
+                def config = adapter.createNewConfig()
                 extension.metaClass."${name}Config" = config
                 extension.metaClass."$name" << { closure ->
                     closure.setDelegate(config)
@@ -131,12 +131,12 @@ public class DeliveryPlugin implements Plugin<Project> {
 
     private void initTasks() {
         //Initialize Scm Adapter
-        project.task("prepareScmAdapter", description:  "Initialize Scm Adapter", group:  TASK_GROUP) << scmFlowMethods.&prepareScmAdapter
-        project.task("prepareScmAdapterForValidation", description:  "Initialize Scm Adapter for validation", group:  TASK_GROUP) << scmFlowMethods.&prepareScmAdapter
-        project.task("releaseScmAdapter", description:  "Release Scm Adapter", group:  TASK_GROUP) << scmFlowMethods.&releaseScmAdapter
-        project.task("releaseScmAdapterForValidation", description:  "Release Scm Adapter for validation", group:  TASK_GROUP) << scmFlowMethods.&releaseScmAdapter
+        project.task("prepareScmAdapter", description: "Initialize Scm Adapter", group: TASK_GROUP) << scmFlowMethods.&prepareScmAdapter
+        project.task("prepareScmAdapterForValidation", description: "Initialize Scm Adapter for validation", group: TASK_GROUP) << scmFlowMethods.&prepareScmAdapter
+        project.task("releaseScmAdapter", description: "Release Scm Adapter", group: TASK_GROUP) << scmFlowMethods.&releaseScmAdapter
+        project.task("releaseScmAdapterForValidation", description: "Release Scm Adapter for validation", group: TASK_GROUP) << scmFlowMethods.&releaseScmAdapter
 
-        project.task("checkSnapshotDependencies", description:  "Looks for Snapshot dependencies", group:  TASK_GROUP) << releaseMethods.&checkSnapshotDependencies
+        project.task("checkSnapshotDependencies", description: "Looks for Snapshot dependencies", group: TASK_GROUP) << releaseMethods.&checkSnapshotDependencies
 
 
         this.tasksInitRelease = [
@@ -268,7 +268,7 @@ public class DeliveryPlugin implements Plugin<Project> {
 
         applyVersionKeys()
 
-        if(versionFile.exists()){
+        if (versionFile.exists()) {
             applyPropertiesOnProject(versionFile)
         }
     }
@@ -283,11 +283,11 @@ public class DeliveryPlugin implements Plugin<Project> {
     }
 
     public void setProjectProperty(def key, def value) {
-        if(key == versionKey && key != 'version'){
+        if (key == versionKey && key != 'version') {
             setProjectProperty('version', value)
-        }else if(key == versionIdKey && key != 'versionId'){
+        } else if (key == versionIdKey && key != 'versionId') {
             setProjectProperty('versionId', value)
-        }else if(key == projectNameKey && key != 'projectName' ){
+        } else if (key == projectNameKey && key != 'projectName') {
             setProjectProperty('projectName', value)
         }
 

@@ -5,6 +5,7 @@ import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
 import org.junit.Before
 import org.junit.Test
+
 /**
  * Created by florian on 17/12/15.
  */
@@ -24,16 +25,15 @@ class IntegrationTest {
         }
     }
 
-
     /**
      *
      * Testing Methods
      *
      */
 
-    private static void testTask(String... tasks){
+    private static void testTask(String... tasks) {
         GradleConnector connector = GradleConnector.newConnector()
-        connector.forProjectDirectory(new File("delivery-test"))
+        connector.forProjectDirectory(new File("android"))
         ProjectConnection connection = connector.connect()
         try {
             BuildLauncher launcher = connection.newBuild()

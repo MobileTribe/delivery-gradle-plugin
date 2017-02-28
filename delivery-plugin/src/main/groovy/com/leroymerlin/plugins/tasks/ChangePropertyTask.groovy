@@ -1,7 +1,6 @@
 package com.leroymerlin.plugins.tasks
 
 import com.leroymerlin.plugins.utils.PropertiesFileUtils
-import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.tasks.TaskAction
 

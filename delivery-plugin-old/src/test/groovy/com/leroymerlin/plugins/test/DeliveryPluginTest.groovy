@@ -8,6 +8,7 @@ import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+
 /**
  * Created by florian on 17/12/15.
  */
@@ -46,13 +47,9 @@ class DeliveryPluginTest extends BasePluginTest {
     }
 
 
-
-
-
-
     @Test
     public void testSaveLatestReleaseInfos() {
-        File file = new File(project.projectDir.path+"/delivery.properties")
+        File file = new File(project.projectDir.path + "/delivery.properties")
         file.delete()
 
         project.version = "1.0.0-SNAPSHOT";
@@ -70,7 +67,7 @@ class DeliveryPluginTest extends BasePluginTest {
     @Test
     public void testBasicTagName() {
         project.evaluate()
-        Assert.assertEquals(project.projectName +"-"+ project.versionId + "-" + project.version, Utils.tagName(this.project, this.project.extensions['delivery'] as DeliveryPluginExtension))
+        Assert.assertEquals(project.projectName + "-" + project.versionId + "-" + project.version, Utils.tagName(this.project, this.project.extensions['delivery'] as DeliveryPluginExtension))
     }
 
 
@@ -188,8 +185,6 @@ class DeliveryPluginTest extends BasePluginTest {
         Assert.assertEquals(9, project.configurations.testQualifConfig.allArtifacts.size())
 
         project.tasks['tasks'].execute()
-
-
 
 
     }

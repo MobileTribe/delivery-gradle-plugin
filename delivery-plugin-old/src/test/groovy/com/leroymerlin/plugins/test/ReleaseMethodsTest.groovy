@@ -43,5 +43,4 @@ class ReleaseMethodsTest extends BasePluginTest {
     }
 
 
-
 }

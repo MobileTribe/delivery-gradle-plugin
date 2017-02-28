@@ -70,5 +70,4 @@ class GitHandlerTest extends Executor implements BaseScmAdapter {
     String push() {
         return println('push')
     }
-
 }

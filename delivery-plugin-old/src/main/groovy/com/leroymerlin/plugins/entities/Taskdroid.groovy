@@ -18,9 +18,9 @@ class Taskdroid {
     }
 
 
-    String createTask(Project project, String previousTaskName){
+    String createTask(Project project, String previousTaskName) {
         def dep = [];
-        if(previousTaskName)
+        if (previousTaskName)
             dep.add(previousTaskName);
         dep.addAll(dependOn)
         project.task(name, description: description, group: group, dependsOn: dep) << function

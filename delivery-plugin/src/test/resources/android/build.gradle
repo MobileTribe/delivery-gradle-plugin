@@ -1,0 +1,98 @@
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.1.0'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.3'
+    }
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+        mavenLM()
+    }
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'com.leroymerlin.delivery'
+
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+        mavenLM()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.5.0'
+        classpath "com.leroymerlin.plugins:delivery-plugin:${System.getProperty("DELIVERY_VERSION")}"
+    }
+}
+
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.2"
+
+    defaultConfig {
+        applicationId "com.leroymerlin.pandroid.plugin.testapp"
+        minSdkVersion 19
+        targetSdkVersion 23
+    }
+    buildTypes {
+        all {
+            minifyEnabled false
+        }
+        debug {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:23.2.1'
+}
+
+delivery {
+    ext {
+        developBranch = 'developTest'
+        masterBranch = 'master'
+        releaseBranch = "release/$version"
+        customBranch = 'custom'
+        versionId = (versionId as int) + 1
+    }
+
+    flows {
+        customStartFlow {
+            switchBranch delivery.developBranch, true
+            commitFiles 'this is a comment'
+            tag 'an annotation', 'a message'
+            //merge delivery.developBranch
+            //push
+        }
+        beginReleaseFlow {
+            switchBranch delivery.customBranch, false
+            /*branch delivery.ext.releaseBranch, false
+            changeVersion '2.0.2-SNAPSHOT'
+            changeVersionId((versionId as int) + 1)
+            commitFiles 'this is a comment'
+            tag 'this is an annotation', 'this is a message'
+            push ''*/
+        }
+    }
+
+    /*signingProperties {
+        all {
+            propertiesFile = project.file("signing.properties")
+        }
+    }*/
+}

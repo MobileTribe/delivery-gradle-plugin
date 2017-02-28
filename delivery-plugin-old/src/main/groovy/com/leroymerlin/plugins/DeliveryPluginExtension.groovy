@@ -20,7 +20,6 @@ class DeliveryPluginExtension {
         this.signingProperties = signingProperties;
     }
 
-
     //commit text
     def newVersionCommitPattern = 'chore (version) : Update version to $version'
 
@@ -28,12 +27,13 @@ class DeliveryPluginExtension {
 
     def releaseBranchPattern = 'release/$versionId-$version'
 
-    def archiveRepositories = project.ext.properties.containsKey('archiveRepositories')?project.ext.archiveRepositories : {}
+    def archiveRepositories = project.ext.properties.containsKey('archiveRepositories') ? project.ext.archiveRepositories : {
+    }
 
     boolean failOnSnapshotDependency = true
 
     def scmAdapters = [
-            "git":GitAdapter
+            "git": GitAdapter
             //"svn":SvnAdapter
     ];
 
@@ -42,7 +42,7 @@ class DeliveryPluginExtension {
             /(\d+)([^\d]*$)/: { Matcher m, Project p -> m.replaceAll("${(m[0][1] as int) + 1}${m[0][2]}") }
     ]
 
-    void signingProperties(Action<? super NamedDomainObjectContainer<SigningProperty>> action){
+    void signingProperties(Action<? super NamedDomainObjectContainer<SigningProperty>> action) {
         action.execute(signingProperties)
         signingProperties.each {
             SigningProperty signingProperty ->

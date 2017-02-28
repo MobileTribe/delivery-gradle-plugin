@@ -48,7 +48,7 @@ class GitAdapter extends BaseScmAdapter {
     boolean isSupported(File directory) {
         boolean supported = true;
         if (!directory.list().grep('.git')) {
-            supported = supported &&( directory.parentFile ? isSupported(directory.parentFile) : false)
+            supported = supported && (directory.parentFile ? isSupported(directory.parentFile) : false)
         }
         supported = supported && extension.hasProperty("gitConfig")
 
@@ -62,7 +62,7 @@ class GitAdapter extends BaseScmAdapter {
 
             baseUri = new URI(exec(['git', 'config', '--local', '--get', 'remote.origin.url'], errorMessage: "Fail to read origin url").readLines()[0]);
 
-            String domain = baseUri.getHost()+baseUri.path
+            String domain = baseUri.getHost() + baseUri.path
             String credential = "${baseUri.getScheme()}://${extension.gitConfig.user}:${extension.gitConfig.password}@$domain"
 
             exec(['git', 'remote', 'rm', 'origin'], errorMessage: "Fail to remove origin")
@@ -86,38 +86,38 @@ class GitAdapter extends BaseScmAdapter {
         }
     }
 
-    boolean isOnTheReleaseBranch(){
+    boolean isOnTheReleaseBranch() {
         return gitCurrentBranch().equals(Utils.releaseBranchName(this.project, this.extension))
     }
 
-    boolean releaseBranchAlreadyExists(){
+    boolean releaseBranchAlreadyExists() {
         boolean retour = false;
-        exec(['git', 'branch']).readLines().each{ value ->
+        exec(['git', 'branch']).readLines().each { value ->
             retour |= value.contains(Utils.releaseBranchName(this.project, this.extension))
         }
         return retour
     }
 
     @Override
-    void createNewReleaseBranchIfNeeded(){
-        if( project.version != null ){
+    void createNewReleaseBranchIfNeeded() {
+        if (project.version != null) {
             def releaseBranchName = Utils.releaseBranchName(this.project, this.extension)
-            if(!releaseBranchAlreadyExists()){
-                exec(['git', 'checkout', "-b", releaseBranchName], errorMessage: "Failed to create the "  + releaseBranchName + " branch")
+            if (!releaseBranchAlreadyExists()) {
+                exec(['git', 'checkout', "-b", releaseBranchName], errorMessage: "Failed to create the " + releaseBranchName + " branch")
                 exec(['git', 'branch', "--set-upstream-to=origin/$releaseBranchName", releaseBranchName], errorMessage: "Fail to set upstream")
                 //TODO Should Push after creating the new branch ?
-            }else if(!isOnTheReleaseBranch()){
+            } else if (!isOnTheReleaseBranch()) {
                 exec(['git', 'checkout', releaseBranchName], errorMessage: "Failed to switch to the " + releaseBranchName + " branch")
                 exec(['git', 'branch', "--set-upstream-to=origin/$releaseBranchName", releaseBranchName], errorMessage: "Fail to set upstream")
             }
-        }else{
+        } else {
             throw new GradleException("Project version not found")
         }
     }
 
     @Override
     void release() {
-        if(baseUri!=null){
+        if (baseUri != null) {
             exec(['git', 'remote', 'rm', 'origin'], errorMessage: "Fail to remove origin")
             exec(['git', 'remote', 'add', 'origin', baseUri.toURL().toString()], errorMessage: "Fail to add origin")
         }
@@ -129,13 +129,13 @@ class GitAdapter extends BaseScmAdapter {
         def status = gitStatus()
 
         if (status[UNVERSIONED]) {
-       //     warnOrThrow(extension.failOnUnversionedFiles,
+            //     warnOrThrow(extension.failOnUnversionedFiles,
             warnOrThrow(true,
                     (['You have unversioned files:', LINE, *status[UNVERSIONED], LINE] as String[]).join('\n'))
         }
 
         if (status[UNCOMMITTED]) {
-         //   warnOrThrow(extension.failOnCommitNeeded,
+            //   warnOrThrow(extension.failOnCommitNeeded,
             warnOrThrow(true,
                     (['You have uncommitted files:', LINE, *status[UNCOMMITTED], LINE] as String[]).join('\n'))
         }
@@ -149,12 +149,12 @@ class GitAdapter extends BaseScmAdapter {
         def status = gitRemoteStatus()
 
         if (status[AHEAD]) {
-        //    warnOrThrow(extension.failOnPublishNeeded, "You have ${status[AHEAD]} local change(s) to push.")
+            //    warnOrThrow(extension.failOnPublishNeeded, "You have ${status[AHEAD]} local change(s) to push.")
             warnOrThrow(true, "You have ${status[AHEAD]} local change(s) to push.")
         }
 
         if (status[BEHIND]) {
-        //    warnOrThrow(extension.failOnUpdateNeeded, "You have ${status[BEHIND]} remote change(s) to pull.")
+            //    warnOrThrow(extension.failOnUpdateNeeded, "You have ${status[BEHIND]} remote change(s) to pull.")
             warnOrThrow(true, "You have ${status[BEHIND]} remote change(s) to pull.")
         }
     }
@@ -164,7 +164,7 @@ class GitAdapter extends BaseScmAdapter {
         exec(['git', 'tag', tagName], errorMessage: "Duplicate tag [$tagName]", errorPatterns: ['already exists'])
         //if (shouldPush()) {
         exec(['git', 'push', '--porcelain', 'origin', tagName], errorMessage: "Failed to push tag [$tagName] to remote", errorPatterns: ['[rejected]', 'error: ', 'fatal: '])
-       // }
+        // }
     }
 
     @Override
@@ -181,34 +181,34 @@ class GitAdapter extends BaseScmAdapter {
                   branch = extension.gitConfig.requireBranch ? extension.gitConfig.requireBranch : 'master'
               }*/
         exec(['git', 'push', '--porcelain', 'origin', gitCurrentBranch()], errorMessage: 'Failed to push to remote', errorPatterns: ['[rejected]', 'error: ', 'fatal: '])
-       // }
+        // }
     }
 
     @Override
-    void merge(String branchFrom, String branchTo, boolean shouldPush){
+    void merge(String branchFrom, String branchTo, boolean shouldPush) {
         this.checkCommitNeeded()
         this.checkUpdateNeeded()
 
-        if(branchTo.equals("develop")){
+        if (branchTo.equals("develop")) {
             branchTo = extension.gitConfig.requireBranch
         }
 
         exec(['git', 'checkout', branchTo], errorMessage: "Failed to checkout " + branchTo)
         exec(['git', 'merge', branchFrom], errorMessage: "Failed to merge " + branchFrom + " into " + branchTo)
-        if(shouldPush){
+        if (shouldPush) {
             exec(['git', 'push', '--porcelain', 'origin', branchTo], errorMessage: "Failed to push branch [$branchTo] to remote", errorPatterns: ['[rejected]', 'error: ', 'fatal: '])
         }
     }
 
     @Override
-    void commitBranch(String branch, String message){
+    void commitBranch(String branch, String message) {
         exec(['git', 'commit', '-a', '-m', message], errorMessage: "Failed to commit changed to " + branch + " branch")
         exec(['git', 'push', "-u", "origin", branch], errorMessage: "Failed to push the " + branch + " branch")
     }
 
     void revert() {
         //exec(['git', 'checkout', "*"+findPropertiesFile().name], errorMessage: 'Error reverting changes made by the release plugin.')
-        exec(['git', 'reset', '--hard', extension.gitConfig.pushToRemote+"/"+extension.gitConfig.requireBranch], errorMessage: 'Error reverting changes made by the release plugin.')
+        exec(['git', 'reset', '--hard', extension.gitConfig.pushToRemote + "/" + extension.gitConfig.requireBranch], errorMessage: 'Error reverting changes made by the release plugin.')
     }
 
     private boolean shouldPush() {
