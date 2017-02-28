@@ -9,6 +9,6 @@ class PushTask extends ScmBaseTask {
 
     @TaskAction
     push() {
-        return scmAdapter.push()
+        scmAdapter.push()
     }
 }

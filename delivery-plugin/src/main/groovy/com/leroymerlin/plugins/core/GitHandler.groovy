@@ -17,8 +17,7 @@ class GitHandler extends Executor implements BaseScmAdapter {
         if (!"git --version".execute().text.contains('git version')) {
             throw new GradleException("Git not found, install Git before continue")
         } else {
-            if (System.hasProperty("SCM_EMAIL") && System.hasProperty("SCM_USER"))
-                email = System.getProperty('SCM_EMAIL')
+            email = System.getProperty('SCM_EMAIL')
             username = System.getProperty('SCM_USER')
 
             if (!new File('.git').exists()) {
@@ -67,5 +66,10 @@ class GitHandler extends Executor implements BaseScmAdapter {
     @Override
     String push() {
         return println(exec(['git', '-c', "user.name=$username", '-c', "user.email=$email", 'push'], directory: ' delivery - test ', errorMessage: ' Failed to push to remote ', errorPatterns: ['[rejected] ', ' error: ', ' fatal: ']))
+    }
+
+    @Override
+    List<String> generateGitCommand(List<String> command) {
+        return null
     }
 }

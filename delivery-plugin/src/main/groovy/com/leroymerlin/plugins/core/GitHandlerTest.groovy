@@ -10,64 +10,63 @@ import org.gradle.api.Project
  */
 class GitHandlerTest extends Executor implements BaseScmAdapter {
 
+    String email, username
+    List<String> list
+
     @Override
     void setup(Project project, DeliveryPluginExtension extension) {
         if (!"git --version".execute().text.contains('git version')) {
             throw new GradleException("Git not found, install Git before continue")
         } else {
-            if (!new File('.git').exists())
-                println('Init Git on the folder')
-
-            System.setProperty('SCM_PASSWORD', 'Test')
-            System.setProperty('SCM_USER', 'Test')
-
-            String password = System.getProperty('SCM_PASSWORD')
-            String user = System.getProperty('SCM_USER')
-            if (password == null || user == null) {
-                throw new GradleException('Please login')
-            } else {
-                println('Use git cache')
-            }
+            email = System.getProperty('SCM_EMAIL')
+            username = System.getProperty('SCM_USER')
         }
     }
 
     @Override
     void release() {
-        println('release')
     }
 
     @Override
     String addAllFiles() {
-        return println('addAllFiles')
+        return println(generateGitCommand(['git', 'add', '.']))
     }
 
     @Override
     String commit(String comment) {
-        return println('commmit ' + comment)
+        return println(generateGitCommand(['git', 'commit', '-am', "\'" + comment + "\'"]))
     }
 
     @Override
     String deleteBranch(String branchName) {
-        return println('deleteBranch ' + branchName)
+        return println(generateGitCommand(['git', 'branch', '-d', branchName]))
     }
 
     @Override
     String switchBranch(String branchName, boolean createIfNeeded) {
-        return println('switchBranch ' + branchName + createIfNeeded)
+        return println(generateGitCommand(['git', 'checkout', '-B', branchName]))
     }
 
     @Override
     String tag(String annotation, String message) {
-        return println('tag ' + annotation + message)
+        return println(generateGitCommand(['git', 'tag', '-a', annotation, '-m', '\'' + message + '\'']))
     }
 
     @Override
     String merge(String from) {
-        return println('merge ' + from)
+        return println(generateGitCommand(['git', 'merge', '--no-ff', from]))
     }
 
     @Override
     String push() {
-        return println('push')
+        return println(generateGitCommand(['git', 'push']))
+    }
+
+    @Override
+    List<String> generateGitCommand(List<String> command) {
+        list = command
+        if (username != null && email != null)
+            list.addAll(1, ['-c', "user.name=$username", '-c', "user.email=$email"])
+        return list
     }
 }

@@ -12,6 +12,6 @@ class SwitchTask extends ScmBaseTask {
 
     @TaskAction
     switchBranch() {
-        return scmAdapter.switchBranch(branch, createIfNeeded)
+        scmAdapter.switchBranch(branch, createIfNeeded)
     }
 }

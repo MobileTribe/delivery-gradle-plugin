@@ -11,6 +11,6 @@ class MergeTask extends ScmBaseTask {
 
     @TaskAction
     mergeToNewBranch() {
-        return scmAdapter.merge(from)
+        scmAdapter.merge(from)
     }
 }
