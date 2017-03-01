@@ -17,11 +17,23 @@ public class ScmFlowMethods {
     Project project
     DeliveryPlugin parent
     DeliveryPluginExtension extension
+    String customDevelop
+    String customMaster
 
     public ScmFlowMethods(Project project, DeliveryPlugin deliveryPlugin) {
         this.project = project
         this.parent = deliveryPlugin
         this.extension = parent.extension;
+
+        customDevelop = System.getProperty('CUSTOM_DEVELOP')
+        if (customDevelop == null) {
+            customDevelop = "develop"
+        }
+
+        customMaster = System.getProperty('CUSTOM_MASTER')
+        if (customMaster == null) {
+            customMaster = "master"
+        }
     }
 
     /**
@@ -95,7 +107,9 @@ public class ScmFlowMethods {
         basicCommit("docs (infoRelease) : Updates the delivery.properties file with the date and version of the release")
 
         String releaseBranchName = Utils.releaseBranchName(this.project, this.extension)
-        scmAdapter.merge(releaseBranchName, "master", true)
+
+
+        scmAdapter.merge(releaseBranchName, customMaster, true)
         scmAdapter.createReleaseTag(Utils.tagName(this.project, this.extension))
     }
 
@@ -121,7 +135,7 @@ public class ScmFlowMethods {
 
     void backOnDevelop() {
         parent.logger.info("Trying to merge on develop")
-        scmAdapter.merge("master", "develop", false)
+        scmAdapter.merge(customMaster, customDevelop, false)
     }
 
     void basicCommit(String message) {
