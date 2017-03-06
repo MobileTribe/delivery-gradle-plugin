@@ -10,7 +10,7 @@ import org.gradle.api.Task
  * Created by alexandre on 08/02/2017.
  */
 class Flow {
-    String name, lastTaskName
+    String name, lastTaskName, lastPropertyMissing
     Project project
     ArrayList<String> tasksList = new ArrayList<>()
     BaseScmAdapter adapter
@@ -78,8 +78,8 @@ class Flow {
         createTask(ChangePropertyTask, [key: 'changeVersionId', value: value, project: project])
     }
 
-    def task(String taskName) {
-        Task task = project.getTasksByName(taskName, false)[0]
+    def execTask(String taskName) {
+        Task task = project.getTasksByName(taskName, true)[0]
         if (task != null) {
             if (lastTaskName != null)
                 task.dependsOn(lastTaskName)
@@ -89,7 +89,10 @@ class Flow {
         }
     }
 
-    def propertyMissing(String name, arg) {
-        this."$name"()
+    def propertyMissing(String name) {
+        if (lastPropertyMissing != name) {
+            lastPropertyMissing = name
+            this."$name"()
+        }
     }
 }

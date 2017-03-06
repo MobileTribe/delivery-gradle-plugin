@@ -3,7 +3,6 @@ package com.leroymerlin.plugins.test
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
-import org.gradle.tooling.BuildLauncher
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
 import org.junit.After
@@ -22,13 +21,13 @@ abstract class IntegrationTest {
 
     @BeforeClass
     static void setUpPlugin() {
-        GradleConnector connector = GradleConnector.newConnector()
-        connector.forProjectDirectory(new File(""))
-        ProjectConnection connection = connector.connect()
+        ProjectConnection connection = GradleConnector.newConnector()
+                .forProjectDirectory(new File(""))
+                .connect()
         try {
-            BuildLauncher launcher = connection.newBuild()
-            launcher.forTasks(":delivery-plugin:install")
-            launcher.run()
+            connection.newBuild()
+                    .forTasks(":delivery-plugin:install")
+                    .run()
         } finally {
             connection.close()
         }
@@ -37,7 +36,7 @@ abstract class IntegrationTest {
     @Before
     void setUp() {
         projectTemplate = new File(TestUtils.getPluginBaseDir(), "src/test/resources/${getProjectName()}")
-        workingDirectory = new File(TestUtils.getPluginBaseDir(), "build/testDir/${getProjectName()}")
+        workingDirectory = new File(TestUtils.getPluginBaseDir(), "../../testDir/${getProjectName()}")
         FileUtils.deleteDirectory(workingDirectory)
         FileUtils.copyDirectory(projectTemplate, workingDirectory)
         project = ProjectBuilder.builder().withProjectDir(workingDirectory).build()
@@ -50,9 +49,9 @@ abstract class IntegrationTest {
     }
 
     protected void testTask(String... tasks) {
-        GradleConnector connector = GradleConnector.newConnector()
-        connector.forProjectDirectory(workingDirectory)
-        ProjectConnection connection = connector.connect()
+        ProjectConnection connection = GradleConnector.newConnector()
+                .forProjectDirectory(workingDirectory)
+                .connect()
         Properties props = new Properties()
         props.load(new FileInputStream(new File(TestUtils.getPluginBaseDir(), "../gradle.properties")))
         def versionPlugin = props.getProperty('version')

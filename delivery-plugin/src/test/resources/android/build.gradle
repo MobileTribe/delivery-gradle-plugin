@@ -72,21 +72,17 @@ delivery {
     }
 
     flows {
+        releaseFlow {
+            switchBranch delivery.releaseBranch, true
+            commitFiles 'test release'
+            push
+        }
         customStartFlow {
             switchBranch delivery.developBranch, true
-            //commitFiles 'test comment'
-            //tag 'an annotation', 'a message'
-            //merge delivery.developBranch
-            //push
-        }
-        beginReleaseFlow {
-            /*switchBranch delivery.customBranch, false
-            branch delivery.ext.releaseBranch, false
-            changeVersion '2.0.2-SNAPSHOT'
-            changeVersionId((versionId as int) + 1)
-            commitFiles 'this is a comment'
-            tag 'this is an annotation', 'this is a message'
-            push ''*/
+            commitFiles 'test comment'
+            tag 'an annotation', 'a message'
+            push
+            execTask 'initReleaseFlow'
         }
     }
 
