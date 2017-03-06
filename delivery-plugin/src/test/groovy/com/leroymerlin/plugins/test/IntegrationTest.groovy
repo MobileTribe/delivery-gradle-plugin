@@ -2,13 +2,13 @@ package com.leroymerlin.plugins.test
 
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
-import org.gradle.internal.impldep.org.junit.BeforeClass
 import org.gradle.testfixtures.ProjectBuilder
 import org.gradle.tooling.BuildLauncher
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
 import org.junit.After
 import org.junit.Before
+import org.junit.BeforeClass
 
 /**
  * Created by florian on 17/12/15.
