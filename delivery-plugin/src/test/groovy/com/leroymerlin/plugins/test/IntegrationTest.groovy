@@ -36,7 +36,7 @@ abstract class IntegrationTest {
     @Before
     void setUp() {
         projectTemplate = new File(TestUtils.getPluginBaseDir(), "src/test/resources/${getProjectName()}")
-        workingDirectory = new File(TestUtils.getPluginBaseDir(), "../../testDir/${getProjectName()}")
+        workingDirectory = new File(TestUtils.getPluginBaseDir(), "../../${getProjectName()}")
         FileUtils.deleteDirectory(workingDirectory)
         FileUtils.copyDirectory(projectTemplate, workingDirectory)
         project = ProjectBuilder.builder().withProjectDir(workingDirectory).build()

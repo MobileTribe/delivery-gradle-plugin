@@ -75,13 +75,14 @@ delivery {
         releaseFlow {
             switchBranch delivery.releaseBranch, true
             commitFiles 'test release'
-            push
+            //push
         }
         customStartFlow {
             switchBranch delivery.developBranch, true
             commitFiles 'test comment'
+            //cmd 'ionic run debug'
             tag 'an annotation', 'a message'
-            push
+            //push
             execTask 'initReleaseFlow'
         }
     }

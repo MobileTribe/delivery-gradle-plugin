@@ -14,9 +14,11 @@ class DeliveryPluginExtension {
     ProjectConfigurator mConfigurator
     BaseScmAdapter scmAdapter
     NamedDomainObjectContainer<Flow> flowsContainer
+    DeliveryPlugin plugin
 
-    DeliveryPluginExtension(Project project) {
+    DeliveryPluginExtension(Project project, DeliveryPlugin deliveryPlugin) {
         this.project = project
+        this.plugin = deliveryPlugin
         this.scmAdapter = new GitHandler()
         this.flowsContainer = project.container(Flow, { String name ->
             return Flow.newInstance(name, this)

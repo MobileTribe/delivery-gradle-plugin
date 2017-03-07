@@ -12,7 +12,7 @@ class GitHandler extends Executor implements BaseScmAdapter {
 
     String email, username, branchToUse
     List<String> list
-    final File workingDir = new File(new File("").absoluteFile, "../../testDir/android")
+    final File workingDir = new File(new File("").absoluteFile, "../../android")
 
     @Override
     void setup(Project project, DeliveryPluginExtension extension) {
@@ -68,7 +68,6 @@ class GitHandler extends Executor implements BaseScmAdapter {
 
     @Override
     String push() {
-        exec(generateGitCommand(['git', 'remote', 'add', 'origin', 'https://github.com/Alecerf/deliveryTestAndroid.git']), directory: workingDir, errorMessage: ' Failed to push to remote ', errorPatterns: ['[rejected] ', ' error: ', ' fatal: '])
         return println(exec(generateGitCommand(['git', 'push', '-u', 'origin', branchToUse != null ? branchToUse : 'master']), directory: workingDir, errorMessage: ' Failed to push to remote ', errorPatterns: ['[rejected] ', ' error: ', ' fatal: ']))
     }
 

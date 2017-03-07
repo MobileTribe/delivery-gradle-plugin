@@ -17,6 +17,8 @@ abstract class ProjectConfigurator {
         this.extension = extension
     }
 
+    abstract boolean handleProject(Project project)
+
     abstract void configureBuildTasks(Task buildTask, Task archiveTask)
 
     abstract void applyVersion(String version, String versionId, String projectName)

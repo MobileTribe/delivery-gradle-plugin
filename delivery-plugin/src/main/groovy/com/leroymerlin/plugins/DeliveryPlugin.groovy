@@ -1,5 +1,6 @@
 package com.leroymerlin.plugins
 
+import com.leroymerlin.plugins.core.AndroidConfigurator
 import com.leroymerlin.plugins.core.BaseScmAdapter
 import com.leroymerlin.plugins.core.ProjectConfigurator
 import com.leroymerlin.plugins.utils.PropertiesFileUtils
@@ -13,16 +14,20 @@ class DeliveryPlugin implements Plugin<Project> {
     static final String TASK_GROUP = 'delivery'
     static final String DELIVERY_CONF_FILE = 'delivery.properties'
 
+    ProjectConfigurator[] configurators = [new AndroidConfigurator()]
+
     Project project
     DeliveryPluginExtension deliveryExtension
 
     void apply(Project project) {
         this.project = project
-        this.deliveryExtension = project.extensions.create(TASK_GROUP, DeliveryPluginExtension, project)
+        this.deliveryExtension = project.extensions.create(TASK_GROUP, DeliveryPluginExtension, project, this)
         setupProperties()
 
         project.afterEvaluate {
-            ProjectConfigurator configurator = deliveryExtension.configurator
+            if (deliveryExtension.configurator == null) {
+                deliveryExtension.configurator = configurators.findResult { it.handleProject(project) ? it : null }
+            }
             BaseScmAdapter scmAdapter = deliveryExtension.scmAdapter
             scmAdapter.setup(this.project, this.deliveryExtension)
 
@@ -52,15 +57,11 @@ class DeliveryPlugin implements Plugin<Project> {
 
 
     void setupProperties() {
+        //Read and apply Delivery.properties file to override default version.properties path and version, versionId, projectName keys
         PropertiesFileUtils.readAndApplyPropertiesFile(project, project.file(DELIVERY_CONF_FILE))
-        File versionFile
 
-        if (project.hasProperty('versionFilePath')) {
-            versionFile = project.file(project.property('versionFilePath'))
-        } else {
-            versionFile = project.file('version.properties')
-        }
-
+        //Apply default value if needed
+        File versionFile = getVersionFile()
         if (!project.hasProperty('versionIdKey')) {
             project.ext.versionIdKey = 'versionId'
         }
@@ -75,10 +76,25 @@ class DeliveryPlugin implements Plugin<Project> {
             project.ext.projectNameKey = 'projectName'
         }
         PropertiesFileUtils.setDefaultProperty(versionFile, project.ext.projectNameKey, project.name)
+        applyDeliveryProperties(versionFile)
+    }
 
+    File getVersionFile() {
+        if (project.hasProperty('versionFilePath')) {
+            return project.file(project.property('versionFilePath'))
+        } else {
+            return project.file('version.properties')
+        }
+    }
+
+    void applyDeliveryProperties(File versionFile) {
         PropertiesFileUtils.readAndApplyPropertiesFile(project, versionFile)
         project.ext.versionId = project.ext."${project.ext.versionIdKey}"
         project.ext.version = project.ext."${project.ext.versionKey}"
         project.version = project.ext."${project.ext.versionKey}"
+        project.ext.projectName = project.ext."${project.ext.projectNameKey}"
+        if (deliveryExtension.configurator != null) {
+            deliveryExtension.configurator.applyVersion(project.version, project.ext.versionId, project.ext.projectName)
+        }
     }
 }

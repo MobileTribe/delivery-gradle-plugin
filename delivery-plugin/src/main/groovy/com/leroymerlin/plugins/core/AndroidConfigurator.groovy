@@ -2,7 +2,6 @@ package com.leroymerlin.plugins.core
 
 import com.leroymerlin.plugins.DeliveryPlugin
 import com.leroymerlin.plugins.DeliveryPluginExtension
-import com.leroymerlin.plugins.core.ProjectConfigurator
 import com.leroymerlin.plugins.entities.ArchiveArtifact
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -15,24 +14,22 @@ import org.slf4j.LoggerFactory
 /**
  * Created by florian on 30/01/2017.
  */
-class ArchiveConfigurator extends ProjectConfigurator {
+class AndroidConfigurator extends ProjectConfigurator {
 
-    Logger logger = LoggerFactory.getLogger('ArchiveConfigurator')
-
-    boolean isAndroidApp
-    boolean isAndroidLibrary
+    Logger logger = LoggerFactory.getLogger('AndroidConfigurator')
+    boolean isAndroidApp, isAndroidLibrary
 
     @Override
     void setup(Project project, DeliveryPluginExtension extension) {
         super.setup(project, extension)
         isAndroidApp = project.plugins.hasPlugin("com.android.application")
         isAndroidLibrary = project.plugins.hasPlugin("com.android.library")
-        if (!isAndroidApp && !isAndroidLibrary) {
+        if (handleProject(project)) {
             throw new IllegalStateException("Your project must apply com.android.application or com.android.library to use " + getClass().simpleName)
         }
 
         //TODO def signingProperties = project.container(SigningProperty)
-
+        //TODO check que les version / versionId soient bien configurées sur l'extension android
         /*if (isAndroidApp) {
             project.android {
                 buildTypes.all {
@@ -44,9 +41,14 @@ class ArchiveConfigurator extends ProjectConfigurator {
     }
 
     @Override
+    boolean handleProject(Project project) {
+        return project.plugins.hasPlugin("com.android.application") || project.plugins.hasPlugin("com.android.library")
+    }
+
+    @Override
     void configureBuildTasks(Task buildTask, Task archiveTask) {
         logger.info("Generate Android Build and Archive tasks")
-        def uploadArtifactTasks = ['check'];
+        def uploadArtifactTasks = ['check']
 
         if (isAndroidApp) {
             project.android.applicationVariants.all { variant ->
@@ -61,7 +63,7 @@ class ArchiveConfigurator extends ProjectConfigurator {
                         from variant.javaCompile.destinationDir
                     }
                     sourcesJar.dependsOn variant.javaCompile
-                    project.artifacts.add('archives', sourcesJar);
+                    project.artifacts.add('archives', sourcesJar)
                 }
             }
             //for library or java code we use the standard plugin
@@ -85,17 +87,17 @@ class ArchiveConfigurator extends ProjectConfigurator {
     }
 
     private void handleAPKVariant(variant, uploadArtifactTasks) {
-        String flavorName = project.projectName.toString().split(' ').collect({ m -> return m.toLowerCase().capitalize() }).join("") + variant.flavorName.capitalize();
+        String flavorName = project.projectName.toString().split(' ').collect({ m -> return m.toLowerCase().capitalize() }).join("") + variant.flavorName.capitalize()
         flavorName = flavorName[0].toLowerCase() + flavorName.substring(1)
         def uploadTask = "upload${flavorName.capitalize()}Artifacts"
-        def configurationName = flavorName + "Config";
-        def flavorLowerCase = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, flavorName);
+        def configurationName = flavorName + "Config"
+        def flavorLowerCase = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, flavorName)
 
         if (!project.configurations.hasProperty(configurationName)) {
             project.configurations.create(configurationName)
             project.dependencies.add(configurationName, 'org.apache.maven.wagon:wagon-http:2.2')
 
-            uploadArtifactTasks.add(uploadTask);
+            uploadArtifactTasks.add(uploadTask)
             project.task(uploadTask, type: Upload, group: DeliveryPlugin.TASK_GROUP) {
                 configuration = project.configurations."${configurationName}"
                 repositories extension.archiveRepositories
@@ -116,7 +118,6 @@ class ArchiveConfigurator extends ProjectConfigurator {
                 addArtifacts(variant.mappingFile, variant.assemble, configurationName, flavorLowerCase, "mapping-" + classifier, "txt")
             }
 
-
             def sourcesJar = project.task("sources${variant.name.capitalize()}Jar", type: Jar) {
                 classifier = 'sources'
                 from variant.javaCompile.destinationDir
@@ -124,11 +125,9 @@ class ArchiveConfigurator extends ProjectConfigurator {
 
             sourcesJar.dependsOn variant.javaCompile
             addArtifacts(sourcesJar.outputs.getFiles().getSingleFile(), sourcesJar, configurationName, flavorLowerCase, "sources-" + classifier, "jar")
-
         } else {
             logger.warn("$classifier has no valid signing config and will not be archived")
         }
-
     }
 
     private void addArtifacts(File outputFile, Task depTask, String configurationName, String flavorName, String classifier, String extension) {

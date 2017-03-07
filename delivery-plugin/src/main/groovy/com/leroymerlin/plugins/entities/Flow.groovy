@@ -70,12 +70,8 @@ class Flow {
         createTask(DeleteTask, [branch: branchName])
     }
 
-    def changeVersion(value) {
-        createTask(ChangePropertyTask, [key: 'changeVersion', value: value, project: project])
-    }
-
-    def changeVersionId(value) {
-        createTask(ChangePropertyTask, [key: 'changeVersionId', value: value, project: project])
+    def changeProperties(String version, String versionId, String projectName) {
+        createTask(ChangePropertiesTask, [version: version, versionId: versionId, projectName: projectName, project: project])
     }
 
     def execTask(String taskName) {
