@@ -2,9 +2,10 @@ package com.leroymerlin.plugins.core
 
 import com.leroymerlin.plugins.DeliveryPlugin
 import com.leroymerlin.plugins.DeliveryPluginExtension
-import com.leroymerlin.plugins.entities.ArchiveArtifact
+import com.leroymerlin.plugins.tasks.DeliveryBuildTask
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.artifacts.Configuration
 import org.gradle.api.tasks.Upload
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.internal.impldep.com.google.common.base.CaseFormat
@@ -47,12 +48,24 @@ class AndroidConfigurator extends ProjectConfigurator {
 
     @Override
     void configureBuildTasks(Task buildTask, Task archiveTask) {
+
+        if (isAndroidApp) {
+            String flavorName = project.projectName.toString().split(' ').collect({ m -> return m.toLowerCase().capitalize() }).join("") + variant.flavorName.capitalize()
+            flavorName = flavorName[0].toLowerCase() + flavorName.substring(1)
+
+            project.android.applicationVariants.all { variant ->
+
+
+            }
+        }
+
+        //TODO remove
         logger.info("Generate Android Build and Archive tasks")
         def uploadArtifactTasks = ['check']
 
         if (isAndroidApp) {
             project.android.applicationVariants.all { variant ->
-                handleAPKVariant(variant, uploadArtifactTasks)
+                createBuildTask(variant)
             }
         } else {
             project.android.libraryVariants.all { variant ->
@@ -86,53 +99,48 @@ class AndroidConfigurator extends ProjectConfigurator {
         }
     }
 
-    private void handleAPKVariant(variant, uploadArtifactTasks) {
+    private void createBuildTask(variant) {
         String flavorName = project.projectName.toString().split(' ').collect({ m -> return m.toLowerCase().capitalize() }).join("") + variant.flavorName.capitalize()
         flavorName = flavorName[0].toLowerCase() + flavorName.substring(1)
-        def uploadTask = "upload${flavorName.capitalize()}Artifacts"
-        def configurationName = flavorName + "Config"
-        def flavorLowerCase = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, flavorName)
 
-        if (!project.configurations.hasProperty(configurationName)) {
-            project.configurations.create(configurationName)
-            project.dependencies.add(configurationName, 'org.apache.maven.wagon:wagon-http:2.2')
 
-            uploadArtifactTasks.add(uploadTask)
-            project.task(uploadTask, type: Upload, group: DeliveryPlugin.TASK_GROUP) {
-                configuration = project.configurations."${configurationName}"
-                repositories extension.archiveRepositories
-            }
-        }
+        Map<String, File> flavorOutputFiles = []
 
         def classifier = variant.buildType.name
         if (variant.signingReady) {
-            addArtifacts(variant.outputs.get(0).outputFile, variant.assemble, configurationName, flavorLowerCase, classifier, "apk")
+            flavorOutputFiles.put(classifier, variant.outputs.get(0).outputFile)
             if (variant.testVariant) {
-                addArtifacts(variant.testVariant.outputs.get(0).outputFile, variant.testVariant.assemble, configurationName, flavorLowerCase, "test-" + classifier, "apk")
+                flavorOutputFiles.put("test-" + classifier, variant.testVariant.outputs.get(0).outputFile)
             }
             if (variant.mappingFile) {
                 if (!variant.mappingFile.exists()) {
                     variant.mappingFile.parentFile.mkdirs()
                     variant.mappingFile.createNewFile()
                 }
-                addArtifacts(variant.mappingFile, variant.assemble, configurationName, flavorLowerCase, "mapping-" + classifier, "txt")
+                flavorOutputFiles.put("mapping-" + classifier, variant.mappingFile)
             }
 
             def sourcesJar = project.task("sources${variant.name.capitalize()}Jar", type: Jar) {
                 classifier = 'sources'
                 from variant.javaCompile.destinationDir
             }
-
             sourcesJar.dependsOn variant.javaCompile
-            addArtifacts(sourcesJar.outputs.getFiles().getSingleFile(), sourcesJar, configurationName, flavorLowerCase, "sources-" + classifier, "jar")
+            flavorOutputFiles.put("sources-" + classifier, sourcesJar.outputs.getFiles().getSingleFile())
         } else {
             logger.warn("$classifier has no valid signing config and will not be archived")
         }
+
+
+        project.task("build${flavorName.capitalize()}Artufacts", type: DeliveryBuildTask, group: DeliveryPlugin.TASK_GROUP) {
+            configurationName = flavorName
+            outputFiles = flavorOutputFiles
+        }
+
     }
 
-    private void addArtifacts(File outputFile, Task depTask, String configurationName, String flavorName, String classifier, String extension) {
-        project.configurations."${configurationName}".artifacts.add(
+/*    private void addArtifacts(File outputFile, Task depTask, String variantName, String flavorName, String classifier, String extension) {
+        project.configurations."${variantName}".artifacts.add(
                 new ArchiveArtifact(flavorName, extension, classifier, outputFile, depTask)
         )
-    }
+    }*/
 }

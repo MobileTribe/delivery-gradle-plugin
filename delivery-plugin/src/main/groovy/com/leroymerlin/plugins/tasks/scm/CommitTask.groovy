@@ -1,4 +1,4 @@
-package com.leroymerlin.plugins.tasks
+package com.leroymerlin.plugins.tasks.scm
 
 import org.gradle.api.tasks.TaskAction
 

@@ -1,4 +1,4 @@
-package com.leroymerlin.plugins.tasks
+package com.leroymerlin.plugins.tasks.scm
 
 import com.leroymerlin.plugins.core.BaseScmAdapter
 import org.gradle.api.DefaultTask

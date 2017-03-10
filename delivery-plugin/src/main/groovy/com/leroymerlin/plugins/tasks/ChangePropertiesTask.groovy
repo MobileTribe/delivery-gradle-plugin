@@ -1,6 +1,8 @@
 package com.leroymerlin.plugins.tasks
 
+import com.leroymerlin.plugins.tasks.scm.ScmBaseTask
 import com.leroymerlin.plugins.utils.PropertiesFileUtils
+import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
@@ -8,7 +10,7 @@ import org.gradle.api.tasks.TaskAction
 /**
  * Created by alexandre on 15/02/2017.
  */
-class ChangePropertiesTask extends ScmBaseTask {
+class ChangePropertiesTask extends DefaultTask {
 
     @Input
     String version, versionId, projectName

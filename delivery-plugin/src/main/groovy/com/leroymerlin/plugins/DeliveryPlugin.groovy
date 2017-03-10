@@ -3,9 +3,12 @@ package com.leroymerlin.plugins
 import com.leroymerlin.plugins.core.AndroidConfigurator
 import com.leroymerlin.plugins.core.BaseScmAdapter
 import com.leroymerlin.plugins.core.ProjectConfigurator
+import com.leroymerlin.plugins.tasks.DeliveryBuildTask
 import com.leroymerlin.plugins.utils.PropertiesFileUtils
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.Configuration
+import org.gradle.api.tasks.Upload
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -31,27 +34,34 @@ class DeliveryPlugin implements Plugin<Project> {
             BaseScmAdapter scmAdapter = deliveryExtension.scmAdapter
             scmAdapter.setup(this.project, this.deliveryExtension)
 
-            /*project.task("prepareReleaseFiles", description: "Prepare project file for release", dependsOn: "initReleaseBranch").doFirst(scmAdapter.&prepareReleaseFiles)
-            project.task("commitReleaseFiles", description: "Changes the version with the one given in parameters or Unsnapshots the current one", dependsOn: "initReleaseBranch") << this.&changeAndCommitReleaseVersion
-            project.task('runBuildTasks', description: 'Runs the build process in a separate gradle run.', dependsOn: "commitReleaseFiles", type: GradleBuild) {
-                startParameter = project.getGradle().startParameter.newInstance()
-                tasks = [
-                        'uploadArtifacts'
-                ]
+
+            //TODO generate task if project type detected  deliveryExtension.configurator.configureBuildTasks()
+
+            project.tasks.withType(DeliveryBuildTask).each {
+                task ->
+
+                    def configurationName = task.variantName + "Config"
+
+
+                    if (!project.configurations.hasProperty(configurationName)) {
+                        project.configurations.create(configurationName)
+                        project.dependencies.add(configurationName, 'org.apache.maven.wagon:wagon-http:2.2')
+
+
+                        project.task("upload${task.variantName.capitalize()}Artifacts", type: Upload, group: TASK_GROUP) {
+                            configuration = project.configurations."${configurationName}"
+                            repositories extension.archiveRepositories
+                        }
+                    }
+
+                    ((Configuration) project.configurations."${configurationName}").artifacts.addAll(
+                            task.getArtifacts()
+                    )
+
+
             }
-            project.task("startRelease", description: "Prepares release branch, change version, builds the app", group: TASK_GROUP, dependsOn: "runBuildTasks")
 
-
-            project.task("mergeAndTagRelease", description: "Merge on the main Branch and tag", mustRunAfter: "startRelease") << this.&mergeAndTagRelease
-            project.task("changeAndCommitNewVersion", description: "Changes the version with the one given in parameters or Snapshots the next one", dependsOn: "mergeAndTagRelease") << this.&changeAndCommitNewVersion
-            project.task("mergeOnWorkingBranch", description: "Merge on the default branch or on the develop branch by default", dependsOn: "changeAndCommitNewVersion") << this.&mergeOnWorkingBranch
-            project.task("endRelease", description: "Merge on master, Tags, change version, merge on develop", group: TASK_GROUP, dependsOn: "mergeOnWorkingBranch", mustRunAfter: "startRelease")
-            project.task("delivery", description: "Performs a full release of your app", group: TASK_GROUP, dependsOn: ["startRelease", "endRelease"])
-
-            //Build tasks
-            Task buildArtifacts = project.task("buildArtifacts", description: "build all artifacts", group: TASK_GROUP)
-            Task uploadArtifacts = project.task("uploadArtifacts", description: "upload built artifacts to repository", group: TASK_GROUP, dependsOn: "buildArtifacts") << this.&uploadArtifact
-            configurator.configureBuildTasks(buildArtifacts, uploadArtifacts);*/
+            project.task("uploadArtifacts", group: TASK_GROUP, dependsOn: project.tasks.withType(Upload))
         }
     }
 
