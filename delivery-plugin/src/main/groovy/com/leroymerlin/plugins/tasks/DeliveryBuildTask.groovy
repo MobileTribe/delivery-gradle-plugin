@@ -16,7 +16,6 @@ class DeliveryBuildTask extends DefaultTask {
     @Input
     Map<String, File> outputFiles
 
-    @Output
     PublishArtifact[] getArtifacts() {
         return outputFiles.collect { classifier, file ->
             return new ArchiveArtifact(variantName, file.name.replaceFirst(~/\.[^\.]+$/, ''), classifier, file, this)
