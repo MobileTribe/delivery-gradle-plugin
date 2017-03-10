@@ -1,11 +1,11 @@
-package com.leroymerlin.plugins.test
+package com.leroymerlin.plugins.test.integration
 
 import org.junit.Test
 
 /**
  * Created by florian on 17/12/15.
  */
-class AndroidTest extends IntegrationTest {
+class AndroidTest extends AbstractIntegrationTest {
 
     @Override
     String getProjectName() {

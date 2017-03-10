@@ -13,18 +13,16 @@ class GitHandler extends Executor implements BaseScmAdapter {
     String email, username, branchToUse
     List<String> list
     final File workingDir = new File(new File("").absoluteFile, "../../android")
+    Project project
 
     @Override
     void setup(Project project, DeliveryPluginExtension extension) {
+        this.project = project;
         if (!"git --version".execute().text.contains('git version')) {
             throw new GradleException("Git not found, install Git before continue")
         } else {
             email = System.getProperty('SCM_EMAIL')
             username = System.getProperty('SCM_USER')
-
-            if (!new File(workingDir, '/.git').exists()) {
-                println(exec(['git', 'init'], directory: workingDir, errorMessage: "Failed to init Git", errorPatterns: ['[rejected]', 'error: ', 'fatal: ']))
-            }
         }
     }
 
@@ -34,41 +32,41 @@ class GitHandler extends Executor implements BaseScmAdapter {
 
     @Override
     String addAllFiles() {
-        return println(exec(generateGitCommand(['git', 'add', '.']), directory: workingDir, errorMessage: "Failed to add files", errorPatterns: ['[rejected]', 'error: ', 'fatal: ']))
+        return println(exec(generateGitCommand(['git', 'add', '.']), errorMessage: "Failed to add files", errorPatterns: ['[rejected]', 'error: ', 'fatal: ']))
     }
 
     @Override
     String commit(String comment) {
-        return println(exec(generateGitCommand(['git', 'commit', '-am', "\'" + comment + "\'"]), directory: workingDir, errorMessage: "Failed to commit", errorPatterns: ['[rejected]', 'error: ', 'fatal: ']))
+        return println(exec(generateGitCommand(['git', 'commit', '-am', "\'" + comment + "\'"]), errorMessage: "Failed to commit", errorPatterns: ['[rejected]', 'error: ', 'fatal: ']))
     }
 
     @Override
     String deleteBranch(String branchName) {
-        return println(exec(generateGitCommand(['git', 'branch', '-d', branchName]), directory: workingDir, errorMessage: "Failed to delete $branchName", errorPatterns: ['[rejected]', 'error: ', 'fatal: ']))
+        return println(exec(generateGitCommand(['git', 'branch', '-d', branchName]), errorMessage: "Failed to delete $branchName", errorPatterns: ['[rejected]', 'error: ', 'fatal: ']))
     }
 
     @Override
     String switchBranch(String branchName, boolean createIfNeeded) {
         branchToUse = branchName
         if (createIfNeeded)
-            return println(exec(generateGitCommand(['git', 'checkout', '-B', branchName]), directory: workingDir, errorMessage: "Couldn't create $branchName", errorPatterns: ['[rejected]', 'error: ', 'fatal: ']))
+            return println(exec(generateGitCommand(['git', 'checkout', '-B', branchName]), errorMessage: "Couldn't create $branchName", errorPatterns: ['[rejected]', 'error: ', 'fatal: ']))
         else
-            return println(exec(generateGitCommand(['git', 'checkout', '-B', branchName]), directory: workingDir, errorMessage: "Failed to switch to $branchName", errorPatterns: ['[rejected]', 'error: ', 'fatal: ']))
+            return println(exec(generateGitCommand(['git', 'checkout', '-B', branchName]), errorMessage: "Failed to switch to $branchName", errorPatterns: ['[rejected]', 'error: ', 'fatal: ']))
     }
 
     @Override
     String tag(String annotation, String message) {
-        return println(exec(generateGitCommand(['git', 'tag', '-a', annotation, '-m', '\'' + message + '\'']), directory: workingDir, errorMessage: "Duplicate tag [$annotation]", errorPatterns: ['already exists']))
+        return println(exec(generateGitCommand(['git', 'tag', '-a', annotation, '-m', '\'' + message + '\'']), errorMessage: "Duplicate tag [$annotation]", errorPatterns: ['already exists']))
     }
 
     @Override
     String merge(String from) {
-        return println(exec(generateGitCommand(['git', 'merge', '--no-ff', from]), directory: workingDir, errorMessage: "Failed to merge $from", errorPatterns: ['[rejected]', 'error: ', 'fatal: ']))
+        return println(exec(generateGitCommand(['git', 'merge', '--no-ff', from]), errorMessage: "Failed to merge $from", errorPatterns: ['[rejected]', 'error: ', 'fatal: ']))
     }
 
     @Override
     String push() {
-        return println(exec(generateGitCommand(['git', 'push', '-u', 'origin', branchToUse != null ? branchToUse : 'master']), directory: workingDir, errorMessage: ' Failed to push to remote ', errorPatterns: ['[rejected] ', ' error: ', ' fatal: ']))
+        return println(exec(generateGitCommand(['git', 'push', '-u', 'origin', branchToUse != null ? branchToUse : 'master']), errorMessage: ' Failed to push to remote ', errorPatterns: ['[rejected] ', ' error: ', ' fatal: ']))
     }
 
     @Override

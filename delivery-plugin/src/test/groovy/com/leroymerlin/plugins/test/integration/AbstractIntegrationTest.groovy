@@ -1,5 +1,6 @@
-package com.leroymerlin.plugins.test
+package com.leroymerlin.plugins.test.integration
 
+import com.leroymerlin.plugins.test.TestUtils
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -12,7 +13,7 @@ import org.junit.BeforeClass
 /**
  * Created by florian on 17/12/15.
  */
-abstract class IntegrationTest {
+abstract class AbstractIntegrationTest {
 
     Project project
     File workingDirectory, projectTemplate
@@ -46,6 +47,10 @@ abstract class IntegrationTest {
     void tearDown() {
         project = null
         FileUtils.deleteDirectory(workingDirectory)
+    }
+
+    protected void applyExtraGradle(String string) {
+        new File(workingDirectory, "extra.gradle") << string;
     }
 
     protected void testTask(String... tasks) {

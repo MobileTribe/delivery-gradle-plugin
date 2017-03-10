@@ -28,9 +28,9 @@ class DeliveryPlugin implements Plugin<Project> {
         setupProperties()
 
         project.afterEvaluate {
-            if (deliveryExtension.configurator == null) {
+            /*if (deliveryExtension.configurator == null) {
                 deliveryExtension.configurator = configurators.findResult { it.handleProject(project) ? it : null }
-            }
+            }*/
             BaseScmAdapter scmAdapter = deliveryExtension.scmAdapter
             scmAdapter.setup(this.project, this.deliveryExtension)
 

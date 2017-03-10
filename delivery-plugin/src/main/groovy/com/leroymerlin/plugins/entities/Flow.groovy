@@ -23,7 +23,7 @@ class Flow {
         this.project = extension.project
         this.delivery = extension
         this.adapter = this.delivery.scmAdapter
-        taskFlow = project.task("init" + name.capitalize())
+        taskFlow = project.task(name.capitalize()+"Flow")
     }
 
     private String formatTaskName(String baseName) {
