@@ -25,7 +25,7 @@ class AndroidConfigurator extends ProjectConfigurator {
         super.setup(project, extension)
         isAndroidApp = project.plugins.hasPlugin("com.android.application")
         isAndroidLibrary = project.plugins.hasPlugin("com.android.library")
-        if (handleProject(project)) {
+        if (!handleProject(project)) {
             throw new IllegalStateException("Your project must apply com.android.application or com.android.library to use " + getClass().simpleName)
         }
 

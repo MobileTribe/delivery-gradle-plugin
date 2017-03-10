@@ -2,14 +2,8 @@ package com.leroymerlin.plugins.entities
 
 import com.leroymerlin.plugins.DeliveryPluginExtension
 import com.leroymerlin.plugins.core.BaseScmAdapter
-import com.leroymerlin.plugins.tasks.*
-import com.leroymerlin.plugins.tasks.scm.AddFilesTask
-import com.leroymerlin.plugins.tasks.scm.CommitTask
-import com.leroymerlin.plugins.tasks.scm.DeleteTask
-import com.leroymerlin.plugins.tasks.scm.MergeTask
-import com.leroymerlin.plugins.tasks.scm.PushTask
-import com.leroymerlin.plugins.tasks.scm.SwitchTask
-import com.leroymerlin.plugins.tasks.scm.TagTask
+import com.leroymerlin.plugins.tasks.ChangePropertiesTask
+import com.leroymerlin.plugins.tasks.scm.*
 import org.gradle.api.Project
 import org.gradle.api.Task
 
@@ -77,7 +71,7 @@ class Flow {
         createTask(DeleteTask, [branch: branchName])
     }
 
-    def changeProperties(String version, String versionId, String projectName) {
+    def changeProperties(version, versionId, projectName) {
         createTask(ChangePropertiesTask, [version: version, versionId: versionId, projectName: projectName, project: project])
     }
 
