@@ -91,12 +91,7 @@ class AndroidConfigurator extends ProjectConfigurator {
 
     @Override
     void applyVersion(String version, String versionId, String projectName) {
-        project.android {
-            defaultConfig {
-                versionName version
-                versionCode Integer.parseInt(versionId)
-            }
-        }
+
     }
 
     private void createBuildTask(variant) {

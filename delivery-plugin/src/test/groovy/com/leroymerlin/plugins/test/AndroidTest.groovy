@@ -14,6 +14,6 @@ class AndroidTest extends IntegrationTest {
 
     @Test
     void testBuildTaskGeneration() {
-        testTask('initCustomStartFlow')
+        testTask('initReleaseFlow')
     }
 }

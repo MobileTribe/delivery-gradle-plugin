@@ -11,7 +11,7 @@ import org.gradle.api.Task
  * Created by alexandre on 08/02/2017.
  */
 class Flow {
-    String name, lastTaskName, lastPropertyMissing
+    String name, lastTaskName
     Project project
     ArrayList<String> tasksList = new ArrayList<>()
     BaseScmAdapter adapter
@@ -86,10 +86,7 @@ class Flow {
         }
     }
 
-    def propertyMissing(String name) {
-        if (lastPropertyMissing != name) {
-            lastPropertyMissing = name
-            this."$name"()
-        }
+    def get(String name) {
+        return this."$name"()
     }
 }
