@@ -1,6 +1,5 @@
 package com.leroymerlin.plugins.tasks
 
-import com.leroymerlin.plugins.tasks.scm.ScmBaseTask
 import com.leroymerlin.plugins.utils.PropertiesFileUtils
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
@@ -30,9 +29,6 @@ class ChangePropertiesTask extends DefaultTask {
         if (projectName != null) {
             PropertiesFileUtils.setProperty(versionFile, project.ext.projectNameKey, projectName)
         }
-
-
         project.delivery.plugin.applyDeliveryProperties(versionFile)
-
     }
 }

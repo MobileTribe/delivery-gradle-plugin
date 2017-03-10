@@ -8,15 +8,18 @@ import org.gradle.api.tasks.Input
 /**
  * Created by alexandre on 15/02/2017.
  */
-class DeliveryBuildTask extends DefaultTask {
+abstract class DeliveryBuildTask extends DefaultTask {
 
     @Input
     String variantName
 
     @Input
-    Map<String, File> outputFiles
+    Map<String, File> outputFiles = []
 
     PublishArtifact[] getArtifacts() {
+        if (variantName == null) {
+            variantName = project.projectName
+        }
         return outputFiles.collect { classifier, file ->
             return new ArchiveArtifact(variantName, file.name.replaceFirst(~/\.[^\.]+$/, ''), classifier, file, this)
         }
