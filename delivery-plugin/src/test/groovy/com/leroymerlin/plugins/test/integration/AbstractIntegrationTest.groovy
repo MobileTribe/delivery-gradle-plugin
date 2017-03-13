@@ -10,6 +10,8 @@ import org.junit.After
 import org.junit.Before
 import org.junit.BeforeClass
 
+import java.nio.file.Files
+
 /**
  * Created by florian on 17/12/15.
  */
@@ -37,7 +39,7 @@ abstract class AbstractIntegrationTest {
     @Before
     void setUp() {
         projectTemplate = new File(TestUtils.getPluginBaseDir(), "src/test/resources/${getProjectName()}")
-        workingDirectory = new File(TestUtils.getPluginBaseDir(), "../../${getProjectName()}")
+        workingDirectory = new File(Files.createTempDirectory(getProjectName()) as String)
         FileUtils.deleteDirectory(workingDirectory)
         FileUtils.copyDirectory(projectTemplate, workingDirectory)
         project = ProjectBuilder.builder().withProjectDir(workingDirectory).build()
@@ -50,7 +52,7 @@ abstract class AbstractIntegrationTest {
     }
 
     protected void applyExtraGradle(String string) {
-        new File(workingDirectory, "extra.gradle") << string;
+        new File(workingDirectory, "extra.gradle") << string
     }
 
     protected void testTask(String... tasks) {

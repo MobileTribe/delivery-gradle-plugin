@@ -15,20 +15,20 @@ class GitFlowTest extends AbstractIntegrationTest {
     }
 
     @Before
-    public void initGit() {
-        println(Executor.exec(["git", "init"],  directory: workingDirectory));
+    void initGit() {
+        println(Executor.exec(["git", "init"], directory: workingDirectory))
     }
 
     @Test
     void testBuildTaskGeneration() {
         applyExtraGradle('''
 
-println "yes !!!!!!! c'est le weekend"
+println "yes !!!!!!! c'est lundi"
 
 delivery{
     flows{
-        git{
-
+        gitFlow{
+            commitFiles 'test commit'
         }
     }
 }

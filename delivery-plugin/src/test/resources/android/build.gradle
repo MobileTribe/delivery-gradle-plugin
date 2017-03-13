@@ -62,7 +62,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.2.1'
 }
 
-delivery {
+/*delivery {
     ext {
         developBranch = 'developTest'
         masterBranch = 'master'
@@ -80,12 +80,12 @@ delivery {
 
     }
 
-    /*signingProperties {
+    signingProperties {
         all {
             propertiesFile = project.file("signing.properties")
         }
-    }*/
-}
+    }
+}*/
 
 
 if (file('extra.gradle').exists()) {
