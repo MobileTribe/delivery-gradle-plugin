@@ -27,17 +27,18 @@ class GitFlowTest extends AbstractIntegrationTest {
         applyExtraGradle('''
 delivery{
     flows{
-        git{
+        initCommit{
             commit 'init commit', true
         }
     }
 }
 
 ''')
-        testTask('gitFlow')
-        def gitStatus = Executor.exec(["git", "status"], directory: workingDirectory)
+        def file = new File(workingDirectory, "fichier.txt")
+        file << "init"
+        testTask('initCommitFlow')
+        def gitStatus = getGitStatus()
         Assert.assertTrue("Commit init file should be :\n$gitStatus", gitStatus.contains("nothing to commit"))
-
     }
 
 
@@ -64,13 +65,85 @@ delivery{
         testTask('initCommitFlow')
         file << "salut !"
         def gitStatus = Executor.exec(["git", "status"], directory: workingDirectory)
-        println gitStatus
         Assert.assertTrue("fichier.txt should be modified :\n$gitStatus", gitStatus.contains("fichier.txt"))
         testTask('addFileFlow')
-        gitStatus = Executor.exec(["git", "status"], directory: workingDirectory)
+        gitStatus = getGitStatus()
         Assert.assertTrue("Commit init file should be :\n$gitStatus", gitStatus.contains("nothing to commit"))
-
     }
 
+    @Test
+    void testSwitchBranch() {
 
+        applyExtraGradle('''
+delivery{
+    flows{
+        initCommit{
+            commit 'init commit', true
+        }
+        addFile{
+            add 'fichier.txt'
+            commit 'fichier.txt'
+        }
+        switchBranch{
+            switchBranch 'branchTest', true
+        }
+    }
+}
+''')
+
+        def file = new File(workingDirectory, "fichier.txt")
+        file << "init"
+        testTask('initCommitFlow')
+        file << "salut !"
+        def gitStatus = getGitStatus()
+        Assert.assertTrue("fichier.txt should be modified :\n$gitStatus", gitStatus.contains("fichier.txt"))
+        testTask('addFileFlow')
+        gitStatus = getGitStatus()
+        Assert.assertTrue("Commit init file should be :\n$gitStatus", gitStatus.contains("nothing to commit"))
+        testTask('switchBranchFlow')
+        println getGitStatus()
+    }
+
+    @Test
+    void testPush() {
+
+        applyExtraGradle('''
+delivery{
+    flows{
+        initCommit{
+            commit 'init commit', true
+        }
+        addFile{
+            add 'fichier.txt'
+            commit 'fichier.txt'
+        }
+        switchBranch{
+            switchBranch 'branchTest', true
+        }
+        push{
+            push
+        }
+    }
+}
+''')
+
+        def file = new File(workingDirectory, "fichier.txt")
+        file << "init"
+        testTask('initCommitFlow')
+        file << "salut !"
+        def gitStatus = getGitStatus()
+        Assert.assertTrue("fichier.txt should be modified :\n$gitStatus", gitStatus.contains("fichier.txt"))
+        testTask('addFileFlow')
+        gitStatus = getGitStatus()
+        Assert.assertTrue("Commit init file should be :\n$gitStatus", gitStatus.contains("nothing to commit"))
+        testTask('switchBranchFlow')
+        println getGitStatus()
+        testTask('pushFlow')
+        gitStatus = getGitStatus()
+        Assert.assertTrue("Could not push :\n$gitStatus", gitStatus.contains("does not appear"))
+    }
+
+    def getGitStatus() {
+        return Executor.exec(["git", "status"], directory: workingDirectory)
+    }
 }

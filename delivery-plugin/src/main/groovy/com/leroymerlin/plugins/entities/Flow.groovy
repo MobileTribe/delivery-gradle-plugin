@@ -86,12 +86,12 @@ class Flow {
 
     def cmd(String cmd) {
         if (cmd.length() == 0)
-            throw new IllegalArgumentException("Empty command");
+            throw new IllegalArgumentException("Empty command")
 
-        StringTokenizer st = new StringTokenizer(cmd);
-        String[] cmdarray = new String[st.countTokens()];
+        StringTokenizer st = new StringTokenizer(cmd)
+        String[] cmdarray = new String[st.countTokens()]
         for (int i = 0; st.hasMoreTokens(); i++)
-            cmdarray[i] = st.nextToken();
+            cmdarray[i] = st.nextToken()
 
         createTask(Exec, [commandLine: cmdarray])
     }
