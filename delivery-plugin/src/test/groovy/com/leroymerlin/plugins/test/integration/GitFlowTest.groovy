@@ -43,23 +43,33 @@ delivery{
 
     @Test
     void testAddFile() {
+
+
         applyExtraGradle('''
 delivery{
     flows{
-        git{
-            cmd 'echo', '-ne', '"text de test"', '>>', 'fichier.txt'
+        initCommit{
             commit 'init commit', true
-            cmd 'echo', '-ne', '"Changement du contenu"', '>>', 'fichier.txt'
-            commit 'change fichier.txt'
+        }
+        addFile{
+            add 'fichier.txt'
+            commit 'fichier.txt'
         }
     }
 }
 ''')
 
-        testTask('gitFlow')
+        def file = new File(workingDirectory, "fichier.txt")
+        file << "init"
+        testTask('initCommitFlow')
+        file << "salut !"
         def gitStatus = Executor.exec(["git", "status"], directory: workingDirectory)
         println gitStatus
+        Assert.assertTrue("fichier.txt should be modified :\n$gitStatus", gitStatus.contains("fichier.txt"))
+        testTask('addFileFlow')
+        gitStatus = Executor.exec(["git", "status"], directory: workingDirectory)
         Assert.assertTrue("Commit init file should be :\n$gitStatus", gitStatus.contains("nothing to commit"))
+
     }
 
 

@@ -84,8 +84,16 @@ class Flow {
         createTask(ChangePropertiesTask, [version: version, versionId: versionId, projectName: projectName, project: project])
     }
 
-    def cmd(Object... cmd) {
-        createTask(Exec, [commandLine: (Iterable) Arrays.asList(cmd), standardOutput: System.out])
+    def cmd(String cmd) {
+        if (cmd.length() == 0)
+            throw new IllegalArgumentException("Empty command");
+
+        StringTokenizer st = new StringTokenizer(cmd);
+        String[] cmdarray = new String[st.countTokens()];
+        for (int i = 0; st.hasMoreTokens(); i++)
+            cmdarray[i] = st.nextToken();
+
+        createTask(Exec, [commandLine: cmdarray])
     }
 
     def task(String taskName) {
