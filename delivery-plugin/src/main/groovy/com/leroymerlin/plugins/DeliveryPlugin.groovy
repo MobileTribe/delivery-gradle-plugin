@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory
 
 class DeliveryPlugin implements Plugin<Project> {
     Logger logger = LoggerFactory.getLogger('DeliveryPlugin')
+
     static final String TASK_GROUP = 'delivery'
     static final String DELIVERY_CONF_FILE = 'delivery.properties'
 

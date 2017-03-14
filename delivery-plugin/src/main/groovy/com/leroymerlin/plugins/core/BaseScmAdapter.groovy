@@ -12,7 +12,7 @@ interface BaseScmAdapter {
 
     void release()
 
-    String addAllFiles()
+    String addFiles(String[] files)
 
     String commit(String comment)
 

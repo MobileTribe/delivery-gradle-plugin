@@ -1,7 +1,7 @@
 package com.leroymerlin.plugins
 
 import com.leroymerlin.plugins.core.BaseScmAdapter
-import com.leroymerlin.plugins.core.GitHandler
+import com.leroymerlin.plugins.core.GitAdapter
 import com.leroymerlin.plugins.core.ProjectConfigurator
 import com.leroymerlin.plugins.entities.Flow
 import org.gradle.api.Action
@@ -19,7 +19,7 @@ class DeliveryPluginExtension {
     DeliveryPluginExtension(Project project, DeliveryPlugin deliveryPlugin) {
         this.project = project
         this.plugin = deliveryPlugin
-        this.scmAdapter = new GitHandler()
+        this.scmAdapter = new GitAdapter()
         this.flowsContainer = project.container(Flow, { String name ->
             return Flow.newInstance(name, this)
         })

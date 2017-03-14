@@ -6,6 +6,7 @@ import com.leroymerlin.plugins.tasks.ChangePropertiesTask
 import com.leroymerlin.plugins.tasks.scm.*
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.tasks.Exec
 
 /**
  * Created by alexandre on 08/02/2017.
@@ -23,16 +24,18 @@ class Flow {
         this.project = extension.project
         this.delivery = extension
         this.adapter = this.delivery.scmAdapter
-        taskFlow = project.task(name.capitalize())
+        taskFlow = project.task(name + Flow.simpleName)
     }
 
     private String formatTaskName(String baseName) {
-        "${name}_step${tasksList.size()}_${baseName}"
+        "${name}Step${tasksList.size()}${baseName}"
     }
 
     private void createTask(Class className, HashMap<String, Object> parameters) {
-        Task task = project.task(formatTaskName(className.simpleName), type: className) {
-            scmAdapter adapter
+
+        Task task = project.task(formatTaskName(className.simpleName), type: className);
+        if (task.hasProperty("scmAdapter")) {
+            task.setProperty("scmAdapter", adapter)
         }
         if (parameters != null) {
             for (Map.Entry<String, Object> entry : parameters.entrySet()) {
@@ -50,8 +53,14 @@ class Flow {
         createTask(SwitchTask, [branch: branchName, createIfNeeded: create])
     }
 
-    def commitFiles(String commitComment) {
-        createTask(AddFilesTask, null)
+    def add(String... files) {
+        createTask(AddFilesTask, [files: files])
+    }
+
+    def commit(String commitComment, boolean addAll = false) {
+        if (addAll) {
+            add()
+        }
         createTask(CommitTask, [comment: commitComment])
     }
 
@@ -75,7 +84,11 @@ class Flow {
         createTask(ChangePropertiesTask, [version: version, versionId: versionId, projectName: projectName, project: project])
     }
 
-    def execTask(String taskName) {
+    def cmd(Object... cmd) {
+        createTask(Exec, [commandLine: (Iterable) Arrays.asList(cmd), standardOutput: System.out])
+    }
+
+    def task(String taskName) {
         Task task = project.getTasksByName(taskName, true)[0]
         if (task != null) {
             if (lastTaskName != null)

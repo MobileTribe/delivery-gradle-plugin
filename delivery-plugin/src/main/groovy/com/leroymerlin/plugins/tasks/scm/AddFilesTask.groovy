@@ -7,8 +7,13 @@ import org.gradle.api.tasks.TaskAction
  */
 class AddFilesTask extends ScmBaseTask {
 
+    String[] files
+
     @TaskAction
     addAllFiles() {
-        scmAdapter.addAllFiles()
+        if (files == null || files.length == 0) {
+            files = ["."]
+        }
+        scmAdapter.addFiles(files)
     }
 }

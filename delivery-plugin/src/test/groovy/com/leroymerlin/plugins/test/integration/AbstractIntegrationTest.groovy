@@ -10,8 +10,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.BeforeClass
 
-import java.nio.file.Files
-
 /**
  * Created by florian on 17/12/15.
  */
@@ -39,7 +37,7 @@ abstract class AbstractIntegrationTest {
     @Before
     void setUp() {
         projectTemplate = new File(TestUtils.getPluginBaseDir(), "src/test/resources/${getProjectName()}")
-        workingDirectory = new File(Files.createTempDirectory(getProjectName()) as String)
+        workingDirectory = new File(TestUtils.getPluginBaseDir(), "build/tests/integration/${getProjectName()}")
         FileUtils.deleteDirectory(workingDirectory)
         FileUtils.copyDirectory(projectTemplate, workingDirectory)
         project = ProjectBuilder.builder().withProjectDir(workingDirectory).build()
@@ -66,7 +64,7 @@ abstract class AbstractIntegrationTest {
         try {
             connection.newBuild()
                     .forTasks(tasks)
-                    .withArguments("--stacktrace", "-DDELIVERY_VERSION=$versionPlugin")
+                    .withArguments("--stacktrace", "--info", "-DDELIVERY_VERSION=$versionPlugin")
                     .setStandardOutput(System.out)
                     .run()
         } finally {

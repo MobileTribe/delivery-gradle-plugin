@@ -2,7 +2,7 @@ package com.leroymerlin.plugins.cli
 
 import org.gradle.api.GradleException
 
-import java.util.logging.Logger
+import org.gradle.api.logging.Logger
 
 /**
  * Created by alexandre on 31/01/2017.
@@ -10,7 +10,7 @@ import java.util.logging.Logger
 
 class Executor {
 
-    static private Logger logger
+    protected static Logger logger
 
     Executor(Logger logger = null) {
         this.logger = logger
@@ -40,7 +40,7 @@ class Executor {
             if (options['failOnStderr'] as boolean) {
                 throw new GradleException(message)
             } else {
-                logger?.warning(message)
+                logger?.warn(message)
             }
         }
 
@@ -52,6 +52,7 @@ class Executor {
             throw new GradleException("${options['errorMessage'] ? options['errorMessage'] as String : 'Failed to run [' + commands.join(' ') + ']'} - [$out][$err]")
         }
 
-        return out.toString()
+        def result = out.toString()
+        return result
     }
 }
