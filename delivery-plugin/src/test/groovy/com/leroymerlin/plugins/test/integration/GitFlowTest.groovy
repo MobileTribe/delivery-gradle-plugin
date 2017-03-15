@@ -47,6 +47,8 @@ delivery{
 
 
         applyExtraGradle('''
+
+
 delivery{
     flows{
         initCommit{
@@ -85,7 +87,7 @@ delivery{
             commit 'fichier.txt'
         }
         switchBranch{
-            switchBranch 'branchTest', true
+            branch 'branchTest', true
         }
     }
 }
@@ -105,6 +107,45 @@ delivery{
     }
 
     @Test
+    void testMerge() {
+
+        applyExtraGradle('''
+delivery{
+    flows{
+        commitAll{
+            commit 'commit all', true
+        }
+        switchBranch{
+            branch 'branchTest', true
+        }
+        switchToMaster{
+            branch 'master'
+        }
+        merge{
+            merge 'branchTest'
+        }
+    }
+}
+''')
+
+        def file = new File(workingDirectory, "fichier.txt")
+        file << "init"
+        testTask('commitAllFlow')
+        testTask('switchBranchFlow')
+        file << "salut !"
+        testTask('commitAllFlow')
+        Assert.assertTrue("File should contain 'salut'", file.text.contains("salut !"));
+        testTask('switchToMasterFlow')
+        Assert.assertTrue("Should be on master :\n$gitStatus", gitStatus.contains("master"))
+        Assert.assertTrue("File should not contain 'salut'", !file.text.contains("salut !"));
+        testTask('mergeFlow')
+        Assert.assertTrue("File should contain 'salut'", file.text.contains("salut !"));
+        def gitStatus = getGitStatus()
+
+    }
+
+
+    @Test
     void testPush() {
 
         applyExtraGradle('''
@@ -118,7 +159,7 @@ delivery{
             commit 'fichier.txt'
         }
         switchBranch{
-            switchBranch 'branchTest', true
+            branch 'branchTest', true
         }
         push{
             push
@@ -138,10 +179,11 @@ delivery{
         Assert.assertTrue("Commit init file should be :\n$gitStatus", gitStatus.contains("nothing to commit"))
         testTask('switchBranchFlow')
         println getGitStatus()
-        testTask('pushFlow')
+        Assert.assertTrue("Didn't try to push", testTask('pushFlow').contains("'origin' does not appear to be a git repository"));
         gitStatus = getGitStatus()
-        Assert.assertTrue("Could not push :\n$gitStatus", gitStatus.contains("does not appear"))
+        Assert.assertTrue("Could not push :\n$gitStatus", gitStatus.contains("nothing to commit"))
     }
+
 
     def getGitStatus() {
         return Executor.exec(["git", "status"], directory: workingDirectory)

@@ -35,7 +35,8 @@ class GitAdapter extends Executor implements BaseScmAdapter {
     String addFiles(String[] files) {
         def result = "";
         files.each {
-            result = exec(generateGitCommand(['git', 'add', '.']), directory: project.rootDir, errorMessage: "Failed to add files", errorPatterns: ['[rejected]', 'error: ', 'fatal: ']) + '\n'
+            f ->
+                result = exec(generateGitCommand(['git', 'add', f]), directory: project.rootDir, errorMessage: "Failed to add files", errorPatterns: ['[rejected]', 'error: ', 'fatal: ']) + '\n'
         }
         return result;
     }

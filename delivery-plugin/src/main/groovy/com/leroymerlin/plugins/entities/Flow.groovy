@@ -49,8 +49,8 @@ class Flow {
         taskFlow.dependsOn(tasksList)
     }
 
-    def switchBranch(String branchName, boolean create) {
-        createTask(SwitchTask, [branch: branchName, createIfNeeded: create])
+    def branch(String branchName, boolean create = false) {
+        createTask(BranchTask, [branch: branchName, createIfNeeded: create])
     }
 
     def add(String... files) {

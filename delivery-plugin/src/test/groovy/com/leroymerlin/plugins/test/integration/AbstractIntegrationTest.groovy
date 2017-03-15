@@ -2,6 +2,7 @@ package com.leroymerlin.plugins.test.integration
 
 import com.leroymerlin.plugins.test.TestUtils
 import org.apache.commons.io.FileUtils
+import org.apache.commons.io.output.TeeOutputStream
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.gradle.tooling.GradleConnector
@@ -53,7 +54,7 @@ abstract class AbstractIntegrationTest {
         new File(workingDirectory, "extra.gradle") << string
     }
 
-    protected void testTask(String... tasks) {
+    protected String testTask(String... tasks) {
         ProjectConnection connection = GradleConnector.newConnector()
                 .forProjectDirectory(workingDirectory)
                 .connect()
@@ -61,12 +62,17 @@ abstract class AbstractIntegrationTest {
         props.load(new FileInputStream(new File(TestUtils.getPluginBaseDir(), "../gradle.properties")))
         def versionPlugin = props.getProperty('version')
 
+
         try {
+            def outputStream = new ByteArrayOutputStream()
+            OutputStream out = new TeeOutputStream(outputStream, System.out)
             connection.newBuild()
                     .forTasks(tasks)
                     .withArguments("--stacktrace", "--info", "-DDELIVERY_VERSION=$versionPlugin")
-                    .setStandardOutput(System.out)
+                    .setStandardOutput(out)
                     .run()
+
+            return outputStream.toString("UTF-8")
         } finally {
             connection.close()
         }
