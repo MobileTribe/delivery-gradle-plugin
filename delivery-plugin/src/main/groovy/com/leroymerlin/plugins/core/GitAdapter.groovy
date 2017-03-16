@@ -28,10 +28,6 @@ class GitAdapter extends Executor implements BaseScmAdapter {
     }
 
     @Override
-    void release() {
-    }
-
-    @Override
     String addFiles(String[] files) {
         def result = "";
         files.each {

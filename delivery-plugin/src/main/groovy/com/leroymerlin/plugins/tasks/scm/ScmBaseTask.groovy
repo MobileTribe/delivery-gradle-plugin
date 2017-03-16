@@ -7,7 +7,7 @@ import org.gradle.api.tasks.Input
 /**
  * Created by alexandre on 07/02/2017.
  */
-class ScmBaseTask extends DefaultTask {
+abstract class ScmBaseTask extends DefaultTask {
     @Input
     BaseScmAdapter scmAdapter
 }

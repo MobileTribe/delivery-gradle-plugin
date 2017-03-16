@@ -27,16 +27,21 @@ class DeliveryPluginTest {
         project = null
     }
 
+
+    @Test
+    void testDeliveryExtension(){
+        Asserts.notNull(project.delivery, "Delivery extension don't exist")
+    }
+
     @Test
     void testBuildTaskGeneration() {
         project.delivery {
             flows {
                 azerty {
-                    commitFiles 'this is a comment'
                 }
             }
         }
         project.evaluate()
-        Asserts.notNull(project.tasks.findByPath('initAzerty'), "Flow azerty")
+        Asserts.notNull(project.tasks.findByPath('azertyFlow'), "Flow azerty")
     }
 }

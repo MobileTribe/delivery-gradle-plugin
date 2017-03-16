@@ -20,15 +20,14 @@ class DeliveryPluginExtension {
         this.signingProperties = signingProperties;
     }
 
+    def archiveRepositories = project.ext.properties.containsKey('archiveRepositories') ? project.ext.archiveRepositories : {}
+
     //commit text
     def newVersionCommitPattern = 'chore (version) : Update version to $version'
 
     def releaseTagPattern = '$projectName-$versionId-$version'
 
     def releaseBranchPattern = 'release/$versionId-$version'
-
-    def archiveRepositories = project.ext.properties.containsKey('archiveRepositories') ? project.ext.archiveRepositories : {
-    }
 
     boolean failOnSnapshotDependency = true
 

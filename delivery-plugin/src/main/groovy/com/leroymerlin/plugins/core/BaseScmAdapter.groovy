@@ -10,8 +10,6 @@ interface BaseScmAdapter {
 
     void setup(Project project, DeliveryPluginExtension extension)
 
-    void release()
-
     String addFiles(String[] files)
 
     String commit(String comment)

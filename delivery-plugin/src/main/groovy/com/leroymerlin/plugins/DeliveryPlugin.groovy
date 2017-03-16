@@ -1,10 +1,10 @@
 package com.leroymerlin.plugins
 
 import com.leroymerlin.plugins.core.AndroidConfigurator
-import com.leroymerlin.plugins.core.BaseScmAdapter
 import com.leroymerlin.plugins.core.ProjectConfigurator
-import com.leroymerlin.plugins.tasks.DeliveryBuildTask
+import com.leroymerlin.plugins.tasks.build.DeliveryBuildTask
 import com.leroymerlin.plugins.utils.PropertiesFileUtils
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
@@ -18,7 +18,7 @@ class DeliveryPlugin implements Plugin<Project> {
     static final String TASK_GROUP = 'delivery'
     static final String DELIVERY_CONF_FILE = 'delivery.properties'
 
-    ProjectConfigurator[] configurators = [new AndroidConfigurator()]
+    def configurators = [AndroidConfigurator]
 
     Project project
     DeliveryPluginExtension deliveryExtension
@@ -26,19 +26,28 @@ class DeliveryPlugin implements Plugin<Project> {
     void apply(Project project) {
         this.project = project
         this.deliveryExtension = project.extensions.create(TASK_GROUP, DeliveryPluginExtension, project, this)
+
         setupProperties()
 
+        ProjectConfigurator detectedConfigurator = configurators.find {
+            configurator ->
+                configurator.newInstance().handleProject(project)
+        }?.newInstance()
+        if (detectedConfigurator == null) {
+            detectedConfigurator = []
+        }
+        this.deliveryExtension.configurator = detectedConfigurator
         project.afterEvaluate {
-            /*if (deliveryExtension.configurator == null) {
-                deliveryExtension.configurator = configurators.findResult { it.handleProject(project) ? it : null }
-            }*/
-            BaseScmAdapter scmAdapter = deliveryExtension.scmAdapter
-            scmAdapter.setup(this.project, this.deliveryExtension)
-
+            if (deliveryExtension.configurator == null) {
+                throw new GradleException("Configurator is null. Can't configure your project. Please set the configurator or apply the plugin after your project plugin")
+            }
+            deliveryExtension.configurator.configure();
 
             //TODO generate task if project type detected  deliveryExtension.configurator.configureBuildTasks()
 
-            project.tasks.withType(DeliveryBuildTask).each {
+            def buildTasks = []
+            buildTasks.addAll(project.tasks.withType(DeliveryBuildTask))
+            buildTasks.each {
                 task ->
 
                     def configurationName = task.variantName + "Config"
@@ -51,7 +60,7 @@ class DeliveryPlugin implements Plugin<Project> {
 
                         project.task("upload${task.variantName.capitalize()}Artifacts", type: Upload, group: TASK_GROUP) {
                             configuration = project.configurations."${configurationName}"
-                            repositories extension.archiveRepositories
+                            repositories deliveryExtension.archiveRepositories
                         }
                     }
 

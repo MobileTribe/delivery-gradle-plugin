@@ -1,5 +1,7 @@
 package com.leroymerlin.plugins.test.integration
 
+import groovy.io.FileType
+import org.junit.Assert
 import org.junit.Test
 
 /**
@@ -14,6 +16,27 @@ class AndroidTest extends AbstractIntegrationTest {
 
     @Test
     void testBuildTaskGeneration() {
-        testTask('initReleaseFlow')
+        def archiveDirectory = new File(workingDirectory, "build/archive")
+        applyExtraGradle('''
+delivery{
+    archiveRepositories = {
+        maven {
+            url uri("''' + archiveDirectory.absolutePath + '''")
+        }
+    }
+    flows{
+        build{
+            build
+        }
+    }
+}
+''')
+        testTask('buildFlow')
+        def list = []
+        archiveDirectory.eachFileRecurse(FileType.FILES, {
+            f ->
+                list << f
+        })
+        Assert.assertEquals("archive folder should contain 8 files", 8, list.size());
     }
 }

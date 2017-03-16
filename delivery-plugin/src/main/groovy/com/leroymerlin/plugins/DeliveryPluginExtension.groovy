@@ -4,29 +4,43 @@ import com.leroymerlin.plugins.core.BaseScmAdapter
 import com.leroymerlin.plugins.core.GitAdapter
 import com.leroymerlin.plugins.core.ProjectConfigurator
 import com.leroymerlin.plugins.entities.Flow
+import com.leroymerlin.plugins.entities.SigningProperty
 import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 
 class DeliveryPluginExtension {
 
-    Project project
-    ProjectConfigurator mConfigurator
-    BaseScmAdapter scmAdapter
+    private ProjectConfigurator mConfigurator
+    private BaseScmAdapter mScmAdapter
+
+    NamedDomainObjectContainer<SigningProperty> signingProperties
     NamedDomainObjectContainer<Flow> flowsContainer
+    Project project
+
     DeliveryPlugin plugin
 
     DeliveryPluginExtension(Project project, DeliveryPlugin deliveryPlugin) {
         this.project = project
         this.plugin = deliveryPlugin
-        this.scmAdapter = new GitAdapter()
         this.flowsContainer = project.container(Flow, { String name ->
             return Flow.newInstance(name, this)
         })
+        this.signingProperties = project.container(SigningProperty);
     }
 
-    void setConfigurator(Class<? extends ProjectConfigurator> configuratorClass) {
-        setConfigurator(configuratorClass.newInstance())
+
+    def archiveRepositories = project.ext.properties.containsKey('archiveRepositories') ? project.ext.archiveRepositories : {}
+
+
+    void signingProperties(Action<? super NamedDomainObjectContainer<SigningProperty>> action) {
+        action.execute(signingProperties)
+        if (mConfigurator != null) {
+            signingProperties.each {
+                SigningProperty signingProperty ->
+                    mConfigurator.applySigningProperty(signingProperty)
+            }
+        }
     }
 
     def flows(Action<? super NamedDomainObjectContainer<Flow>> action) {
@@ -36,10 +50,28 @@ class DeliveryPluginExtension {
     void setConfigurator(ProjectConfigurator configurator) {
         this.mConfigurator = configurator
         this.mConfigurator.setup(project, this)
-        this.mConfigurator.applyVersion(project.version, project.ext.versionId, project.ext.projectName)
+        this.mConfigurator.applyProperties(project.version, project.ext.versionId, project.ext.projectName)
+        this.signingProperties.each {
+            SigningProperty signingProperty ->
+                this.configurator.applySigningProperty(signingProperty)
+        }
     }
 
     ProjectConfigurator getConfigurator() {
         return mConfigurator
     }
+
+    void setScmAdapter(BaseScmAdapter scmAdapter) {
+        this.mScmAdapter = scmAdapter
+        this.mScmAdapter.setup(project, this);
+    }
+
+    BaseScmAdapter getScmAdapter() {
+        if(mScmAdapter==null){
+            setScmAdapter(new GitAdapter());
+        }
+        return mScmAdapter
+    }
+
+
 }
