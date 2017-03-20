@@ -1,4 +1,4 @@
-package com.leroymerlin.plugins.core
+package com.leroymerlin.plugins.core.configurators
 
 import com.leroymerlin.plugins.DeliveryPluginExtension
 import com.leroymerlin.plugins.entities.SigningProperty

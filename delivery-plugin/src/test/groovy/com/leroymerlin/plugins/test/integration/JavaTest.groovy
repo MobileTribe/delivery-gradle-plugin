@@ -7,11 +7,11 @@ import org.junit.Test
 /**
  * Created by alexandre on 17/12/15.
  */
-class AndroidLibraryTest extends AbstractIntegrationTest {
+class JavaTest extends AbstractIntegrationTest {
 
     @Override
     String getProjectName() {
-        return "androidLibrary"
+        return "java"
     }
 
     @Test

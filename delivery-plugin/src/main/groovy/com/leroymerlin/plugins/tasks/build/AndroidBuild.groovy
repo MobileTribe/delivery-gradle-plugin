@@ -31,7 +31,6 @@ class AndroidBuild extends DeliveryBuildTask {
                 classifier = 'sources'
                 from variant.javaCompile.destinationDir
             }
-            //sourcesJar.dependsOn variant.javaCompile
             outputFiles.put("sources-" + classifier, sourcesJar.outputs.getFiles().getSingleFile())
             dependsOn.add(sourcesJar)
         } else {

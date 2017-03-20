@@ -1,7 +1,8 @@
 package com.leroymerlin.plugins
 
-import com.leroymerlin.plugins.core.AndroidConfigurator
-import com.leroymerlin.plugins.core.ProjectConfigurator
+import com.leroymerlin.plugins.core.configurators.AndroidConfigurator
+import com.leroymerlin.plugins.core.configurators.JavaConfigurator
+import com.leroymerlin.plugins.core.configurators.ProjectConfigurator
 import com.leroymerlin.plugins.tasks.build.DeliveryBuildTask
 import com.leroymerlin.plugins.utils.PropertiesFileUtils
 import org.gradle.api.GradleException
@@ -18,7 +19,7 @@ class DeliveryPlugin implements Plugin<Project> {
     static final String TASK_GROUP = 'delivery'
     static final String DELIVERY_CONF_FILE = 'delivery.properties'
 
-    def configurators = [AndroidConfigurator]
+    def configurators = [AndroidConfigurator, JavaConfigurator]
 
     Project project
     DeliveryPluginExtension deliveryExtension
@@ -71,7 +72,10 @@ class DeliveryPlugin implements Plugin<Project> {
 
             }
 
-            project.task("uploadArtifacts", group: TASK_GROUP, dependsOn: project.tasks.withType(Upload))
+            def uploadArtifacts = project.task("uploadArtifacts", group: TASK_GROUP, dependsOn: project.tasks.withType(Upload))
+            if(project.tasks.findByPath("check")!=null){
+                uploadArtifacts.dependsOn += project.tasks.findByPath("check")
+            }
         }
     }
 

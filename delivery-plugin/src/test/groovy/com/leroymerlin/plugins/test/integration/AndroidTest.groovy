@@ -28,6 +28,12 @@ delivery{
         build{
             build
         }
+    } 
+}
+android{
+    productFlavors {
+        dev {}
+        prod {}
     }
 }
 ''')
@@ -37,7 +43,7 @@ delivery{
             f ->
                 list << f
         })
-        Assert.assertEquals("archive folder should contain 8 files", 8, list.size());
+        Assert.assertEquals("archive folder should contain 16 files", 16, list.size());
     }
 
     @Test

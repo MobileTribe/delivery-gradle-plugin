@@ -1,12 +1,12 @@
-package com.leroymerlin.plugins.core
+package com.leroymerlin.plugins.core.configurators
 
 import com.leroymerlin.plugins.DeliveryPlugin
 import com.leroymerlin.plugins.DeliveryPluginExtension
 import com.leroymerlin.plugins.entities.SigningProperty
 import com.leroymerlin.plugins.tasks.build.AndroidBuild
+import com.leroymerlin.plugins.tasks.build.AndroidLibBuild
 import org.gradle.api.GradleException
 import org.gradle.api.Project
-import org.gradle.api.tasks.bundling.Jar
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -45,7 +45,7 @@ class AndroidConfigurator extends ProjectConfigurator {
 
         //TODO def signingProperties = project.container(SigningProperty)
         //TODO check que les version / versionId soient bien configurées sur l'extension android
-        /*if (isAndroidApp) {
+        /*if (isJavaProject) {
             project.android {
                 buildTypes.all {
                     buildType ->
@@ -100,16 +100,15 @@ class AndroidConfigurator extends ProjectConfigurator {
                 project.tasks.findByPath(buildTaskName).addVariant(currentVariant)
             }
         } else {
-            //TODO check if Buildtask should be created
-            project.android.libraryVariants.all { variant ->
-                def name = variant.buildType.name
-                if (name.equals('release')) {
-                    def sourcesJar = project.task("sources${variant.name.capitalize()}Jar", type: Jar) {
-                        classifier = 'sources'
-                        from variant.javaCompile.destinationDir
+            project.android.libraryVariants.all { currentVariant ->
+                if (currentVariant.buildType.name.equals("release")) {
+                    def buildTaskName = "build${project.projectName.capitalize()}Artifacts"
+                    if (project.tasks.findByPath(buildTaskName) == null) {
+                        project.task(buildTaskName, type: AndroidLibBuild, group: DeliveryPlugin.TASK_GROUP) {
+                            variantName project.projectName
+                        }
                     }
-                    sourcesJar.dependsOn variant.javaCompile
-                    project.artifacts.add('archives', sourcesJar)
+                    project.tasks.findByPath(buildTaskName).addVariant(currentVariant)
                 }
             }
         }

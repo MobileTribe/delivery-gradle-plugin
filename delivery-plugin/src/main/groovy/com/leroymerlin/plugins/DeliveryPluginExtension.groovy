@@ -2,7 +2,7 @@ package com.leroymerlin.plugins
 
 import com.leroymerlin.plugins.core.BaseScmAdapter
 import com.leroymerlin.plugins.core.GitAdapter
-import com.leroymerlin.plugins.core.ProjectConfigurator
+import com.leroymerlin.plugins.core.configurators.ProjectConfigurator
 import com.leroymerlin.plugins.entities.Flow
 import com.leroymerlin.plugins.entities.SigningProperty
 import org.gradle.api.Action
