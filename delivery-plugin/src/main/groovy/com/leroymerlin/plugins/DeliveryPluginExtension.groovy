@@ -35,11 +35,9 @@ class DeliveryPluginExtension {
 
     void signingProperties(Action<? super NamedDomainObjectContainer<SigningProperty>> action) {
         action.execute(signingProperties)
-        if (mConfigurator != null) {
-            signingProperties.each {
-                SigningProperty signingProperty ->
-                    mConfigurator.applySigningProperty(signingProperty)
-            }
+        signingProperties.each {
+            SigningProperty signingProperty ->
+                getConfigurator().applySigningProperty(signingProperty)
         }
     }
 

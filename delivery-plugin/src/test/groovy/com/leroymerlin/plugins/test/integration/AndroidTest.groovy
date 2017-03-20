@@ -39,4 +39,39 @@ delivery{
         })
         Assert.assertEquals("archive folder should contain 8 files", 8, list.size());
     }
+
+    @Test
+    void testSignTask() {
+        def archiveDirectory = new File(workingDirectory, "build/archive")
+        applyExtraGradle('''
+delivery{
+    archiveRepositories = {
+        maven {
+            url uri("''' + archiveDirectory.absolutePath + '''")
+        }
+    }
+    flows{
+        build{
+            build
+        }
+    }
+    signingProperties {
+        release {
+            propertiesFile = project.file("signing.properties")
+            storeFileField = "storeFile"
+            storePasswordField = "storePassword"
+            keyAliasField = "keyAlias"
+            keyAliasPasswordField = "keyAliasPassword"
+        }
+    }
+}
+''')
+        testTask('buildFlow')
+        def list = []
+        archiveDirectory.eachFileRecurse(FileType.FILES, {
+            f ->
+                list << f
+        })
+        Assert.assertEquals("archive folder should contain 12 files", 12, list.size());
+    }
 }
