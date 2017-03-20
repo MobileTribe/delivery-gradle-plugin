@@ -42,7 +42,8 @@ local.properties
 *.launch
 ## NetBeans
 nbproject/private/
-build/
+/build/
+/delivery-plugin/build/
 nbbuild/
 dist/
 nbdist/
@@ -50,7 +51,6 @@ nbactions.xml
 nb-configuration.xml
 ## Gradle
 .gradle
-build/
 velocity.log
 crashlytics-build.properties
 container_plugins
