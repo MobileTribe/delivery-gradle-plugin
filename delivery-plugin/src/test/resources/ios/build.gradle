@@ -1,0 +1,20 @@
+buildscript {
+    repositories {
+        mavenLocal()
+    }
+
+    dependencies {
+        classpath "com.leroymerlin.plugins:delivery-plugin:${System.getProperty("DELIVERY_VERSION")}"
+    }
+}
+
+
+apply plugin: 'com.leroymerlin.delivery'
+
+
+
+
+
+if (file('extra.gradle').exists()) {
+    apply from: 'extra.gradle'
+}

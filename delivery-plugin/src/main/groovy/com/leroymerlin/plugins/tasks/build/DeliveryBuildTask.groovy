@@ -8,7 +8,7 @@ import org.gradle.api.tasks.Input
 /**
  * Created by alexandre on 15/02/2017.
  */
-abstract class DeliveryBuildTask extends DefaultTask {
+class DeliveryBuildTask extends DefaultTask {
 
     @Input
     String variantName

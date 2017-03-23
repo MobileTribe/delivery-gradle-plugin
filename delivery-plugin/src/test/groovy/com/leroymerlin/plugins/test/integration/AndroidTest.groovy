@@ -64,10 +64,6 @@ delivery{
     signingProperties {
         release {
             propertiesFile = project.file("signing.properties")
-            storeFileField = "storeFile"
-            storePasswordField = "storePassword"
-            keyAliasField = "keyAlias"
-            keyAliasPasswordField = "keyAliasPassword"
         }
     }
 }

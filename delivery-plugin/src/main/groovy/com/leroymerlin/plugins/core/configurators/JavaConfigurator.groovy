@@ -16,7 +16,7 @@ class JavaConfigurator extends ProjectConfigurator {
 
     static String JAVA_PLUGIN_ID = "java"
 
-    Logger logger = LoggerFactory.getLogger('AndroidConfigurator')
+    Logger logger = LoggerFactory.getLogger('JavaConfigurator')
     boolean isJavaProject
 
     @Override
