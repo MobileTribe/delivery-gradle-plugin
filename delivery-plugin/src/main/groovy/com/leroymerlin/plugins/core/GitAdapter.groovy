@@ -39,7 +39,7 @@ class GitAdapter extends Executor implements BaseScmAdapter {
 
     @Override
     String commit(String comment) {
-        def result = exec(generateGitCommand(['git', 'commit', '-am', "\'" + comment + "\'"]), directory: project.rootDir, errorMessage: "Failed to commit", errorPatterns: ['[rejected]', 'error: ', 'fatal: '])
+        def result = exec(generateGitCommand(['git', 'commit', '-m', "\'" + comment + "\'"]), directory: project.rootDir, errorMessage: "Failed to commit", errorPatterns: ['[rejected]', 'error: ', 'fatal: '])
         return result;
     }
 
