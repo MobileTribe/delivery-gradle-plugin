@@ -21,7 +21,7 @@ class IonicConfigurator extends ProjectConfigurator {
     boolean isAndroidApp
 
     @Override
-    def setup(Project project, DeliveryPluginExtension extension) {
+    public void setup(Project project, DeliveryPluginExtension extension) {
         super.setup(project, extension)
         isAndroidApp = project.plugins.hasPlugin(ANDROID_PLUGIN_ID)
         if (!isAndroidApp) {
@@ -42,7 +42,7 @@ class IonicConfigurator extends ProjectConfigurator {
     }
 
     @Override
-    def configure() {
+    public void configure() {
 
         String version = project.version
         if (isAndroidApp) {
@@ -81,11 +81,11 @@ class IonicConfigurator extends ProjectConfigurator {
     }
 
     @Override
-    def applyProperties(String version, String versionId, String projectName) {
+    public void applyProperties(String version, String versionId, String projectName) {
     }
 
     @Override
-    def applySigningProperty(SigningProperty signingProperty) {
+    public void applySigningProperty(SigningProperty signingProperty) {
         if (isAndroidApp) {
             def buildType = project.android.buildTypes.findByName(signingProperty.name)
 
@@ -116,7 +116,7 @@ class IonicConfigurator extends ProjectConfigurator {
     }
 
     @Override
-    boolean handleProject(Project project) {
+    public boolean handleProject(Project project) {
         return project.plugins.hasPlugin(ANDROID_PLUGIN_ID)
     }
 }
