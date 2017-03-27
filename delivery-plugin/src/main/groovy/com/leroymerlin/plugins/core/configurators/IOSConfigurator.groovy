@@ -46,32 +46,27 @@ class IOSConfigurator extends ProjectConfigurator {
         String target = property.target
         String scheme = property.scheme
         if (target == null || scheme == null) {
-            def split = property.name.split(".")
-            if (split.length == 2) {
-                scheme = split[0]
-                target = split[1]
-            }
+            throw new GradleException("signing config needs target and scheme properties")
         }
         def variantCodeName = scheme.trim().capitalize() + target.trim().capitalize()
 
 
-        if (target != null && scheme != null) {
-            def taskName = "build${variantCodeName}Artifacts"
-            Task buildTask = project.tasks.findByPath(taskName)
-            if (buildTask == null) {
-                project.task(taskName, type: DeliveryBuildTask, group: DeliveryPlugin.TASK_GROUP) {
-                    variantName variantCodeName
-                    outputFiles = ["": project.file("${project.getBuildDir()}/package/${variantCodeName}.ipa")]
-                }.dependsOn(taskName + "Process")
+        def taskName = "build${variantCodeName}Artifacts"
+        Task buildTask = project.tasks.findByPath(taskName)
+        if (buildTask == null) {
+            project.task(taskName, type: DeliveryBuildTask, group: DeliveryPlugin.TASK_GROUP) {
+                variantName variantCodeName
+                outputFiles = ["": project.file("${project.getBuildDir()}/package/${variantCodeName}.ipa")]
+            }.dependsOn(taskName + "Process")
 
-                def parameter = project.getGradle().startParameter.newInstance()
-                parameter.systemPropertiesArgs.put("xcodebuild", property.name)
-                project.task(taskName + "Process", type: GradleBuild) {
-                    startParameter = parameter
-                    tasks = ['archive', 'package']
-                }
+            def parameter = project.getGradle().startParameter.newInstance()
+            parameter.systemPropertiesArgs.put("xcodebuild", property.name)
+            project.task(taskName + "Process", type: GradleBuild) {
+                startParameter = parameter
+                tasks = ['archive', 'package']
             }
         }
+
 
 
         if (System.getProperty("xcodebuild")?.equals(property.name)) {
@@ -88,7 +83,6 @@ class IOSConfigurator extends ProjectConfigurator {
                     certificatePassword = property.certificatePassword
                     mobileProvisionURI = property.mobileProvisionURI.split(",").collect { path -> return project.file(path).toURI() }
                 }
-
 
 
             }
