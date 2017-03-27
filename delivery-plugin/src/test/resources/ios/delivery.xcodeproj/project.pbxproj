@@ -17,6 +17,7 @@
 		177D61661E881A1800C4A93F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 176A8A6C1E818CB0003970BE /* LaunchScreen.storyboard */; };
 		177D61671E881A1800C4A93F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 176A8A6A1E818CB0003970BE /* Assets.xcassets */; };
 		177D61681E881A1800C4A93F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 176A8A671E818CB0003970BE /* Main.storyboard */; };
+		A4DB1F7E1E892F7100B0AC32 /* delivery copy-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A4DB1F7D1E892F7100B0AC32 /* delivery copy-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +30,7 @@
 		176A8A6F1E818CB0003970BE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		177D616C1E881A1800C4A93F /* deliveryBis.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = deliveryBis.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		177D616D1E881A1800C4A93F /* delivery copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "delivery copy-Info.plist"; path = "/Users/florian/Projets/MobileTribe/delivery/delivery-plugin/src/test/resources/ios/delivery copy-Info.plist"; sourceTree = "<absolute>"; };
+		A4DB1F7D1E892F7100B0AC32 /* delivery copy-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "delivery copy-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,6 +57,7 @@
 				176A8A621E818CB0003970BE /* delivery */,
 				176A8A611E818CB0003970BE /* Products */,
 				177D616D1E881A1800C4A93F /* delivery copy-Info.plist */,
+				A4DB1F7D1E892F7100B0AC32 /* delivery copy-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -163,6 +166,7 @@
 			files = (
 				176A8A6E1E818CB0003970BE /* LaunchScreen.storyboard in Resources */,
 				176A8A6B1E818CB0003970BE /* Assets.xcassets in Resources */,
+				A4DB1F7E1E892F7100B0AC32 /* delivery copy-Info.plist in Resources */,
 				176A8A691E818CB0003970BE /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
