@@ -1,6 +1,7 @@
 package com.leroymerlin.plugins
 
 import com.leroymerlin.plugins.core.configurators.AndroidConfigurator
+import com.leroymerlin.plugins.core.configurators.IOSConfigurator
 import com.leroymerlin.plugins.core.configurators.JavaConfigurator
 import com.leroymerlin.plugins.core.configurators.ProjectConfigurator
 import com.leroymerlin.plugins.tasks.build.DeliveryBuildTask
@@ -19,7 +20,7 @@ class DeliveryPlugin implements Plugin<Project> {
     static final String TASK_GROUP = 'delivery'
     static final String DELIVERY_CONF_FILE = 'delivery.properties'
 
-    def configurators = [AndroidConfigurator, JavaConfigurator]
+    def configurators = [AndroidConfigurator, JavaConfigurator, IOSConfigurator]
 
     Project project
     DeliveryPluginExtension deliveryExtension
@@ -73,7 +74,7 @@ class DeliveryPlugin implements Plugin<Project> {
             }
 
             def uploadArtifacts = project.task("uploadArtifacts", group: TASK_GROUP, dependsOn: project.tasks.withType(Upload))
-            if(project.tasks.findByPath("check")!=null){
+            if (project.tasks.findByPath("check") != null) {
                 uploadArtifacts.dependsOn += project.tasks.findByPath("check")
             }
         }
@@ -116,6 +117,9 @@ class DeliveryPlugin implements Plugin<Project> {
         project.ext.versionId = project.ext."${project.ext.versionIdKey}"
         project.ext.version = project.ext."${project.ext.versionKey}"
         project.version = project.ext."${project.ext.versionKey}"
+        if (project.extensions.getExtraProperties().has("group")){
+            project.group = project.ext.group
+        }
         project.ext.projectName = project.ext."${project.ext.projectNameKey}"
         if (deliveryExtension.configurator != null) {
             deliveryExtension.configurator.applyVersion(project.version, project.ext.versionId, project.ext.projectName)

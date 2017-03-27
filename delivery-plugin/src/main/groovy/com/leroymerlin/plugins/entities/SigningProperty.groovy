@@ -24,7 +24,15 @@ class SigningProperty {
         }
     }
 
+    @Override
+    void setProperty(String property, Object newValue) {
+        properties.put(property, newValue)
+    }
+
     def get(String name) {
-        properties.get(name, null)
+        if (properties.containsKey(name)) {
+            return properties.get(name)
+        }
+        return null
     }
 }

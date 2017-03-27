@@ -16,7 +16,7 @@ class IOSTest extends AbstractIntegrationTest {
 
     @Test
     void testBuildTaskGeneration() {
-        def archiveDirectory = new File(workingDirectory, "build/archive")
+        def archiveDirectory = new File(workingDirectory, "build/archive_ipa")
         applyExtraGradle('''
 delivery{
     archiveRepositories = {
@@ -30,18 +30,24 @@ delivery{
         }
     }
 
-if(project.file("${System.properties['user.home']}/.gradle/signing_ios.properties").exist(){
+if(file("${System.properties['user.home']}/.gradle/signing_ios.properties").exists()){
     signingProperties {
+        releaseBis {
+            target = "deliveryBis"
+            scheme = "delivery"
+            propertiesFile = file("${System.properties['user.home']}/.gradle/signing_ios.properties")
+        }
+
         release {
             target = "delivery"
             scheme = "delivery"
-            propertiesFile = project.file("${System.properties['user.home']}/.gradle/signing_ios.properties")
+            propertiesFile = file("${System.properties['user.home']}/.gradle/signing_ios.properties")
         }
     }
 }
 }
 ''')
-        //testTask('xcodeBuildFlow')
+        testTask('xcodeBuildFlow')
         def list = []
         archiveDirectory.eachFileRecurse(FileType.FILES, {
             f ->

@@ -124,36 +124,27 @@ class AndroidConfigurator extends ProjectConfigurator {
             def buildType = project.android.buildTypes.findByName(signingProperty.name)
 
 
-            Properties properties = new Properties()
 
             if (buildType == null) {
                 throw new IllegalStateException("Signing property can't apply on missing buildType : " + signingProperty.name)
-            } else if (signingProperty.propertiesFile == null) {
-                logger.warn("Signing property file not defined");
-                return;
-            } else if (!signingProperty.propertiesFile.exists()) {
-                logger.warn("Signing property file doesn't exist : " + signingProperty.propertiesFile)
-                return;
-            } else {
-                signingProperty.propertiesFile.withInputStream {
-                    stream -> properties.load(stream)
-                }
-                def filePath = properties.getProperty(signingProperty.storeFileField)
-                if (filePath == null) {
-                    throw new IllegalStateException("KS can't be found with null filePath. Please add ${signingProperty.storeFileField} in $signingProperty.propertiesFile")
-                } else if (!project.file(filePath).exists()) {
-                    throw new IllegalStateException("KS not found for buildType '${signingProperty.name}' at path $filePath")
-                }
             }
 
-            def ksFile = project.file(properties.getProperty(signingProperty.storeFileField))
+            if(signingProperty.storeFile == null){
+                return ;
+            }
+
+            if (!project.file(signingProperty.storeFile).exists()) {
+                throw new IllegalStateException("KS not found for buildType '${signingProperty.name}' at path $filePath")
+            }
+
+            def ksFile = project.file(signingProperty.storeFile)
 
             project.android.signingConfigs {
                 "${signingProperty.name}Signing" {
                     storeFile ksFile
-                    storePassword properties.getProperty(signingProperty.storePasswordField)
-                    keyAlias properties.getProperty(signingProperty.keyAliasField)
-                    keyPassword properties.getProperty(signingProperty.keyAliasPasswordField)
+                    storePassword signingProperty.storePassword
+                    keyAlias signingProperty.keyAlias
+                    keyPassword signingProperty.keyAliasPassword
                 }
             }
             buildType.signingConfig project.android.signingConfigs."${signingProperty.name}Signing"

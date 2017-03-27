@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory
  */
 class IOSConfigurator extends ProjectConfigurator {
 
-    static String JAVA_PLUGIN_ID = "java"
 
     Logger logger = LoggerFactory.getLogger('IOSConfigurator')
 
@@ -39,12 +38,7 @@ class IOSConfigurator extends ProjectConfigurator {
 
     @Override
     def applyProperties(String version, String versionId, String projectName) {
-        xcodebuild{
-            infoplist {
-                version = version
-            }
-        }
-
+        this.project.infoplist.version = version
     }
 
     @Override
@@ -58,56 +52,75 @@ class IOSConfigurator extends ProjectConfigurator {
                 target = split[1]
             }
         }
+        def variantCodeName = scheme.trim().capitalize() + target.trim().capitalize()
+
 
         if (target != null && scheme != null) {
-            def variantCodeName = scheme.trim().capitalize() + target.trim().capitalize()
             def taskName = "build${variantCodeName}Artifacts"
             Task buildTask = project.tasks.findByPath(taskName)
             if (buildTask == null) {
                 project.task(taskName, type: DeliveryBuildTask, group: DeliveryPlugin.TASK_GROUP) {
                     variantName variantCodeName
-                    outputFiles = ["": project.file("build/package/${variantName}.ipa")]
+                    outputFiles = ["": project.file("${project.getBuildDir()}/package/${variantCodeName}.ipa")]
                 }.dependsOn(taskName + "Process")
 
                 def parameter = project.getGradle().startParameter.newInstance()
                 parameter.systemPropertiesArgs.put("xcodebuild", property.name)
                 project.task(taskName + "Process", type: GradleBuild) {
-                    startParameter: parameter
-                    tasks: ['archive', 'package']
+                    startParameter = parameter
+                    tasks = ['archive', 'package']
                 }
             }
         }
 
 
-        if(System.hasProperty("xcodebuild") && System.getProperty("xcodebuild").equals(property.name)){
+        if (System.getProperty("xcodebuild")?.equals(property.name)) {
 
-            xcodebuild {
-                buildRoot = project.file("build")
-                ipaFileName = variantName
-                target = target
-                scheme = scheme
+            project.xcodebuild.target = target
+            project.xcodebuild.scheme = scheme
+            project.xcodebuild {
+                bundleName = scheme
+                ipaFileName = variantCodeName
                 configuration = "release"
                 simulator = false
                 signing {
-                    certificateURI = project.file(signing.certificateURI)
-                    certificatePassword = signing.certificatePassword
-                    mobileProvisionURI = signing.mobileProvisionURI.split(",").collect {path -> project.file(path)}
+                    certificateURI = project.file(property.certificateURI).toURI()
+                    certificatePassword = property.certificatePassword
+                    mobileProvisionURI = property.mobileProvisionURI.split(",").collect { path -> return project.file(path).toURI() }
                 }
+
+
 
             }
 
+            project.infoplist {
+                version = project.version
+            }
 
 
         }
-
-
 
 
     }
 
     @Override
     boolean handleProject(Project project) {
-        def files = project.projectDir.listFiles({ File dir, String name -> name.contains("xcodeproj") || name.contains("xcworkspace") })
-        return files.length != 0
+        File file = getProjectFile(project)
+        return file != null
+    }
+
+    private File getProjectFile(Project project) {
+        def files = project.projectDir.listFiles(new FilenameFilter() {
+            @Override
+            boolean accept(File dir, String name) {
+                return name.contains("xcodeproj") || name.contains("xcworkspace")
+            }
+        })
+        if (files.length > 1) {
+            return files.find { file -> file.name.contains("xcworkspace") }
+        } else if (files.length == 1) {
+            return files[0]
+        }
+        return null
     }
 }

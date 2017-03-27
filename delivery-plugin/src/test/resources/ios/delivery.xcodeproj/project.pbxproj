@@ -12,6 +12,11 @@
 		176A8A691E818CB0003970BE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 176A8A671E818CB0003970BE /* Main.storyboard */; };
 		176A8A6B1E818CB0003970BE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 176A8A6A1E818CB0003970BE /* Assets.xcassets */; };
 		176A8A6E1E818CB0003970BE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 176A8A6C1E818CB0003970BE /* LaunchScreen.storyboard */; };
+		177D61621E881A1800C4A93F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 176A8A651E818CB0003970BE /* ViewController.swift */; };
+		177D61631E881A1800C4A93F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 176A8A631E818CB0003970BE /* AppDelegate.swift */; };
+		177D61661E881A1800C4A93F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 176A8A6C1E818CB0003970BE /* LaunchScreen.storyboard */; };
+		177D61671E881A1800C4A93F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 176A8A6A1E818CB0003970BE /* Assets.xcassets */; };
+		177D61681E881A1800C4A93F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 176A8A671E818CB0003970BE /* Main.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,10 +27,19 @@
 		176A8A6A1E818CB0003970BE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		176A8A6D1E818CB0003970BE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		176A8A6F1E818CB0003970BE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		177D616C1E881A1800C4A93F /* deliveryBis.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = deliveryBis.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		177D616D1E881A1800C4A93F /* delivery copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "delivery copy-Info.plist"; path = "/Users/florian/Projets/MobileTribe/delivery/delivery-plugin/src/test/resources/ios/delivery copy-Info.plist"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		176A8A5D1E818CB0003970BE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		177D61641E881A1800C4A93F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -40,6 +54,7 @@
 			children = (
 				176A8A621E818CB0003970BE /* delivery */,
 				176A8A611E818CB0003970BE /* Products */,
+				177D616D1E881A1800C4A93F /* delivery copy-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -47,6 +62,7 @@
 			isa = PBXGroup;
 			children = (
 				176A8A601E818CB0003970BE /* delivery.app */,
+				177D616C1E881A1800C4A93F /* deliveryBis.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -84,6 +100,23 @@
 			productReference = 176A8A601E818CB0003970BE /* delivery.app */;
 			productType = "com.apple.product-type.application";
 		};
+		177D61601E881A1800C4A93F /* deliveryBis */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 177D61691E881A1800C4A93F /* Build configuration list for PBXNativeTarget "deliveryBis" */;
+			buildPhases = (
+				177D61611E881A1800C4A93F /* Sources */,
+				177D61641E881A1800C4A93F /* Frameworks */,
+				177D61651E881A1800C4A93F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = deliveryBis;
+			productName = delivery;
+			productReference = 177D616C1E881A1800C4A93F /* deliveryBis.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -98,6 +131,9 @@
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = EBT8MWN76X;
 						ProvisioningStyle = Manual;
+					};
+					177D61601E881A1800C4A93F = {
+						DevelopmentTeam = EBT8MWN76X;
 					};
 				};
 			};
@@ -115,6 +151,7 @@
 			projectRoot = "";
 			targets = (
 				176A8A5F1E818CB0003970BE /* delivery */,
+				177D61601E881A1800C4A93F /* deliveryBis */,
 			);
 		};
 /* End PBXProject section */
@@ -130,6 +167,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		177D61651E881A1800C4A93F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				177D61661E881A1800C4A93F /* LaunchScreen.storyboard in Resources */,
+				177D61671E881A1800C4A93F /* Assets.xcassets in Resources */,
+				177D61681E881A1800C4A93F /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -139,6 +186,15 @@
 			files = (
 				176A8A661E818CB0003970BE /* ViewController.swift in Sources */,
 				176A8A641E818CB0003970BE /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		177D61611E881A1800C4A93F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				177D61621E881A1800C4A93F /* ViewController.swift in Sources */,
+				177D61631E881A1800C4A93F /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -289,6 +345,38 @@
 			};
 			name = Release;
 		};
+		177D616A1E881A1800C4A93F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				DEVELOPMENT_TEAM = EBT8MWN76X;
+				INFOPLIST_FILE = "delivery copy-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.leroymerlin.delivery;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "6543a6d2-a01b-453d-962f-f9a2e0d624d3";
+				PROVISIONING_PROFILE_SPECIFIER = LM_Distribution_Provisioning_Profile_2017;
+				SWIFT_VERSION = 3.0;
+			};
+			name = Debug;
+		};
+		177D616B1E881A1800C4A93F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				DEVELOPMENT_TEAM = EBT8MWN76X;
+				INFOPLIST_FILE = "delivery copy-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.leroymerlin.delivery;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "6543a6d2-a01b-453d-962f-f9a2e0d624d3";
+				PROVISIONING_PROFILE_SPECIFIER = LM_Distribution_Provisioning_Profile_2017;
+				SWIFT_VERSION = 3.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -306,6 +394,15 @@
 			buildConfigurations = (
 				176A8A731E818CB0003970BE /* Debug */,
 				176A8A741E818CB0003970BE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		177D61691E881A1800C4A93F /* Build configuration list for PBXNativeTarget "deliveryBis" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				177D616A1E881A1800C4A93F /* Debug */,
+				177D616B1E881A1800C4A93F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
