@@ -88,4 +88,11 @@ class GitAdapter extends Executor implements BaseScmAdapter {
             list.addAll(1, ['-c', "user.name=$username", '-c', "user.email=$email"])
         return list
     }
+
+    @Override
+    String discardChange() {
+        def result = exec(['git', 'clean', '-df'], directory: project.rootDir)
+        result += exec(['git', 'checkout', '--', '.'], directory: project.rootDir)
+        return result
+    }
 }

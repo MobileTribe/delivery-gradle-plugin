@@ -95,7 +95,9 @@ class Flow {
         createTask(Exec, [commandLine: cmdarray])
     }
 
-
+    def discardChange() {
+        createTask(DiscardFilesTask, null)
+    }
 
     def task(String taskName, boolean newBuild = false) {
         if (newBuild) {

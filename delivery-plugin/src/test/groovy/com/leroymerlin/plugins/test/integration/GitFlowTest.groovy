@@ -74,6 +74,49 @@ delivery{
     }
 
     @Test
+    void testDiscardFile() {
+
+
+        applyExtraGradle('''
+
+
+delivery{
+    flows{
+        initCommit{
+            commit 'init commit', true
+        }
+        addFile{
+            add 'fichier.txt'
+            commit 'fichier.txt'
+        }
+        discardChange{
+            add 'fichier2.txt'
+            discardChange
+        }
+    }
+}
+''')
+
+        def file = new File(workingDirectory, "fichier.txt")
+        file << "init"
+        testTask('initCommitFlow')
+        file << "salut !"
+        def gitStatus = Executor.exec(["git", "status"], directory: workingDirectory)
+        Assert.assertTrue("fichier.txt should be modified :\n$gitStatus", gitStatus.contains("fichier.txt"))
+        testTask('addFileFlow')
+        gitStatus = getGitStatus()
+        Assert.assertTrue("Commit init file should be :\n$gitStatus", gitStatus.contains("nothing to commit"))
+        file << "!!!!!!!"
+        def file2 = new File(workingDirectory, "fichier2.txt")
+        file2 << "toto"
+        gitStatus = getGitStatus()
+        println(gitStatus)
+        testTask('discardChangeFlow')
+        gitStatus = getGitStatus()
+        println(gitStatus)
+    }
+
+    @Test
     void testSwitchBranch() {
 
         applyExtraGradle('''
