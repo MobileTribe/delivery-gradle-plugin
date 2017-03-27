@@ -2,6 +2,7 @@ package com.leroymerlin.plugins
 
 import com.leroymerlin.plugins.core.configurators.AndroidConfigurator
 import com.leroymerlin.plugins.core.configurators.IOSConfigurator
+import com.leroymerlin.plugins.core.configurators.IonicConfigurator
 import com.leroymerlin.plugins.core.configurators.JavaConfigurator
 import com.leroymerlin.plugins.core.configurators.ProjectConfigurator
 import com.leroymerlin.plugins.tasks.build.DeliveryBuildTask
@@ -20,7 +21,7 @@ class DeliveryPlugin implements Plugin<Project> {
     static final String TASK_GROUP = 'delivery'
     static final String DELIVERY_CONF_FILE = 'delivery.properties'
 
-    def configurators = [AndroidConfigurator, JavaConfigurator, IOSConfigurator]
+    def configurators = [AndroidConfigurator, JavaConfigurator, IOSConfigurator, IonicConfigurator]
 
     Project project
     DeliveryPluginExtension deliveryExtension
