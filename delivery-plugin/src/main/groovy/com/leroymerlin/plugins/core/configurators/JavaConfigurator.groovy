@@ -20,7 +20,7 @@ class JavaConfigurator extends ProjectConfigurator {
     boolean isJavaProject
 
     @Override
-    def setup(Project project, DeliveryPluginExtension extension) {
+    public void setup(Project project, DeliveryPluginExtension extension) {
         super.setup(project, extension)
         isJavaProject = project.plugins.hasPlugin(JAVA_PLUGIN_ID)
         if (!isJavaProject) {
@@ -29,7 +29,7 @@ class JavaConfigurator extends ProjectConfigurator {
     }
 
     @Override
-    def configure() {
+    public void configure() {
 
         if (!project.group) {
             throw new GradleException("Project group is not defined. Please use a gradle properties group")
@@ -45,7 +45,7 @@ class JavaConfigurator extends ProjectConfigurator {
     }
 
     @Override
-    boolean handleProject(Project project) {
+    public boolean handleProject(Project project) {
         return project.plugins.hasPlugin(JAVA_PLUGIN_ID)
     }
 }

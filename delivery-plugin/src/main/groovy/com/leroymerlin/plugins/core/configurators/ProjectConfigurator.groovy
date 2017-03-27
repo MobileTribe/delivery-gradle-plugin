@@ -7,23 +7,25 @@ import org.gradle.api.Project
 /**
  * Created by florian on 30/01/2017.
  */
-class ProjectConfigurator {
+public class ProjectConfigurator {
 
     Project project
     DeliveryPluginExtension extension
 
-    def setup(Project project, DeliveryPluginExtension extension) {
+    public void setup(Project project, DeliveryPluginExtension extension) {
         this.project = project
         this.extension = extension
     }
 
-    boolean handleProject(Project project){
+    public boolean handleProject(Project project){
         return false;
     }
 
-    def configure() {}
+    public void configure() {}
 
-    def applySigningProperty(SigningProperty property) {}
+    public void applySigningProperty(SigningProperty property) {}
 
-    def applyProperties(String version, String versionId, String projectName) {}
+    public void applyProperties(String version, String versionId, String projectName) {}
+
+    def teste(){}
 }

@@ -3,7 +3,7 @@ package com.leroymerlin.plugins.core.configurators
 import com.leroymerlin.plugins.DeliveryPlugin
 import com.leroymerlin.plugins.DeliveryPluginExtension
 import com.leroymerlin.plugins.entities.SigningProperty
-import com.leroymerlin.plugins.tasks.build.DeliveryBuildTask
+import com.leroymerlin.plugins.tasks.build.DeliveryBuild
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -20,13 +20,13 @@ class IOSConfigurator extends ProjectConfigurator {
     Logger logger = LoggerFactory.getLogger('IOSConfigurator')
 
     @Override
-    def setup(Project project, DeliveryPluginExtension extension) {
+    public void setup(Project project, DeliveryPluginExtension extension) {
         super.setup(project, extension)
         project.plugins.apply("org.openbakery.xcode-plugin")
     }
 
     @Override
-    def configure() {
+    public void configure() {
 
         if (!project.group) {
             throw new GradleException("Project group is not defined. Please use a gradle properties group")
@@ -37,12 +37,12 @@ class IOSConfigurator extends ProjectConfigurator {
     }
 
     @Override
-    def applyProperties(String version, String versionId, String projectName) {
+    public void applyProperties(String version, String versionId, String projectName) {
         this.project.infoplist.version = version
     }
 
     @Override
-    def applySigningProperty(SigningProperty property) {
+    public void applySigningProperty(SigningProperty property) {
         String target = property.target
         String scheme = property.scheme
         if (target == null || scheme == null) {
@@ -54,7 +54,7 @@ class IOSConfigurator extends ProjectConfigurator {
         def taskName = "build${variantCodeName}Artifacts"
         Task buildTask = project.tasks.findByPath(taskName)
         if (buildTask == null) {
-            project.task(taskName, type: DeliveryBuildTask, group: DeliveryPlugin.TASK_GROUP) {
+            project.task(taskName, type: DeliveryBuild, group: DeliveryPlugin.TASK_GROUP) {
                 variantName variantCodeName
                 outputFiles = ["": project.file("${project.getBuildDir()}/package/${variantCodeName}.ipa")]
             }.dependsOn(taskName + "Process")
@@ -98,7 +98,7 @@ class IOSConfigurator extends ProjectConfigurator {
     }
 
     @Override
-    boolean handleProject(Project project) {
+    public boolean handleProject(Project project) {
         File file = getProjectFile(project)
         return file != null
     }

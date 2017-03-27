@@ -1,16 +1,14 @@
 package com.leroymerlin.plugins.tasks.build
 
-import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.bundling.Jar
 
 /**
  * Created by alexandre on 15/02/2017.
  */
-class JavaBuild extends DeliveryBuildTask {
-
+class JavaBuild extends DeliveryBuild {
 
     @Override
-    void setVariantName(String variantName) {
+    public void setVariantName(String variantName) {
         super.setVariantName(variantName)
 
         outputFiles.put("", project.jar.outputs.getFiles()[0])

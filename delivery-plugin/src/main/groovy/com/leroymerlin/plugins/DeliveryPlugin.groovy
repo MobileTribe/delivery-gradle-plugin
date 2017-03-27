@@ -1,10 +1,11 @@
 package com.leroymerlin.plugins
 
+import com.leroymerlin.plugins.cli.Executor
 import com.leroymerlin.plugins.core.configurators.AndroidConfigurator
 import com.leroymerlin.plugins.core.configurators.IOSConfigurator
 import com.leroymerlin.plugins.core.configurators.JavaConfigurator
 import com.leroymerlin.plugins.core.configurators.ProjectConfigurator
-import com.leroymerlin.plugins.tasks.build.DeliveryBuildTask
+import com.leroymerlin.plugins.tasks.build.DeliveryBuild
 import com.leroymerlin.plugins.utils.PropertiesFileUtils
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
@@ -15,6 +16,9 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 class DeliveryPlugin implements Plugin<Project> {
+
+
+
     Logger logger = LoggerFactory.getLogger('DeliveryPlugin')
 
     static final String TASK_GROUP = 'delivery'
@@ -28,6 +32,12 @@ class DeliveryPlugin implements Plugin<Project> {
     void apply(Project project) {
         this.project = project
         this.deliveryExtension = project.extensions.create(TASK_GROUP, DeliveryPluginExtension, project, this)
+        project.plugins.apply('maven')
+
+        Executor.logger = logger
+        project.ext.DeliveryBuild = DeliveryBuild
+
+
 
         setupProperties()
 
@@ -36,7 +46,7 @@ class DeliveryPlugin implements Plugin<Project> {
                 configurator.newInstance().handleProject(project)
         }?.newInstance()
         if (detectedConfigurator == null) {
-            detectedConfigurator = []
+            detectedConfigurator = [] as ProjectConfigurator
         }
         this.deliveryExtension.configurator = detectedConfigurator
         project.afterEvaluate {
@@ -45,10 +55,8 @@ class DeliveryPlugin implements Plugin<Project> {
             }
             deliveryExtension.configurator.configure();
 
-            //TODO generate task if project type detected  deliveryExtension.configurator.configureBuildTasks()
-
             def buildTasks = []
-            buildTasks.addAll(project.tasks.withType(DeliveryBuildTask))
+            buildTasks.addAll(project.tasks.withType(DeliveryBuild))
             buildTasks.each {
                 task ->
 
@@ -117,7 +125,7 @@ class DeliveryPlugin implements Plugin<Project> {
         project.ext.versionId = project.ext."${project.ext.versionIdKey}"
         project.ext.version = project.ext."${project.ext.versionKey}"
         project.version = project.ext."${project.ext.versionKey}"
-        if (project.extensions.getExtraProperties().has("group")){
+        if (project.extensions.getExtraProperties().has("group")) {
             project.group = project.ext.group
         }
         project.ext.projectName = project.ext."${project.ext.projectNameKey}"

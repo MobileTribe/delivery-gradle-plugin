@@ -30,7 +30,8 @@ class DeliveryPluginExtension {
     }
 
 
-    def archiveRepositories = project.ext.properties.containsKey('archiveRepositories') ? project.ext.archiveRepositories : {}
+    def archiveRepositories = project.ext.properties.containsKey('archiveRepositories') ? project.ext.archiveRepositories : {
+    }
 
 
     void signingProperties(Action<? super NamedDomainObjectContainer<SigningProperty>> action) {
@@ -43,6 +44,10 @@ class DeliveryPluginExtension {
 
     def flows(Action<? super NamedDomainObjectContainer<Flow>> action) {
         action.execute(flowsContainer)
+    }
+
+    void setConfigurator(LinkedHashMap configurator) {
+        setConfigurator(configurator as ProjectConfigurator)
     }
 
     void setConfigurator(ProjectConfigurator configurator) {
@@ -65,7 +70,7 @@ class DeliveryPluginExtension {
     }
 
     BaseScmAdapter getScmAdapter() {
-        if(mScmAdapter==null){
+        if (mScmAdapter == null) {
             setScmAdapter(new GitAdapter());
         }
         return mScmAdapter

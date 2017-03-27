@@ -1,7 +1,6 @@
 package com.leroymerlin.plugins.cli
 
 import org.gradle.api.GradleException
-
 import org.gradle.api.logging.Logger
 
 /**
@@ -10,11 +9,8 @@ import org.gradle.api.logging.Logger
 
 class Executor {
 
-    protected static Logger logger
+    public static Logger logger
 
-    Executor(Logger logger = null) {
-        this.logger = logger
-    }
 
     static String exec(
             Map options = [:],
@@ -54,5 +50,14 @@ class Executor {
 
         def result = out.toString()
         return result
+    }
+
+
+    static List<String> convertToCommandLine(String cmd) {
+        StringTokenizer st = new StringTokenizer(cmd)
+        List<String> cmdList = new ArrayList<>()
+        for (int i = 0; st.hasMoreTokens(); i++)
+            cmdList.add(st.nextToken())
+        cmdList
     }
 }

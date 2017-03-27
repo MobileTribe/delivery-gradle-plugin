@@ -22,7 +22,7 @@ class AndroidConfigurator extends ProjectConfigurator {
     boolean isAndroidApp, isAndroidLibrary
 
     @Override
-    def setup(Project project, DeliveryPluginExtension extension) {
+    public void setup(Project project, DeliveryPluginExtension extension) {
         super.setup(project, extension)
         isAndroidApp = project.plugins.hasPlugin(ANDROID_PLUGIN_ID)
         isAndroidLibrary = project.plugins.hasPlugin(ANDROID_LIBRARY_PLUGIN_ID)
@@ -56,7 +56,7 @@ class AndroidConfigurator extends ProjectConfigurator {
     }
 
     @Override
-    def configure() {
+    public void configure() {
 
         //Check that properties are applied on android extension
         String version = project.version
@@ -115,11 +115,11 @@ class AndroidConfigurator extends ProjectConfigurator {
     }
 
     @Override
-    def applyProperties(String version, String versionId, String projectName) {
+    public void applyProperties(String version, String versionId, String projectName) {
     }
 
     @Override
-    def applySigningProperty(SigningProperty signingProperty) {
+    public void applySigningProperty(SigningProperty signingProperty) {
         if (isAndroidApp) {
             def buildType = project.android.buildTypes.findByName(signingProperty.name)
 
@@ -157,7 +157,7 @@ class AndroidConfigurator extends ProjectConfigurator {
     }*/
 
     @Override
-    boolean handleProject(Project project) {
+    public boolean handleProject(Project project) {
         return project.plugins.hasPlugin(ANDROID_PLUGIN_ID) || project.plugins.hasPlugin(ANDROID_LIBRARY_PLUGIN_ID)
     }
 }

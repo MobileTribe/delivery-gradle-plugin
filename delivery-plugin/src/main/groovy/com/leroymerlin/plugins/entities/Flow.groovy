@@ -1,6 +1,7 @@
 package com.leroymerlin.plugins.entities
 
 import com.leroymerlin.plugins.DeliveryPluginExtension
+import com.leroymerlin.plugins.cli.Executor
 import com.leroymerlin.plugins.tasks.ChangePropertiesTask
 import com.leroymerlin.plugins.tasks.scm.*
 import org.gradle.api.GradleException
@@ -90,14 +91,11 @@ class Flow {
     def cmd(String cmd) {
         if (cmd.length() == 0)
             throw new IllegalArgumentException("Empty command")
-
-        StringTokenizer st = new StringTokenizer(cmd)
-        String[] cmdarray = new String[st.countTokens()]
-        for (int i = 0; st.hasMoreTokens(); i++)
-            cmdarray[i] = st.nextToken()
-
+        String[] cmdarray = Executor.convertToCommandLine(cmd)
         createTask(Exec, [commandLine: cmdarray])
     }
+
+
 
     def task(String taskName, boolean newBuild = false) {
         if (newBuild) {
