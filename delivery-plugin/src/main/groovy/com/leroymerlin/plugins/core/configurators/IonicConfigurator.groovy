@@ -9,6 +9,7 @@ import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.tasks.GradleBuild
 import org.gradle.api.tasks.Upload
+import org.gradle.plugins.signing.Sign
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -48,6 +49,10 @@ class IonicConfigurator extends ProjectConfigurator {
     @Override
     public void configure() {
         if (nestedConfigurator) {
+            if(System.getProperty(IONIC_BUILD) == 'android'){
+                project.android.defaultConfig.versionName = project.version
+                project.android.defaultConfig.versionCode = Integer.parseInt(project.versionId)
+            }
             nestedConfigurator.configure()
         } else {
             def config = project.file("config.xml")
@@ -87,47 +92,32 @@ class IonicConfigurator extends ProjectConfigurator {
         def signingName = signingProperty.name.toLowerCase()
         def buildTaskName = "buildIonic${signingName.capitalize()}Artifacts"
 
-        if (signingName == 'android') {
-            project.task(buildTaskName, type: DeliveryBuild) {
-                outputFiles = []
-            }.dependsOn("${buildTaskName}Process")
-            project.task("${buildTaskName}Process", type: GradleBuild) {
-                startParameter = project.getGradle().startParameter.newInstance()
-                tasks = ['buildFlow']
-            }
-            project.task(taskName + "Process", type: GradleBuild) {
-
-            }
-        } else if (signingName == 'ios') {
+        if (signingName == 'android' || signingName == 'ios') {
             def preparePlatformTask = "prepareIonic${signingName.capitalize()}Platform"
 
             project.task(buildTaskName, type: Upload){
-                configuration = project.configurations.create("ionicIos")
+                configuration = project.configurations.create("ionic${signingName.capitalize()}")
                 repositories {}
             }.dependsOn([preparePlatformTask, "${buildTaskName}Process"])
 
-            /*
-            def buildIosFile = project.file(project.buildDir + "/ios/build.gradle");
-            buildIosFile.delete()
-            buildIosFile.parentFile.mkdirs()
-            buildIosFile.createNewFile()
-            buildIosFile << '''
-'''
-*/
-
-            def newBuildGradleFile = project.file('platforms/ios/build.gradle')
+            def newBuildGradleFile = project.file("platforms/${signingName}/build.gradle")
 
 
 
 
             project.task(preparePlatformTask).doFirst {
-                Executor.exec(["ionic", "platform", "add", "ios"], directory: project.projectDir)
+                Executor.exec(["ionic", "platform", "add", signingName], directory: project.projectDir)
                 Executor.exec(["ionic", "resources"], directory: project.projectDir)
-                Executor.exec(["ionic", "platform", "remove", "ios"], directory: project.projectDir)
-                Executor.exec(["ionic", "platform", "add", "ios"], directory: project.projectDir)
-                Executor.exec(["ionic", "build", "ios", "--release"], directory: project.projectDir)
-                newBuildGradleFile.delete()
-                Files.copy(project.file('build.gradle').toPath(), newBuildGradleFile.toPath())
+                Executor.exec(["ionic", "platform", "remove", signingName], directory: project.projectDir)
+                Executor.exec(["ionic", "platform", "add", signingName], directory: project.projectDir)
+                Executor.exec(["ionic", "build", signingName, "--release"], directory: project.projectDir)
+                if(signingName=='android'){
+                    newBuildGradleFile << project.file('build.gradle').text
+                }else{
+                    newBuildGradleFile.delete()
+                    Files.copy(project.file('build.gradle').toPath(), newBuildGradleFile.toPath())
+
+                }
             }.dependsOn('prepareNpm')
 
 
@@ -140,10 +130,9 @@ class IonicConfigurator extends ProjectConfigurator {
             newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.GROUP_ARG, project.group)
 
 
-
             project.task("${buildTaskName}Process", type: GradleBuild) {
                 startParameter = newStartParameter
-                buildFile newBuildGradleFile
+                buildFile project.file("platforms/${signingName}/build.gradle")
                 tasks = ['uploadArtifacts']
             }.shouldRunAfter preparePlatformTask
 
@@ -161,10 +150,11 @@ class IonicConfigurator extends ProjectConfigurator {
         def signingName = signingProperty.name.toLowerCase()
 
         if (nestedConfigurator && signingName == System.getProperty(IONIC_BUILD)) {
-            signingProperty.name = 'release'
-            signingProperty.target = project.projectName
-            signingProperty.scheme = project.projectName
-            nestedConfigurator.applySigningProperty(signingProperty)
+            SigningProperty signingPropertyCopy = new SigningProperty('release')
+            signingPropertyCopy.properties = signingProperty.properties
+            signingPropertyCopy.target = project.projectName
+            signingPropertyCopy.scheme = project.projectName
+            nestedConfigurator.applySigningProperty(signingPropertyCopy)
         }
     }
 

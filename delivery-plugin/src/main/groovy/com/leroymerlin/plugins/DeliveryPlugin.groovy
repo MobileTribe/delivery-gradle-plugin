@@ -49,6 +49,8 @@ class DeliveryPlugin implements Plugin<Project> {
         }?.newInstance()
         if (detectedConfigurator == null) {
             detectedConfigurator = [] as ProjectConfigurator
+        } else {
+            logger.warn("Project of type ${detectedConfigurator.class.simpleName - "Configurator"} found")
         }
         this.deliveryExtension.configurator = detectedConfigurator
         project.afterEvaluate {

@@ -1,8 +1,10 @@
 package com.leroymerlin.plugins.entities
 
+import com.leroymerlin.plugins.cli.Executor
+
 class SigningProperty {
 
-    String name
+    final String name
 
     def properties = [:]
 
@@ -12,15 +14,19 @@ class SigningProperty {
 
 
     void setPropertiesFile(File propertiesFile) {
-        Properties fileProp = new Properties();
-        propertiesFile.withInputStream {
-            stream -> fileProp.load(stream)
-        }
-        fileProp.each {
-            key, value ->
-                if (!properties.containsKey(key)) {
-                    properties.put(key, value)
-                }
+        if (!propertiesFile.exists()) {
+            Executor.logger?.warn("Can't load ${propertiesFile.path} in $name signingProperty")
+        } else {
+            Properties fileProp = new Properties();
+            propertiesFile.withInputStream {
+                stream -> fileProp.load(stream)
+            }
+            fileProp.each {
+                key, value ->
+                    if (!properties.containsKey(key)) {
+                        properties.put(key, value)
+                    }
+            }
         }
     }
 

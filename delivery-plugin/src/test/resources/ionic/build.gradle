@@ -27,6 +27,9 @@ delivery {
 
   if (file("${System.properties['user.home']}/.gradle/signing_ios.properties").exists()) {
     signingProperties {
+      android{
+        propertiesFile = file("../../signing.properties")
+      }
       ios {
         propertiesFile = file("${System.properties['user.home']}/.gradle/signing_ios.properties")
       }
