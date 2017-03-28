@@ -9,6 +9,7 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.tasks.Exec
 import org.gradle.api.tasks.GradleBuild
+import org.gradle.api.tasks.bundling.Zip
 
 /**
  * Created by alexandre on 08/02/2017.
@@ -19,7 +20,7 @@ class Flow {
     Task taskFlow
     DeliveryPluginExtension delivery
 
-    String name;
+    String name
 
     Flow(String name, DeliveryPluginExtension extension) {
         this.name = name

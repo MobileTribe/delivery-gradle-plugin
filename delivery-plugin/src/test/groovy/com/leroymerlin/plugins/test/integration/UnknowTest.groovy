@@ -38,11 +38,11 @@ task buildVariant2(type: DeliveryBuild){
 
 delivery{
 
-    configurator = [ applyProperties: {String version, String versionId, String projectName ->
+    configurator = [ applyProperties: {
         def f = file('version.txt')
         f.delete()
         f.createNewFile()
-        f << version
+        f << project.version
     }]
     archiveRepositories = {
         maven {

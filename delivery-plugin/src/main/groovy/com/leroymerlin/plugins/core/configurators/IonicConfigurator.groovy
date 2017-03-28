@@ -1,11 +1,11 @@
 package com.leroymerlin.plugins.core.configurators
 
-import com.leroymerlin.plugins.DeliveryPlugin
 import com.leroymerlin.plugins.DeliveryPluginExtension
 import com.leroymerlin.plugins.entities.SigningProperty
-import com.leroymerlin.plugins.tasks.build.AndroidBuild
+import com.leroymerlin.plugins.tasks.build.DeliveryBuild
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.gradle.api.tasks.GradleBuild
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -14,109 +14,58 @@ import org.slf4j.LoggerFactory
  */
 class IonicConfigurator extends ProjectConfigurator {
 
-
-    static String ANDROID_PLUGIN_ID = "com.android.application"
-
-    Logger logger = LoggerFactory.getLogger('AndroidConfigurator')
-    boolean isAndroidApp
+    Logger logger = LoggerFactory.getLogger('IonicConfigurator')
 
     @Override
     public void setup(Project project, DeliveryPluginExtension extension) {
         super.setup(project, extension)
-        isAndroidApp = project.plugins.hasPlugin(ANDROID_PLUGIN_ID)
-        if (!isAndroidApp) {
-            throw new GradleException("Your project must apply com.android.application to use " + getClass().simpleName)
-        }
-
-        project.android {
-            defaultConfig {
-                versionName project.version
-                versionCode Integer.parseInt(project.versionId)
-            }
-
-            buildTypes.all {
-                buildType ->
-                    extension.signingProperties.maybeCreate(buildType.name)
-            }
-        }
     }
 
     @Override
     public void configure() {
-
-        String version = project.version
-        if (isAndroidApp) {
-            if (!(project.android.defaultConfig.versionName == version)) {
-                throw new GradleException("app versionName is ${project.android.defaultConfig.versionName} but should be $version. Please set: android.defaultConfig.versionName version")
-            }
-            if (!(project.android.defaultConfig.versionCode == Integer.parseInt(project.versionId))) {
-                throw new GradleException("app versionCode is ${project.android.defaultConfig.versionCode} but should be ${project.versionId}. Please set: android.defaultConfig.versionCode Integer.parseInt(versionId)")
-            }
-
-            if (project.android.defaultConfig.applicationId)
-                project.group = project.android.defaultConfig.applicationId
+        if (project.group == null) {
+            def config = project.file("config.xml")
+            def widget = new XmlParser(false, false).parse(config)
+            project.group = widget."@id"
         }
 
         if (!project.group) {
-            throw new GradleException("Project group is not defined. Please use a gradle properties or configure your defaultConfig.applicationId")
+            throw new GradleException("Project group is not defined. Please use a gradle properties or configure your id in config.xml")
         }
         logger.info("group used : ${project.group}")
-
-
-        logger.info("Generate Android Build tasks")
-        if (isAndroidApp) {
-            project.android.applicationVariants.all { currentVariant ->
-                String flavorName = project.projectName.toString().split(' ').collect({ m -> return m.toLowerCase().capitalize() }).join("") + currentVariant.flavorName.capitalize()
-                flavorName = flavorName[0].toLowerCase() + flavorName.substring(1)
-
-                def buildTaskName = "build${flavorName.capitalize()}Artifacts"
-                if (project.tasks.findByPath(buildTaskName) == null) {
-                    project.task(buildTaskName, type: AndroidBuild, group: DeliveryPlugin.TASK_GROUP) {
-                        variantName flavorName
-                    }
-                }
-                project.tasks.findByPath(buildTaskName).addVariant(currentVariant)
-            }
-        }
     }
 
     @Override
-    public void applyProperties(String version, String versionId, String projectName) {
+    public void applyProperties() {
+        def config = project.file("config.xml")
+        def widget = new XmlParser(false, false).parse(config)
+        widget."@version" = project.version
+        def xmlNodePrinter = new XmlNodePrinter(new PrintWriter(config))
+        xmlNodePrinter.preserveWhitespace = true
+        xmlNodePrinter.print(widget)
     }
 
     @Override
     public void applySigningProperty(SigningProperty signingProperty) {
-        if (isAndroidApp) {
-            def buildType = project.android.buildTypes.findByName(signingProperty.name)
-
-            if (buildType == null) {
-                throw new IllegalStateException("Signing property can't apply on missing buildType : " + signingProperty.name)
+        if (signingProperty.name.toLowerCase() == 'android') {
+            def buildTaskName = "buildIonicAndroidArtifacts"
+            project.task(buildTaskName, type: DeliveryBuild) {
+                outputFiles = []
+            }.dependsOn("${buildTaskName}Process")
+            project.task("${buildTaskName}Process", type: GradleBuild) {
+                startParameter = project.getGradle().startParameter.newInstance()
+                tasks = ['buildFlow']
             }
+            project.task(taskName + "Process", type: GradleBuild) {
 
-            if (signingProperty.storeFile == null) {
-                return
             }
-
-            if (!project.file(signingProperty.storeFile).exists()) {
-                throw new IllegalStateException("KS not found for buildType '${signingProperty.name}' at path $filePath")
-            }
-
-            def ksFile = project.file(signingProperty.storeFile)
-
-            project.android.signingConfigs {
-                "${signingProperty.name}Signing" {
-                    storeFile ksFile
-                    storePassword signingProperty.storePassword
-                    keyAlias signingProperty.keyAlias
-                    keyPassword signingProperty.keyAliasPassword
-                }
-            }
-            buildType.signingConfig project.android.signingConfigs."${signingProperty.name}Signing"
-        }
+        } else if (signingProperty.name.toLowerCase() == 'ios') {
+        } else
+            throw new GradleException("SigningProperty ${signingProperty.name} is not supported, please use Android or IOS")
     }
 
     @Override
     public boolean handleProject(Project project) {
-        return project.plugins.hasPlugin(ANDROID_PLUGIN_ID)
+        return project.file('ionic.config.json').exists() && project.file('config.xml').exists()
     }
 }

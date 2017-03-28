@@ -25,7 +25,7 @@ public class ProjectConfigurator {
 
     public void applySigningProperty(SigningProperty property) {}
 
-    public void applyProperties(String version, String versionId, String projectName) {}
+    public void applyProperties() {}
 
     def teste(){}
 }

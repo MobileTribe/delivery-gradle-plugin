@@ -37,8 +37,8 @@ class IOSConfigurator extends ProjectConfigurator {
     }
 
     @Override
-    public void applyProperties(String version, String versionId, String projectName) {
-        this.project.infoplist.version = version
+    public void applyProperties() {
+        this.project.infoplist.version = project.version
     }
 
     @Override

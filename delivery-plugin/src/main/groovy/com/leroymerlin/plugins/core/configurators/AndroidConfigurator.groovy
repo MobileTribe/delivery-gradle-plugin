@@ -115,10 +115,6 @@ class AndroidConfigurator extends ProjectConfigurator {
     }
 
     @Override
-    public void applyProperties(String version, String versionId, String projectName) {
-    }
-
-    @Override
     public void applySigningProperty(SigningProperty signingProperty) {
         if (isAndroidApp) {
             def buildType = project.android.buildTypes.findByName(signingProperty.name)

@@ -53,7 +53,7 @@ class DeliveryPluginExtension {
     void setConfigurator(ProjectConfigurator configurator) {
         this.mConfigurator = configurator
         this.mConfigurator.setup(project, this)
-        this.mConfigurator.applyProperties(project.version, project.ext.versionId, project.ext.projectName)
+        this.mConfigurator.applyProperties()
         this.signingProperties.each {
             SigningProperty signingProperty ->
                 this.configurator.applySigningProperty(signingProperty)
