@@ -66,7 +66,7 @@ delivery{
         file << "init"
         testTask('initCommitFlow')
         file << "salut !"
-        def gitStatus = Executor.exec(["git", "status"], directory: workingDirectory)
+        def gitStatus = getGitStatus()
         Assert.assertTrue("fichier.txt should be modified :\n$gitStatus", gitStatus.contains("fichier.txt"))
         testTask('addFileFlow')
         gitStatus = getGitStatus()
@@ -101,7 +101,7 @@ delivery{
         file << "init"
         testTask('initCommitFlow')
         file << "salut !"
-        def gitStatus = Executor.exec(["git", "status"], directory: workingDirectory)
+        def gitStatus = getGitStatus()
         Assert.assertTrue("fichier.txt should be modified :\n$gitStatus", gitStatus.contains("fichier.txt"))
         testTask('addFileFlow')
         gitStatus = getGitStatus()
@@ -110,10 +110,10 @@ delivery{
         def file2 = new File(workingDirectory, "fichier2.txt")
         file2 << "toto"
         gitStatus = getGitStatus()
-        println(gitStatus)
+        Assert.assertTrue("fichier2.txt should be added", gitStatus.contains("fichier2.txt"))
         testTask('discardChangeFlow')
         gitStatus = getGitStatus()
-        println(gitStatus)
+        Assert.assertTrue("discard didn't work", gitStatus.contains("working tree clean"))
     }
 
     @Test
@@ -146,7 +146,8 @@ delivery{
         gitStatus = getGitStatus()
         Assert.assertTrue("Commit init file should be :\n$gitStatus", gitStatus.contains("nothing to commit"))
         testTask('switchBranchFlow')
-        println getGitStatus()
+        gitStatus = getGitStatus()
+        Assert.assertTrue("Branch should be changed", gitStatus.contains("branchTest"))
     }
 
     @Test
@@ -183,8 +184,6 @@ delivery{
         Assert.assertTrue("File should not contain 'salut'", !file.text.contains("salut !"));
         testTask('mergeFlow')
         Assert.assertTrue("File should contain 'salut'", file.text.contains("salut !"));
-        def gitStatus = getGitStatus()
-
     }
 
 

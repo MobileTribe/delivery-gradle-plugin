@@ -91,8 +91,9 @@ class GitAdapter extends Executor implements BaseScmAdapter {
 
     @Override
     String discardChange() {
-        def result = exec(['git', 'clean', '-df'], directory: project.rootDir)
-        result += exec(['git', 'checkout', '--', '.'], directory: project.rootDir)
+        def result = exec(['git', 'checkout', '--', '.'], directory: project.rootDir)
+        result += exec(['git', 'reset', 'HEAD', '.'], directory: project.rootDir)
+        result += exec(['git', 'clean', '-df'], directory: project.rootDir)
         return result
     }
 }
