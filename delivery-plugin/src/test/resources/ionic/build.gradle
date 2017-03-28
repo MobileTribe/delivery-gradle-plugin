@@ -1,15 +1,36 @@
 buildscript {
-    repositories {
-        mavenLocal()
-        jcenter()
-    }
-    dependencies {
-        classpath "com.leroymerlin.plugins:delivery-plugin:${System.getProperty("DELIVERY_VERSION")}"
-    }
+  repositories {
+    mavenLocal()
+    jcenter()
+  }
+  dependencies {
+    classpath "com.leroymerlin.plugins:delivery-plugin:${System.getProperty("DELIVERY_VERSION")}"
+  }
 }
 
 apply plugin: 'com.leroymerlin.delivery'
 
-if (file('extra.gradle').exists()) {
-    apply from: 'extra.gradle'
+
+
+delivery {
+  archiveRepositories = {
+    maven {
+      url uri("../../build/archive_ionic")
+    }
+  }
+  flows {
+    ionic {
+      build
+    }
+  }
+
+
+  if (file("${System.properties['user.home']}/.gradle/signing_ios.properties").exists()) {
+    signingProperties {
+      ios {
+        propertiesFile = file("${System.properties['user.home']}/.gradle/signing_ios.properties")
+      }
+    }
+  }
+
 }

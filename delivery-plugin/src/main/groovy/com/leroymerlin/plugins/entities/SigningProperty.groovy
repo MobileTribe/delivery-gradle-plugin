@@ -2,7 +2,7 @@ package com.leroymerlin.plugins.entities
 
 class SigningProperty {
 
-    final String name
+    String name
 
     def properties = [:]
 

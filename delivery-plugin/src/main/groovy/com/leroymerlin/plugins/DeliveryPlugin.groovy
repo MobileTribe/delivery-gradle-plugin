@@ -1,11 +1,7 @@
 package com.leroymerlin.plugins
 
 import com.leroymerlin.plugins.cli.Executor
-import com.leroymerlin.plugins.core.configurators.AndroidConfigurator
-import com.leroymerlin.plugins.core.configurators.IOSConfigurator
-import com.leroymerlin.plugins.core.configurators.IonicConfigurator
-import com.leroymerlin.plugins.core.configurators.JavaConfigurator
-import com.leroymerlin.plugins.core.configurators.ProjectConfigurator
+import com.leroymerlin.plugins.core.configurators.*
 import com.leroymerlin.plugins.tasks.build.DeliveryBuild
 import com.leroymerlin.plugins.utils.PropertiesFileUtils
 import org.gradle.api.GradleException
@@ -19,13 +15,18 @@ import org.slf4j.LoggerFactory
 class DeliveryPlugin implements Plugin<Project> {
 
 
-
     Logger logger = LoggerFactory.getLogger('DeliveryPlugin')
+
+    static final String VERSION_ARG = 'VERSION'
+    static final String VERSION_ID_ARG = 'VERSION_ID'
+    static final String GROUP_ARG = 'GROUP'
+    static final String PROJECT_NAME_ARG = 'PROJECT_NAME'
+
 
     static final String TASK_GROUP = 'delivery'
     static final String DELIVERY_CONF_FILE = 'delivery.properties'
 
-    def configurators = [AndroidConfigurator, JavaConfigurator, IOSConfigurator, IonicConfigurator]
+    def configurators = [IonicConfigurator, AndroidConfigurator, JavaConfigurator, IOSConfigurator]
 
     Project project
     DeliveryPluginExtension deliveryExtension
@@ -110,6 +111,24 @@ class DeliveryPlugin implements Plugin<Project> {
             project.ext.projectNameKey = 'projectName'
         }
         PropertiesFileUtils.setDefaultProperty(versionFile, project.ext.projectNameKey, project.name)
+
+
+
+
+        if (System.getProperty(VERSION_ID_ARG) != null) {
+            PropertiesFileUtils.setProperty(versionFile, project.ext.versionIdKey, System.getProperty(VERSION_ID_ARG))
+        }
+        if (System.getProperty(VERSION_ARG) != null) {
+            PropertiesFileUtils.setProperty(versionFile, project.ext.versionKey, System.getProperty(VERSION_ARG))
+        }
+        if (System.getProperty(GROUP_ARG) != null) {
+            PropertiesFileUtils.setProperty(versionFile, 'group', System.getProperty(GROUP_ARG))
+        }
+        if (System.getProperty(PROJECT_NAME_ARG) != null) {
+            PropertiesFileUtils.setProperty(versionFile, project.ext.projectNameKey, System.getProperty(PROJECT_NAME_ARG))
+        }
+
+
         applyDeliveryProperties(versionFile)
     }
 

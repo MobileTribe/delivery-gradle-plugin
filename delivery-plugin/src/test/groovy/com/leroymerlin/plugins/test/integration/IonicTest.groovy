@@ -2,6 +2,7 @@ package com.leroymerlin.plugins.test.integration
 
 import groovy.io.FileType
 import org.junit.Assert
+import org.junit.Before
 import org.junit.Test
 
 /**
@@ -14,27 +15,15 @@ class IonicTest extends AbstractIntegrationTest {
         return "ionic"
     }
 
+    @Before
+    void setupIonic(){
+        "chmod -R a+rwx ${workingDirectory.absolutePath}".execute()
+    }
+
     @Test
     void testBuildTaskGeneration() {
 
-        def archiveDirectory = new File(workingDirectory, "platforms/android/build/archive_ipa")
-
-
-        applyExtraGradle('''
-
-delivery{
-    archiveRepositories = {
-        maven {
-            url uri("''' + archiveDirectory.absolutePath + '''")
-        }
-    }
-    flows{
-        ionic{
-            build
-        }
-    }
-}
-''')
+        def archiveDirectory = new File(workingDirectory, "build/archive_ionic")
 
         testTask('ionicFlow')
         def list = []
@@ -42,6 +31,6 @@ delivery{
             f ->
                 list << f
         })
-        Assert.assertEquals("archive folder should contain 16 files", 16, list.size())
+        Assert.assertEquals("archive folder should contain 2 files", 2, list.size())
     }
 }

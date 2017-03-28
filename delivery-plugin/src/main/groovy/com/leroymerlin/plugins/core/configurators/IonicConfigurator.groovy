@@ -1,54 +1,93 @@
 package com.leroymerlin.plugins.core.configurators
 
+import com.leroymerlin.plugins.DeliveryPlugin
 import com.leroymerlin.plugins.DeliveryPluginExtension
+import com.leroymerlin.plugins.cli.Executor
 import com.leroymerlin.plugins.entities.SigningProperty
 import com.leroymerlin.plugins.tasks.build.DeliveryBuild
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.tasks.GradleBuild
+import org.gradle.api.tasks.Upload
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+
+import java.nio.file.Files
 
 /**
  * Created by alexandre on 27/03/2017.
  */
 class IonicConfigurator extends ProjectConfigurator {
 
+    public static final String IONIC_BUILD = 'ionicBuild'
+
+
     Logger logger = LoggerFactory.getLogger('IonicConfigurator')
+
+    ProjectConfigurator nestedConfigurator;
 
     @Override
     public void setup(Project project, DeliveryPluginExtension extension) {
         super.setup(project, extension)
+
+        def signingBuild = System.getProperty(IONIC_BUILD)
+        if (signingBuild == 'ios') {
+            nestedConfigurator = new IOSConfigurator()
+        } else if (signingBuild == 'android') {
+            nestedConfigurator = new AndroidConfigurator()
+        }
+        nestedConfigurator?.setup(project, extension)
+
+
+        project.task("prepareNpm").doFirst {
+            Executor.exec(["npm", "install"], directory: project.projectDir)
+        }
+
     }
 
     @Override
     public void configure() {
-        if (project.group == null) {
+        if (nestedConfigurator) {
+            nestedConfigurator.configure()
+        } else {
             def config = project.file("config.xml")
             def widget = new XmlParser(false, false).parse(config)
-            project.group = widget."@id"
-        }
+            if (!project.group) {
+                project.ext.group = widget."@id"
+                project.group = project.ext.group
+            }
+            project.projectName = widget.name[0].value()[0]
 
-        if (!project.group) {
-            throw new GradleException("Project group is not defined. Please use a gradle properties or configure your id in config.xml")
+            if (!project.group) {
+                throw new GradleException("Project group is not defined. Please use a gradle properties or configure your id in config.xml")
+            }
+            logger.info("group used : ${project.group}")
+
+
+
+            extension.signingProperties.each { signingProperty -> handleProperty(signingProperty) }
         }
-        logger.info("group used : ${project.group}")
     }
 
     @Override
     public void applyProperties() {
-        def config = project.file("config.xml")
-        def widget = new XmlParser(false, false).parse(config)
-        widget."@version" = project.version
-        def xmlNodePrinter = new XmlNodePrinter(new PrintWriter(config))
-        xmlNodePrinter.preserveWhitespace = true
-        xmlNodePrinter.print(widget)
+        if (nestedConfigurator) {
+            nestedConfigurator.applyProperties()
+        } else {
+            def config = project.file("config.xml")
+            def widget = new XmlParser(false, false).parse(config)
+            widget."@version" = project.version
+            def xmlNodePrinter = new XmlNodePrinter(new PrintWriter(config))
+            xmlNodePrinter.preserveWhitespace = true
+            xmlNodePrinter.print(widget)
+        }
     }
 
-    @Override
-    public void applySigningProperty(SigningProperty signingProperty) {
-        if (signingProperty.name.toLowerCase() == 'android') {
-            def buildTaskName = "buildIonicAndroidArtifacts"
+    def handleProperty(SigningProperty signingProperty) {
+        def signingName = signingProperty.name.toLowerCase()
+        def buildTaskName = "buildIonic${signingName.capitalize()}Artifacts"
+
+        if (signingName == 'android') {
             project.task(buildTaskName, type: DeliveryBuild) {
                 outputFiles = []
             }.dependsOn("${buildTaskName}Process")
@@ -59,13 +98,78 @@ class IonicConfigurator extends ProjectConfigurator {
             project.task(taskName + "Process", type: GradleBuild) {
 
             }
-        } else if (signingProperty.name.toLowerCase() == 'ios') {
-        } else
+        } else if (signingName == 'ios') {
+            def preparePlatformTask = "prepareIonic${signingName.capitalize()}Platform"
+
+            project.task(buildTaskName, type: Upload){
+                configuration = project.configurations.create("ionicIos")
+                repositories {}
+            }.dependsOn([preparePlatformTask, "${buildTaskName}Process"])
+
+            /*
+            def buildIosFile = project.file(project.buildDir + "/ios/build.gradle");
+            buildIosFile.delete()
+            buildIosFile.parentFile.mkdirs()
+            buildIosFile.createNewFile()
+            buildIosFile << '''
+'''
+*/
+
+            def newBuildGradleFile = project.file('platforms/ios/build.gradle')
+
+
+
+
+            project.task(preparePlatformTask).doFirst {
+                Executor.exec(["ionic", "platform", "add", "ios"], directory: project.projectDir)
+                Executor.exec(["ionic", "resources"], directory: project.projectDir)
+                Executor.exec(["ionic", "platform", "remove", "ios"], directory: project.projectDir)
+                Executor.exec(["ionic", "platform", "add", "ios"], directory: project.projectDir)
+                Executor.exec(["ionic", "build", "ios", "--release"], directory: project.projectDir)
+                newBuildGradleFile.delete()
+                Files.copy(project.file('build.gradle').toPath(), newBuildGradleFile.toPath())
+            }.dependsOn('prepareNpm')
+
+
+
+            def newStartParameter = project.getGradle().startParameter.newInstance()
+            newStartParameter.systemPropertiesArgs.put(IONIC_BUILD, signingName)
+            newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.VERSION_ARG, project.version)
+            newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.VERSION_ID_ARG, project.versionId)
+            newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.PROJECT_NAME_ARG, project.projectName)
+            newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.GROUP_ARG, project.group)
+
+
+
+            project.task("${buildTaskName}Process", type: GradleBuild) {
+                startParameter = newStartParameter
+                buildFile newBuildGradleFile
+                tasks = ['uploadArtifacts']
+            }.shouldRunAfter preparePlatformTask
+
+
+        } else {
             throw new GradleException("SigningProperty ${signingProperty.name} is not supported, please use Android or IOS")
+        }
+
+
+    }
+
+    @Override
+    public void applySigningProperty(SigningProperty signingProperty) {
+
+        def signingName = signingProperty.name.toLowerCase()
+
+        if (nestedConfigurator && signingName == System.getProperty(IONIC_BUILD)) {
+            signingProperty.name = 'release'
+            signingProperty.target = project.projectName
+            signingProperty.scheme = project.projectName
+            nestedConfigurator.applySigningProperty(signingProperty)
+        }
     }
 
     @Override
     public boolean handleProject(Project project) {
-        return project.file('ionic.config.json').exists() && project.file('config.xml').exists()
+        return System.getProperty(IONIC_BUILD) != null || (project.file('ionic.config.json').exists() && project.file('config.xml').exists())
     }
 }
