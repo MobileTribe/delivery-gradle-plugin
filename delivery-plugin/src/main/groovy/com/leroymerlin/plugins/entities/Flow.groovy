@@ -9,7 +9,6 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.tasks.Exec
 import org.gradle.api.tasks.GradleBuild
-import org.gradle.api.tasks.bundling.Zip
 
 /**
  * Created by alexandre on 08/02/2017.
@@ -58,15 +57,15 @@ class Flow {
         createTask(AddFilesTask, [files: files])
     }
 
-    def commit(String commitComment, boolean addAll = false) {
+    def commit(String message, boolean addAll = false) {
         if (addAll) {
             add()
         }
-        createTask(CommitTask, [comment: commitComment])
+        createTask(CommitTask, [message: message])
     }
 
-    def tag(String tagMessage, String tagAnnotation) {
-        createTask(TagTask, [annotation: tagAnnotation, message: tagMessage])
+    def tag(def message = "", def annotation = "") {
+        createTask(TagTask, [annotation: annotation, message: message])
     }
 
     def merge(String branch) {
@@ -81,7 +80,7 @@ class Flow {
         createTask(DeleteTask, [branch: branchName])
     }
 
-    def changeProperties(version, versionId, projectName) {
+    def changeProperties(version = null, versionId = null, projectName = null) {
         createTask(ChangePropertiesTask, [version: version, versionId: versionId, projectName: projectName, project: project])
     }
 

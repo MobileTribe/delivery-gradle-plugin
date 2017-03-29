@@ -22,15 +22,13 @@ class IonicTest extends AbstractIntegrationTest {
 
     @Test
     void testBuildTaskGeneration() {
-
         def archiveDirectory = new File(workingDirectory, "build/archive_ionic")
-
         testTask('ionicFlow')
         def list = []
         archiveDirectory.eachFileRecurse(FileType.FILES, {
             f ->
                 list << f
         })
-        Assert.assertEquals("archive folder should contain 2 files", 2, list.size())
+        Assert.assertEquals("archive folder should contain 10 files", 10, list.size())
     }
 }

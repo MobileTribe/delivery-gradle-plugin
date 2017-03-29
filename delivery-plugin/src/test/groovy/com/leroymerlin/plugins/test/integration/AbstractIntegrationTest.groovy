@@ -47,7 +47,7 @@ abstract class AbstractIntegrationTest {
     @After
     void tearDown() {
         project = null
-        //FileUtils.deleteDirectory(workingDirectory)
+        FileUtils.deleteDirectory(workingDirectory)
     }
 
     protected void applyExtraGradle(String string) {

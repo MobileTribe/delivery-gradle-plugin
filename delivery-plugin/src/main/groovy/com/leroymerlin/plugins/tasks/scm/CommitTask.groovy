@@ -7,10 +7,10 @@ import org.gradle.api.tasks.TaskAction
  */
 class CommitTask extends ScmBaseTask {
 
-    String comment
+    String message
 
     @TaskAction
     commit() {
-        scmAdapter.commit(comment)
+        scmAdapter.commit(message)
     }
 }

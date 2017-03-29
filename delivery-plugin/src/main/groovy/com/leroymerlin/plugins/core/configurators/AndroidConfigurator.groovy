@@ -146,11 +146,7 @@ class AndroidConfigurator extends ProjectConfigurator {
             buildType.signingConfig project.android.signingConfigs."${signingProperty.name}Signing"
         }
     }
-/*    private void addArtifacts(File outputFile, Task depTask, String variantName, String flavorName, String classifier, String extension) {
-        project.configurations."${variantName}".artifacts.add(
-                new ArchiveArtifact(flavorName, extension, classifier, outputFile, depTask)
-        )
-    }*/
+
 
     @Override
     public boolean handleProject(Project project) {

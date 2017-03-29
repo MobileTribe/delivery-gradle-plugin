@@ -27,5 +27,4 @@ public class ProjectConfigurator {
 
     public void applyProperties() {}
 
-    def teste(){}
 }

@@ -12,7 +12,7 @@ interface BaseScmAdapter {
 
     String addFiles(String[] files)
 
-    String commit(String comment)
+    String commit(String message)
 
     String deleteBranch(String branchName)
 

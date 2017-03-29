@@ -12,6 +12,8 @@ import org.gradle.api.tasks.Upload
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
+import java.util.regex.Matcher
+
 class DeliveryPlugin implements Plugin<Project> {
 
 
@@ -35,11 +37,8 @@ class DeliveryPlugin implements Plugin<Project> {
         this.project = project
         this.deliveryExtension = project.extensions.create(TASK_GROUP, DeliveryPluginExtension, project, this)
         project.plugins.apply('maven')
-
         Executor.logger = logger
         project.ext.DeliveryBuild = DeliveryBuild
-
-
 
         setupProperties()
 
@@ -63,31 +62,59 @@ class DeliveryPlugin implements Plugin<Project> {
             buildTasks.addAll(project.tasks.withType(DeliveryBuild))
             buildTasks.each {
                 task ->
-
                     def configurationName = task.variantName + "Config"
-
-
                     if (!project.configurations.hasProperty(configurationName)) {
                         project.configurations.create(configurationName)
                         project.dependencies.add(configurationName, 'org.apache.maven.wagon:wagon-http:2.2')
-
 
                         project.task("upload${task.variantName.capitalize()}Artifacts", type: Upload, group: TASK_GROUP) {
                             configuration = project.configurations."${configurationName}"
                             repositories deliveryExtension.archiveRepositories
                         }
                     }
-
-                    ((Configuration) project.configurations."${configurationName}").artifacts.addAll(
-                            task.getArtifacts()
-                    )
-
-
+                    ((Configuration) project.configurations."${configurationName}").artifacts.addAll(task.getArtifacts())
             }
 
             def uploadArtifacts = project.task("uploadArtifacts", group: TASK_GROUP, dependsOn: project.tasks.withType(Upload))
             if (project.tasks.findByPath("check") != null) {
                 uploadArtifacts.dependsOn += project.tasks.findByPath("check")
+            }
+
+            //create default release git flow
+
+            if (!deliveryExtension.flowsContainer.hasProperty("releaseGit")) {
+                deliveryExtension.flowsContainer.create('releaseGit',
+                        {
+                            def releaseVersion = System.getProperty("VERSION", project.version - '-SNAPSHOT')
+                            def releaseBranch = "release/${project.versionId}-$releaseVersion"
+                            def matcher = releaseVersion =~ /(\d+)([^\d]*$)/
+                            def newVersion = System.getProperty("NEW_VERSION", matcher.replaceAll("${(matcher[0][1] as int) + 1}${matcher[0][2]}")) - "-SNAPSHOT" + "-SNAPSHOT"
+                            def baseBranch = System.getProperty("BASE_BRANCH", 'master')
+                            def workBranch = System.getProperty("BRANCH", 'develop')
+                            def newVersionId = Integer.parseInt(project.versionId) + 1
+
+                            branch workBranch
+                            branch releaseBranch, true
+                            changeProperties version: releaseVersion
+                            add 'version.properties'
+                            commit "chore (version) : Update version to $releaseVersion"
+                            build
+                            tag annotation: "$project.projectName-$project.versionId-$releaseVersion"
+                            if (baseBranch) {
+                                branch baseBranch
+                                merge releaseBranch
+                                push
+                            }
+                            branch releaseBranch
+                            changeProperties version: newVersion, versionId: newVersionId
+                            add 'version.properties'
+                            commit "chore (version) : Update to new version $releaseVersion and versionId $newVersionId"
+                            push
+                            branch workBranch
+                            merge releaseBranch
+                            push
+                        }
+                )
             }
         }
     }

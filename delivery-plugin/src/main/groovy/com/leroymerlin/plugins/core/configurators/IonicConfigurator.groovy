@@ -151,7 +151,7 @@ class IonicConfigurator extends ProjectConfigurator {
 
         if (nestedConfigurator && signingName == System.getProperty(IONIC_BUILD)) {
             SigningProperty signingPropertyCopy = new SigningProperty('release')
-            signingPropertyCopy.properties = signingProperty.properties
+            signingPropertyCopy.setProperties(signingProperty.properties)
             signingPropertyCopy.target = project.projectName
             signingPropertyCopy.scheme = project.projectName
             nestedConfigurator.applySigningProperty(signingPropertyCopy)
