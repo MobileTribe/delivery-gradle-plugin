@@ -1,8 +1,6 @@
 package com.leroymerlin.plugins.entities
 
 import com.leroymerlin.plugins.DeliveryPluginExtension
-import com.leroymerlin.plugins.annotations.Param
-import com.leroymerlin.plugins.annotations.ServiceDef
 import com.leroymerlin.plugins.cli.Executor
 import com.leroymerlin.plugins.tasks.ChangePropertiesTask
 import com.leroymerlin.plugins.tasks.scm.*

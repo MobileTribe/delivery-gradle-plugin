@@ -4,16 +4,12 @@ import com.leroymerlin.plugins.DeliveryPlugin
 import com.leroymerlin.plugins.DeliveryPluginExtension
 import com.leroymerlin.plugins.cli.Executor
 import com.leroymerlin.plugins.entities.SigningProperty
-import com.leroymerlin.plugins.tasks.build.DeliveryBuild
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.tasks.GradleBuild
 import org.gradle.api.tasks.Upload
-import org.gradle.plugins.signing.Sign
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-
-import java.nio.file.Files
 
 /**
  * Created by alexandre on 27/03/2017.
@@ -49,7 +45,7 @@ class IonicConfigurator extends ProjectConfigurator {
     @Override
     public void configure() {
         if (nestedConfigurator) {
-            if(System.getProperty(IONIC_BUILD) == 'android'){
+            if (System.getProperty(IONIC_BUILD) == 'android') {
                 project.android.defaultConfig.versionName = project.version
                 project.android.defaultConfig.versionCode = Integer.parseInt(project.versionId)
             }
@@ -95,12 +91,13 @@ class IonicConfigurator extends ProjectConfigurator {
         if (signingName == 'android' || signingName == 'ios') {
             def preparePlatformTask = "prepareIonic${signingName.capitalize()}Platform"
 
-            project.task(buildTaskName, type: Upload){
+            project.task(buildTaskName, type: Upload) {
                 configuration = project.configurations.create("ionic${signingName.capitalize()}")
                 repositories {}
             }.dependsOn([preparePlatformTask, "${buildTaskName}Process"])
 
-            def newBuildGradleFile = project.file("platforms/${signingName}/build.gradle")
+            def newBuildGradleFile = project.file("platforms/${signingName}/${signingName == 'android' ? "delivery-" : ""}build.gradle")
+            def settingsGradle = project.file("platforms/${signingName}/${signingName == 'android' ? "delivery-" : ""}settings.gradle")
 
 
 
@@ -111,13 +108,15 @@ class IonicConfigurator extends ProjectConfigurator {
                 Executor.exec(["ionic", "platform", "remove", signingName], directory: project.projectDir)
                 Executor.exec(["ionic", "platform", "add", signingName], directory: project.projectDir)
                 Executor.exec(["ionic", "build", signingName, "--release"], directory: project.projectDir)
-                if(signingName=='android'){
-                    newBuildGradleFile << project.file('build.gradle').text
-                }else{
-                    newBuildGradleFile.delete()
-                    Files.copy(project.file('build.gradle').toPath(), newBuildGradleFile.toPath())
 
+                newBuildGradleFile.delete()
+                if (signingName == 'android') {
+                    newBuildGradleFile << project.file("platforms/${signingName}/build.gradle").text
+                    settingsGradle << project.file("platforms/${signingName}/settings.gradle").text
+
+                    settingsGradle << "\nrootProject.buildFileName = 'delivery-build.gradle'"
                 }
+                newBuildGradleFile << project.file('build.gradle').text
             }.dependsOn('prepareNpm')
 
 
@@ -128,11 +127,13 @@ class IonicConfigurator extends ProjectConfigurator {
             newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.VERSION_ID_ARG, project.versionId)
             newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.PROJECT_NAME_ARG, project.projectName)
             newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.GROUP_ARG, project.group)
-
+            if (signingName == 'android') {
+                newStartParameter.settingsFile = settingsGradle
+            }
+            newStartParameter.projectDir = settingsGradle.getParentFile()
 
             project.task("${buildTaskName}Process", type: GradleBuild) {
                 startParameter = newStartParameter
-                buildFile project.file("platforms/${signingName}/build.gradle")
                 tasks = ['uploadArtifacts']
             }.shouldRunAfter preparePlatformTask
 

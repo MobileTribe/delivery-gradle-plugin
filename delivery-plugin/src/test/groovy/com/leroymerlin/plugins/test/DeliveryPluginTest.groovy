@@ -29,7 +29,7 @@ class DeliveryPluginTest {
 
 
     @Test
-    void testDeliveryExtension(){
+    void testDeliveryExtension() {
         Asserts.notNull(project.delivery, "Delivery extension don't exist")
     }
 
