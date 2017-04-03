@@ -1,6 +1,8 @@
 package com.leroymerlin.plugins.entities
 
 import com.leroymerlin.plugins.DeliveryPluginExtension
+import com.leroymerlin.plugins.annotations.Param
+import com.leroymerlin.plugins.annotations.ServiceDef
 import com.leroymerlin.plugins.cli.Executor
 import com.leroymerlin.plugins.tasks.ChangePropertiesTask
 import com.leroymerlin.plugins.tasks.scm.*
@@ -49,10 +51,22 @@ class Flow {
         taskFlow.dependsOn(tasksList)
     }
 
-    def branch(String branchName, boolean create = false) {
-        createTask(BranchTask, [branch: branchName, createIfNeeded: create])
+    @ServiceDef(
+            desc = "Switch or create SCM branch",
+            params = [
+                    @Param(name = 'branch', desc = "branch name"),
+                    @Param(name = 'create', desc = "create or reset branch")
+            ]
+    )
+    def branch(String name, boolean create = false) {
+        createTask(BranchTask, [branch: name, createIfNeeded: create])
     }
 
+    /**
+     *
+     * @param files
+     * @return
+     */
     def add(String... files) {
         createTask(AddFilesTask, [files: files])
     }
