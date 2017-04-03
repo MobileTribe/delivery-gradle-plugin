@@ -7,3 +7,88 @@ Delivery v{deliveryVersion}, {generationDate}
 
 == Flows
 
+.build.gradle
+****
+[source,java]
+----
+delivery {
+    ...
+
+    signingProperties {
+        flow{
+        //meg
+            branch("develp") name: value, param2: value
+        }
+
+        release {
+            //Only for iOS
+            target = "myTarget"
+            scheme = "myScheme"
+
+            propertiesFile = file("myFile")
+        }
+    }
+}
+----
+****
+
+== Sign Your App (Android & iOS)
+
+You can sign your application using the *signingProperties* link:https://docs.gradle.org/current/javadoc/org/gradle/api/NamedDomainObjectContainer.html[container]. +
+Define the different product flavors inside the container.
+
+.build.gradle for Android
+****
+[source,java]
+----
+delivery {
+    ...
+
+    signingProperties {
+        release {
+            propertiesFile = file("myFile")
+        }
+    }
+}
+----
+****
+
+// Here, release is the product flavor.
+
+
+.build.gradle for iOS
+****
+[source,java]
+----
+delivery {
+    ...
+
+    signingProperties {
+        release {
+            target = "myTarget"
+            scheme = "myScheme"
+            propertiesFile = file("myFile")
+        }
+    }
+}
+----
+****
+
+.Android file.properties
+****
+----
+storePassword=myStorePassword
+keyPassword=myKeyPassword
+keyAlias=myKeyAlias
+storeFile=myStoreFileLocation
+----
+****
+
+.iOS file.properties
+****
+----
+certificateURI=myCertificate
+certificatePassword=myPassword
+mobileProvisionURI=myMobileProvision
+----
+****
