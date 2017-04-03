@@ -1,64 +1,6 @@
-import java.lang.reflect.Method
-
-buildscript {
-    def loader = new GroovyClassLoader(this.class.classLoader)
-    loader.addClasspath(file('../delivery-plugin/src/main/groovy').path)
-    file('../delivery-plugin/src/main/groovy').eachFileRecurse(groovy.io.FileType.FILES) {
-        if (it.name.endsWith('.groovy')) {
-            loader.parseClass(it)
-        }
-    }
-    ext {
-        pluginLoader = loader
-    }
-}
-
-
-
-
 plugins {
     id 'org.asciidoctor.convert' version '1.5.3'
 }
-
-def annotationClass = pluginLoader.loadClass('com.leroymerlin.plugins.annotations.ServiceDef')
-pluginLoader.loadClass('com.leroymerlin.plugins.entities.Flow').methods.each {
-    method ->
-        if (method.getAnnotation(annotationClass)) {
-            def annotation = method.getAnnotation(annotationClass)
-            if (method.parameterCount >= annotation.params().size()) {
-                def line = method.name
-                println annotation.desc()
-                annotation.params().each {
-                    param ->
-                        println param.name() + "   " + param.desc()
-                }
-            }
-        }
-
-//            if(method.getAnnotation(serviceDefClass)){
-//                println method.name
-//                println method.getAnnotations()[0].desc
-//            }
-}
-
-/*def script = new GroovyScriptEngine( '.' ).with {
-    loadScriptByName( file('../delivery-plugin/src/main/groovy/com/leroymerlin/plugins/entities/Flow.groovy').path )
-}*/
-
-/*flowClass.class.methods.each {
-    method ->
-        println method.name
-
-        if(method.getAnnotation(serviceDefClass)){
-            println method.name
-            println method.getAnnotations()[0].desc
-        }
-}*/
-
-//println flowClass
-
-//println value
-
 
 asciidoctorj {
     version = '1.5.4'
@@ -84,10 +26,3 @@ asciidoctor {
             deliveryVersion: "${prop.getProperty('version')}",
             generationDate: "${new Date()}"
 }
-
-/*def script = new GroovyScriptEngine( '.' ).with {
-    loadScriptByName( 'delivery-plugin/src/main/groovy/com/leroymerlin/plugins/entities/Flow.groovy' )
-}
-
-
-println script*/

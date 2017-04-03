@@ -51,13 +51,6 @@ class Flow {
         taskFlow.dependsOn(tasksList)
     }
 
-    @ServiceDef(
-            desc = "Switch or create SCM branch",
-            params = [
-                    @Param(name = 'branch', desc = "branch name"),
-                    @Param(name = 'create', desc = "create or reset branch")
-            ]
-    )
     def branch(String name, boolean create = false) {
         createTask(BranchTask, [branch: name, createIfNeeded: create])
     }
