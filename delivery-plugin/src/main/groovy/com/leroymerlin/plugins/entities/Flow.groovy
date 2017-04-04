@@ -53,11 +53,6 @@ class Flow {
         createTask(BranchTask, [branch: name, createIfNeeded: create])
     }
 
-    /**
-     *
-     * @param files
-     * @return
-     */
     def add(String... files) {
         createTask(AddFilesTask, [files: files])
     }

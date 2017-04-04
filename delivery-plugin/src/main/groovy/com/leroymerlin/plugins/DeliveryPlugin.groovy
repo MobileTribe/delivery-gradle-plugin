@@ -93,18 +93,18 @@ class DeliveryPlugin implements Plugin<Project> {
 
                             branch workBranch
                             branch releaseBranch, true
-                            changeProperties version: releaseVersion
+                            changeProperties releaseVersion
                             add 'version.properties'
                             commit "chore (version) : Update version to $releaseVersion"
                             build
-                            tag annotation: "$project.projectName-$project.versionId-$releaseVersion"
+                            tag "$project.projectName-$project.versionId-$releaseVersion"
                             if (baseBranch) {
                                 branch baseBranch
                                 merge releaseBranch
                                 push
                             }
                             branch releaseBranch
-                            changeProperties version: newVersion, versionId: newVersionId
+                            changeProperties newVersion, newVersionId
                             add 'version.properties'
                             commit "chore (version) : Update to new version $releaseVersion and versionId $newVersionId"
                             push

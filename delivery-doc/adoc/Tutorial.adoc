@@ -4,91 +4,75 @@ include::./Header.adoc[]
 Delivery v{deliveryVersion}, {generationDate}
 
 
+== Configuration
 
-== Flows
+To use delivery, you just have to apply the plugin in your project.
 
-.build.gradle
-****
-[source,java]
-----
+
+```Groovy
+buildscript {
+	repositories {
+		jcenter()
+	}
+
+	dependencies {
+		classpath 'com.leroymerlin.plugins:delivery-plugin:LAST_VERSION'
+	}
+}
+
+apply plugin: 'com.leroymerlin.delivery'
+```
+Create *version.properties* in your module. This file will contain your module *version*, *versionId* and *projectName* the plugin needs.
+
+NOTE: You can override the version.properties file path with *versionFilePath* property. This property has to be in *gradle.properties* or eventually in *delivery.properties*. You could also override other properties name with *versionKey*, *versionIdKey* and *projectNameKey*.
+
+Configure the delivery gradle extension in your build.gradle to fit your need
+
+```Groovy
 delivery {
-    ...
-
+    archiveRepositories {
+        //fill with what you need
+    }
+    flows {
+        //fill with what you need
+    }
     signingProperties {
-        flow{
-        //meg
-            branch("develp") name: value, param2: value
-        }
-
-        release {
-            //Only for iOS
-            target = "myTarget"
-            scheme = "myScheme"
-
-            propertiesFile = file("myFile")
-        }
+        //fill with what you need
     }
 }
-----
-****
-
-== Sign Your App (Android & iOS)
-
-You can sign your application using the *signingProperties* link:https://docs.gradle.org/current/javadoc/org/gradle/api/NamedDomainObjectContainer.html[container]. +
-Define the different product flavors inside the container.
-
-.build.gradle for Android
-****
-[source,java]
-----
-delivery {
-    ...
-
-    signingProperties {
-        release {
-            propertiesFile = file("myFile")
-        }
-    }
-}
-----
-****
-
-// Here, release is the product flavor.
-
-
-.build.gradle for iOS
-****
-[source,java]
-----
-delivery {
-    ...
-
-    signingProperties {
-        release {
-            target = "myTarget"
-            scheme = "myScheme"
-            propertiesFile = file("myFile")
-        }
-    }
-}
-----
-****
-
-.Android file.properties
-****
+```
+For Android and iOS applications, don’t forget to configure your own *signing.properties* file outside of your git repository. +
+Android:
 ----
 storePassword=myStorePassword
 keyPassword=myKeyPassword
 keyAlias=myKeyAlias
 storeFile=myStoreFileLocation
 ----
-****
+iOS:
 
-.iOS file.properties
-****
 ----
 certificateURI=myCertificate
 certificatePassword=myPassword
 mobileProvisionURI=myMobileProvision
 ----
-****
+
+IMPORTANT: You can set the properties inside *build.gradle*, without using a *signing.properties*.
+
+== Flows
+
+Delivery provide default methods.
+
+```Groovy
+delivery {
+    archiveRepositories {
+        //fill with what you need
+    }
+    flows {
+        //fill with what you need
+    }
+    signingProperties {
+        //fill with what you need
+    }
+}
+```
