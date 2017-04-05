@@ -59,20 +59,29 @@ mobileProvisionURI=myMobileProvision
 
 IMPORTANT: You can set the properties inside *build.gradle*, without using a *signing.properties*.
 
-== Flows
+== Sample
 
 Delivery provide default methods.
 
-```Groovy
-delivery {
-    archiveRepositories {
-        //fill with what you need
-    }
-    flows {
-        //fill with what you need
-    }
-    signingProperties {
-        //fill with what you need
-    }
-}
-```
+:sourcedir: ../../delivery-plugin/src/test/groovy
+
+[source,groovy]
+----
+include::{sourcedir}/com/leroymerlin/plugins/test/integration/AndroidDeliveryTest.groovy[]
+----
+
+== Usage
+
+You can use system properties to override default behaviour. Here is the list of all properties supported :
+
+* *SCM_EMAIL* // git email
+* *SCM_USER* // git username
+* *VERSION* // actual version
+* *NEW_VERSION* // new version
+* *BASE_BRANCH* // default branch name
+* *BRANCH* // work branch name
+* *VERSION_ID_ARG* // project version id
+* *VERSION_ARG* // project version
+* *GROUP_ARG* // project group
+* *ROJECT_NAME_ARG* // project name
+* *ionicBuild* // type of ionic project you want to build

@@ -24,7 +24,7 @@ class IonicConfigurator extends ProjectConfigurator {
     ProjectConfigurator nestedConfigurator;
 
     @Override
-    public void setup(Project project, DeliveryPluginExtension extension) {
+    void setup(Project project, DeliveryPluginExtension extension) {
         super.setup(project, extension)
 
         def signingBuild = System.getProperty(IONIC_BUILD)
@@ -43,7 +43,7 @@ class IonicConfigurator extends ProjectConfigurator {
     }
 
     @Override
-    public void configure() {
+    void configure() {
         if (nestedConfigurator) {
             if (System.getProperty(IONIC_BUILD) == 'android') {
                 project.android.defaultConfig.versionName = project.version
@@ -71,7 +71,7 @@ class IonicConfigurator extends ProjectConfigurator {
     }
 
     @Override
-    public void applyProperties() {
+    void applyProperties() {
         if (nestedConfigurator) {
             nestedConfigurator.applyProperties()
         } else {
@@ -146,7 +146,7 @@ class IonicConfigurator extends ProjectConfigurator {
     }
 
     @Override
-    public void applySigningProperty(SigningProperty signingProperty) {
+    void applySigningProperty(SigningProperty signingProperty) {
 
         def signingName = signingProperty.name.toLowerCase()
 
@@ -160,7 +160,7 @@ class IonicConfigurator extends ProjectConfigurator {
     }
 
     @Override
-    public boolean handleProject(Project project) {
+    boolean handleProject(Project project) {
         return System.getProperty(IONIC_BUILD) != null || (project.file('ionic.config.json').exists() && project.file('config.xml').exists())
     }
 }
