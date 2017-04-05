@@ -11,9 +11,9 @@ import org.gradle.api.Project
 
 class GitAdapter extends Executor implements BaseScmAdapter {
 
-    String email, username, branchToUse
-    List<String> list
-    Project project
+    private String email, username, branchToUse
+    private List<String> list
+    private Project project
 
     @Override
     void setup(Project project, DeliveryPluginExtension extension) {

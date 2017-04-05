@@ -29,10 +29,8 @@ class DeliveryPluginExtension {
         this.signingProperties = project.container(SigningProperty);
     }
 
-
     def archiveRepositories = project.ext.properties.containsKey('archiveRepositories') ? project.ext.archiveRepositories : {
     }
-
 
     void signingProperties(Action<? super NamedDomainObjectContainer<SigningProperty>> action) {
         action.execute(signingProperties)
@@ -75,6 +73,4 @@ class DeliveryPluginExtension {
         }
         return mScmAdapter
     }
-
-
 }

@@ -11,7 +11,6 @@ class Executor {
 
     public static Logger logger
 
-
     static String exec(
             Map options = [:],
             List<String> commands
@@ -51,7 +50,6 @@ class Executor {
         def result = out.toString()
         return result
     }
-
 
     static List<String> convertToCommandLine(String cmd) {
         StringTokenizer st = new StringTokenizer(cmd)

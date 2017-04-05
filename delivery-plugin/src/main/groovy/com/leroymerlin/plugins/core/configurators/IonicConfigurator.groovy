@@ -16,17 +16,13 @@ import org.slf4j.LoggerFactory
  */
 class IonicConfigurator extends ProjectConfigurator {
 
-    public static final String IONIC_BUILD = 'ionicBuild'
-
-
-    Logger logger = LoggerFactory.getLogger('IonicConfigurator')
-
-    ProjectConfigurator nestedConfigurator;
+    private final String IONIC_BUILD = 'ionicBuild'
+    private final Logger logger = LoggerFactory.getLogger('IonicConfigurator')
+    private ProjectConfigurator nestedConfigurator
 
     @Override
     void setup(Project project, DeliveryPluginExtension extension) {
         super.setup(project, extension)
-
         def signingBuild = System.getProperty(IONIC_BUILD)
         if (signingBuild == 'ios') {
             nestedConfigurator = new IOSConfigurator()
@@ -35,11 +31,9 @@ class IonicConfigurator extends ProjectConfigurator {
         }
         nestedConfigurator?.setup(project, extension)
 
-
         project.task("prepareNpm").doFirst {
             Executor.exec(["npm", "install"], directory: project.projectDir)
         }
-
     }
 
     @Override
@@ -63,8 +57,6 @@ class IonicConfigurator extends ProjectConfigurator {
                 throw new GradleException("Project group is not defined. Please use a gradle properties or configure your id in config.xml")
             }
             logger.info("group used : ${project.group}")
-
-
 
             extension.signingProperties.each { signingProperty -> handleProperty(signingProperty) }
         }
@@ -99,9 +91,6 @@ class IonicConfigurator extends ProjectConfigurator {
             def newBuildGradleFile = project.file("platforms/${signingName}/${signingName == 'android' ? "delivery-" : ""}build.gradle")
             def settingsGradle = project.file("platforms/${signingName}/${signingName == 'android' ? "delivery-" : ""}settings.gradle")
 
-
-
-
             project.task(preparePlatformTask).doFirst {
                 Executor.exec(["ionic", "platform", "add", signingName], directory: project.projectDir)
                 Executor.exec(["ionic", "resources"], directory: project.projectDir)
@@ -119,8 +108,6 @@ class IonicConfigurator extends ProjectConfigurator {
                 newBuildGradleFile << project.file('build.gradle').text
             }.dependsOn('prepareNpm')
 
-
-
             def newStartParameter = project.getGradle().startParameter.newInstance()
             newStartParameter.systemPropertiesArgs.put(IONIC_BUILD, signingName)
             newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.VERSION_ARG, project.version)
@@ -136,18 +123,13 @@ class IonicConfigurator extends ProjectConfigurator {
                 startParameter = newStartParameter
                 tasks = ['uploadArtifacts']
             }.shouldRunAfter preparePlatformTask
-
-
         } else {
             throw new GradleException("SigningProperty ${signingProperty.name} is not supported, please use Android or IOS")
         }
-
-
     }
 
     @Override
     void applySigningProperty(SigningProperty signingProperty) {
-
         def signingName = signingProperty.name.toLowerCase()
 
         if (nestedConfigurator && signingName == System.getProperty(IONIC_BUILD)) {

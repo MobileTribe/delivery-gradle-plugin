@@ -12,7 +12,6 @@ class SigningProperty {
         this.name = name
     }
 
-
     void setPropertiesFile(File propertiesFile) {
         if (!propertiesFile.exists()) {
             Executor.logger?.warn("Can't load ${propertiesFile.path} in $name signingProperty")

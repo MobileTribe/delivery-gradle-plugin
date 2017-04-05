@@ -1,5 +1,5 @@
 :sourcesDir: ./../../
-:pluginDir: {sourcesDir}delivery-doc/
+:pluginDir: {sourcesDir}delivery-plugin/
 :groovyDir: {pluginDir}src/main/groovy/
 :testGroovyDir: {pluginDir}src/test/groovy/
 :testProjectDir: {pluginDir}src/test/resources/

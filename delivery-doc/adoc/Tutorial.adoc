@@ -30,17 +30,49 @@ Configure the delivery gradle extension in your build.gradle to fit your need
 
 ```Groovy
 delivery {
-    archiveRepositories {
-        //fill with what you need
-    }
+    // RepositoryHandler to archive your build artifact
+    archiveRepositories = project.ext.archiveRepositories //default value
+
+    // project flow container
     flows {
-        //fill with what you need
+        ...
     }
+    // artifact signing properties container
     signingProperties {
-        //fill with what you need
+        ...
     }
 }
 ```
+
+NOTE: You can find more documentation about RepositoryHandler on the https://docs.gradle.org/current/dsl/org.gradle.api.artifacts.dsl.RepositoryHandler.html[official groovy website]
+
+You can use system properties to override default behaviour. Here is the list of all properties supported :
+
+* *SCM_EMAIL* // git email
+* *SCM_USER* // git username
+* *VERSION* // actual version
+* *NEW_VERSION* // new version
+
+=== Flows
+
+Flow allows you to configure release steps that fit your project. +
+Once a flow is configured you can run it by calling the gradle task named yourFlowName+*Flow*
+
+
+[source,groovy]
+----
+include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[tags=flowExample]
+
+----
+
+NOTE: To simplify your life Delivery suggest an implementation of git release flow.
+
+[source,groovy]
+----
+include::{groovyDir}com/leroymerlin/plugins/DeliveryPlugin.groovy[tags=gitReleaseFlow]
+
+----
+
 For Android and iOS applications, don’t forget to configure your own *signing.properties* file outside of your git repository. +
 Android:
 ----
@@ -58,28 +90,3 @@ mobileProvisionURI=myMobileProvision
 ----
 
 IMPORTANT: You can set the properties inside *build.gradle*, without using a *signing.properties*.
-
-== Sample
-
-:sourcedir: ../../delivery-plugin/src/test/groovy
-
-[source,groovy]
-----
-include::{sourcedir}/com/leroymerlin/plugins/test/integration/DeliveryTest.groovy[]
-----
-
-== Usage
-
-You can use system properties to override default behaviour. Here is the list of all properties supported :
-
-* *SCM_EMAIL* // git email
-* *SCM_USER* // git username
-* *VERSION* // actual version
-* *NEW_VERSION* // new version
-* *BASE_BRANCH* // default branch name
-* *BRANCH* // work branch name
-* *VERSION_ID_ARG* // project version id
-* *VERSION_ARG* // project version
-* *GROUP_ARG* // project group
-* *ROJECT_NAME_ARG* // project name
-* *ionicBuild* // type of ionic project you want to build

@@ -9,8 +9,8 @@ import org.gradle.api.Project
  */
 class ProjectConfigurator {
 
-    Project project
-    DeliveryPluginExtension extension
+    protected Project project
+    protected DeliveryPluginExtension extension
 
     void setup(Project project, DeliveryPluginExtension extension) {
         this.project = project
@@ -18,7 +18,7 @@ class ProjectConfigurator {
     }
 
     boolean handleProject(Project project) {
-        return false;
+        return false
     }
 
     void configure() {}
@@ -26,5 +26,4 @@ class ProjectConfigurator {
     void applySigningProperty(SigningProperty property) {}
 
     void applyProperties() {}
-
 }

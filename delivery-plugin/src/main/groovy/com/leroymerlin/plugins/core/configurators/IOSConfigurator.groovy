@@ -16,41 +16,35 @@ import org.slf4j.LoggerFactory
  */
 class IOSConfigurator extends ProjectConfigurator {
 
-
-    Logger logger = LoggerFactory.getLogger('IOSConfigurator')
+    private final Logger logger = LoggerFactory.getLogger('IOSConfigurator')
 
     @Override
-    public void setup(Project project, DeliveryPluginExtension extension) {
+    void setup(Project project, DeliveryPluginExtension extension) {
         super.setup(project, extension)
         project.plugins.apply("org.openbakery.xcode-plugin")
     }
 
     @Override
-    public void configure() {
-
+    void configure() {
         if (!project.group) {
             throw new GradleException("Project group is not defined. Please use a gradle properties group")
         }
         logger.info("group used : ${project.group}")
-
-
     }
 
     @Override
-    public void applyProperties() {
+    void applyProperties() {
         this.project.infoplist.version = project.version
     }
 
     @Override
-    public void applySigningProperty(SigningProperty property) {
+    void applySigningProperty(SigningProperty property) {
         String target = property.target
         String scheme = property.scheme
         if (target == null || scheme == null) {
             throw new GradleException("signing config needs target and scheme properties")
         }
         def variantCodeName = scheme.trim().capitalize() + target.trim().capitalize()
-
-
         def taskName = "build${variantCodeName}Artifacts"
         Task buildTask = project.tasks.findByPath(taskName)
         if (buildTask == null) {
@@ -66,11 +60,7 @@ class IOSConfigurator extends ProjectConfigurator {
                 tasks = ['archive', 'package']
             }
         }
-
-
-
         if (System.getProperty("xcodebuild")?.equals(property.name)) {
-
             project.xcodebuild.target = target
             project.xcodebuild.scheme = scheme
             project.xcodebuild {
@@ -83,22 +73,15 @@ class IOSConfigurator extends ProjectConfigurator {
                     certificatePassword = property.certificatePassword
                     mobileProvisionURI = property.mobileProvisionURI.split(",").collect { path -> return project.file(path).toURI() }
                 }
-
-
             }
-
             project.infoplist {
                 version = project.version
             }
-
-
         }
-
-
     }
 
     @Override
-    public boolean handleProject(Project project) {
+    boolean handleProject(Project project) {
         File file = getProjectFile(project)
         return file != null
     }

@@ -2,7 +2,6 @@ package com.leroymerlin.plugins.core.configurators
 
 import com.leroymerlin.plugins.DeliveryPlugin
 import com.leroymerlin.plugins.DeliveryPluginExtension
-import com.leroymerlin.plugins.entities.SigningProperty
 import com.leroymerlin.plugins.tasks.build.JavaBuild
 import org.gradle.api.GradleException
 import org.gradle.api.Project
@@ -14,13 +13,12 @@ import org.slf4j.LoggerFactory
  */
 class JavaConfigurator extends ProjectConfigurator {
 
-    static String JAVA_PLUGIN_ID = "java"
-
-    Logger logger = LoggerFactory.getLogger('JavaConfigurator')
-    boolean isJavaProject
+    private final String JAVA_PLUGIN_ID = "java"
+    private final Logger logger = LoggerFactory.getLogger('JavaConfigurator')
+    private boolean isJavaProject
 
     @Override
-    public void setup(Project project, DeliveryPluginExtension extension) {
+    void setup(Project project, DeliveryPluginExtension extension) {
         super.setup(project, extension)
         isJavaProject = project.plugins.hasPlugin(JAVA_PLUGIN_ID)
         if (!isJavaProject) {
@@ -29,23 +27,20 @@ class JavaConfigurator extends ProjectConfigurator {
     }
 
     @Override
-    public void configure() {
-
+    void configure() {
         if (!project.group) {
             throw new GradleException("Project group is not defined. Please use a gradle properties group")
         }
         logger.info("group used : ${project.group}")
 
-
         logger.info("Generate Java Build tasks")
         project.task("build${project.projectName}Artifacts", type: JavaBuild, group: DeliveryPlugin.TASK_GROUP) {
             variantName project.projectName
         }
-
     }
 
     @Override
-    public boolean handleProject(Project project) {
+    boolean handleProject(Project project) {
         return project.plugins.hasPlugin(JAVA_PLUGIN_ID)
     }
 }

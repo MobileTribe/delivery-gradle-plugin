@@ -21,8 +21,6 @@ class DeliveryPlugin implements Plugin<Project> {
     static final String VERSION_ID_ARG = 'VERSION_ID'
     static final String GROUP_ARG = 'GROUP'
     static final String PROJECT_NAME_ARG = 'PROJECT_NAME'
-
-
     static final String TASK_GROUP = 'delivery'
     static final String DELIVERY_CONF_FILE = 'delivery.properties'
 
@@ -82,6 +80,7 @@ class DeliveryPlugin implements Plugin<Project> {
 
             if (!deliveryExtension.flowsContainer.hasProperty("releaseGit")) {
                 deliveryExtension.flowsContainer.create('releaseGit',
+                        //tag::gitReleaseFlow[]
                         {
                             def releaseVersion = System.getProperty("VERSION", project.version - '-SNAPSHOT')
                             def releaseBranch = "release/${project.versionId}-$releaseVersion"
@@ -112,6 +111,7 @@ class DeliveryPlugin implements Plugin<Project> {
                             merge releaseBranch
                             push
                         }
+//end::gitReleaseFlow[]
                 )
             }
         }
@@ -139,9 +139,6 @@ class DeliveryPlugin implements Plugin<Project> {
         }
         PropertiesFileUtils.setDefaultProperty(versionFile, project.ext.projectNameKey, project.name)
 
-
-
-
         if (System.getProperty(VERSION_ID_ARG) != null) {
             PropertiesFileUtils.setProperty(versionFile, project.ext.versionIdKey, System.getProperty(VERSION_ID_ARG))
         }
@@ -154,8 +151,6 @@ class DeliveryPlugin implements Plugin<Project> {
         if (System.getProperty(PROJECT_NAME_ARG) != null) {
             PropertiesFileUtils.setProperty(versionFile, project.ext.projectNameKey, System.getProperty(PROJECT_NAME_ARG))
         }
-
-
         applyDeliveryProperties(versionFile)
     }
 
@@ -176,5 +171,6 @@ class DeliveryPlugin implements Plugin<Project> {
             project.group = project.ext.group
         }
         project.ext.projectName = project.ext."${project.ext.projectNameKey}"
+        deliveryExtension.configurator?.applyProperties()
     }
 }

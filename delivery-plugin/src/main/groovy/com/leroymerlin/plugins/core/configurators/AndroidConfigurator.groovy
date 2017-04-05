@@ -15,10 +15,9 @@ import org.slf4j.LoggerFactory
  */
 class AndroidConfigurator extends ProjectConfigurator {
 
-    static String ANDROID_PLUGIN_ID = "com.android.application"
-    static String ANDROID_LIBRARY_PLUGIN_ID = "com.android.library"
-
-    Logger logger = LoggerFactory.getLogger('AndroidConfigurator')
+    private final String ANDROID_PLUGIN_ID = "com.android.application"
+    private final String ANDROID_LIBRARY_PLUGIN_ID = "com.android.library"
+    private final Logger logger = LoggerFactory.getLogger('AndroidConfigurator')
     boolean isAndroidApp, isAndroidLibrary
 
     @Override
@@ -30,34 +29,20 @@ class AndroidConfigurator extends ProjectConfigurator {
             throw new GradleException("Your project must apply com.android.application or com.android.library to use " + getClass().simpleName)
         }
 
-
         project.android {
             defaultConfig {
                 versionName project.version
                 versionCode Integer.parseInt(project.versionId)
             }
-
             buildTypes.all {
                 buildType ->
                     extension.signingProperties.maybeCreate(buildType.name)
             }
         }
-
-        //TODO def signingProperties = project.container(SigningProperty)
-        //TODO check que les version / versionId soient bien configurées sur l'extension android
-        /*if (isJavaProject) {
-            project.android {
-                buildTypes.all {
-                    buildType ->
-                        signingProperties.maybeCreate(buildType.name)
-                }
-            }
-        }*/
     }
 
     @Override
     void configure() {
-
         //Check that properties are applied on android extension
         String version = project.version
         if (isAndroidApp) {
@@ -78,13 +63,10 @@ class AndroidConfigurator extends ProjectConfigurator {
             }
         }
 
-
         if (!project.group) {
             throw new GradleException("Project group is not defined. Please use a gradle properties or configure your defaultConfig.applicationId")
         }
         logger.info("group used : ${project.group}")
-
-
         logger.info("Generate Android Build tasks")
         if (isAndroidApp) {
             project.android.applicationVariants.all { currentVariant ->
@@ -115,7 +97,7 @@ class AndroidConfigurator extends ProjectConfigurator {
     }
 
     @Override
-    public void applySigningProperty(SigningProperty signingProperty) {
+    void applySigningProperty(SigningProperty signingProperty) {
         if (isAndroidApp) {
             def buildType = project.android.buildTypes.findByName(signingProperty.name)
 
@@ -144,7 +126,6 @@ class AndroidConfigurator extends ProjectConfigurator {
             buildType.signingConfig project.android.signingConfigs."${signingProperty.name}Signing"
         }
     }
-
 
     @Override
     boolean handleProject(Project project) {
