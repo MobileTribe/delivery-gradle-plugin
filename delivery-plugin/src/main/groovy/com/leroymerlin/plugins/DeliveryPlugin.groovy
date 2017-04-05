@@ -176,8 +176,5 @@ class DeliveryPlugin implements Plugin<Project> {
             project.group = project.ext.group
         }
         project.ext.projectName = project.ext."${project.ext.projectNameKey}"
-        if (deliveryExtension.configurator != null) {
-            deliveryExtension.configurator.applyVersion(project.version, project.ext.versionId, project.ext.projectName)
-        }
     }
 }

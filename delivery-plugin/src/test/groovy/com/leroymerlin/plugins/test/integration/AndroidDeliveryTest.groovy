@@ -42,7 +42,9 @@ delivery {
             def workBranch = System.getProperty("BRANCH", 'develop')
             def newVersionId = Integer.parseInt(project.versionId) + 1
             
-            branch workBranch
+            branch workBranch, true
+            add
+            commit "feat (android) : first commit"
             branch releaseBranch, true
             changeProperties releaseVersion
             add 'version.properties'
@@ -50,7 +52,7 @@ delivery {
             build
             tag "$project.projectName-$project.versionId-$releaseVersion"
             if (baseBranch) {
-                branch baseBranch
+                branch baseBranch, true
                 merge releaseBranch
                 push
             }
@@ -63,7 +65,12 @@ delivery {
             merge releaseBranch
             push
         }
-    } 
+    }
+    signingProperties {
+        release {
+            propertiesFile = file("signing.properties")
+        }
+    }
 }
 ''')
         testTask('releaseFlow')
@@ -72,6 +79,6 @@ delivery {
             f ->
                 list << f
         })
-        Assert.assertEquals("archive folder should contain 16 files", 16, list.size());
+        Assert.assertEquals("archive folder should contain 12 files", 12, list.size());
     }
 }

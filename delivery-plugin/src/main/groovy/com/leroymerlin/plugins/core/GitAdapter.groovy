@@ -18,7 +18,7 @@ class GitAdapter extends Executor implements BaseScmAdapter {
     @Override
     void setup(Project project, DeliveryPluginExtension extension) {
         logger = project.getLogger()
-        this.project = project;
+        this.project = project
         if (!"git --version".execute().text.contains('git version')) {
             throw new GradleException("Git not found, install Git before continue")
         } else {
@@ -29,24 +29,24 @@ class GitAdapter extends Executor implements BaseScmAdapter {
 
     @Override
     String addFiles(String[] files) {
-        def result = "";
+        def result = ""
         files.each {
             f ->
                 result = exec(generateGitCommand(['git', 'add', f]), directory: project.rootDir, errorMessage: "Failed to add files", errorPatterns: ['[rejected]', 'error: ', 'fatal: ']) + '\n'
         }
-        return result;
+        return result
     }
 
     @Override
     String commit(String message) {
         def result = exec(generateGitCommand(['git', 'commit', '-m', "\'" + message + "\'"]), directory: project.rootDir, errorMessage: "Failed to commit", errorPatterns: ['[rejected]', 'error: ', 'fatal: '])
-        return result;
+        return result
     }
 
     @Override
     String deleteBranch(String branchName) {
         def result = exec(generateGitCommand(['git', 'branch', '-d', branchName]), directory: project.rootDir, errorMessage: "Failed to delete $branchName", errorPatterns: ['[rejected]', 'error: ', 'fatal: '])
-        return result;
+        return result
     }
 
     @Override
@@ -57,7 +57,7 @@ class GitAdapter extends Executor implements BaseScmAdapter {
         if (createIfNeeded) {
             params.add(2, "-B")
         }
-        def result = exec(generateGitCommand(params), directory: project.rootDir, errorMessage: "Couldn't create $branchName", errorPatterns: ['[rejected]', 'error: ', 'fatal: '])
+        def result = exec(generateGitCommand(params), directory: project.rootDir, errorMessage: "Couldn't switch to $branchName", errorPatterns: ['[rejected]', 'error: ', 'fatal: '])
 
         return result
     }

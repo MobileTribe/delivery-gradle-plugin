@@ -22,7 +22,7 @@ class AndroidConfigurator extends ProjectConfigurator {
     boolean isAndroidApp, isAndroidLibrary
 
     @Override
-    public void setup(Project project, DeliveryPluginExtension extension) {
+    void setup(Project project, DeliveryPluginExtension extension) {
         super.setup(project, extension)
         isAndroidApp = project.plugins.hasPlugin(ANDROID_PLUGIN_ID)
         isAndroidLibrary = project.plugins.hasPlugin(ANDROID_LIBRARY_PLUGIN_ID)
@@ -56,7 +56,7 @@ class AndroidConfigurator extends ProjectConfigurator {
     }
 
     @Override
-    public void configure() {
+    void configure() {
 
         //Check that properties are applied on android extension
         String version = project.version
@@ -119,14 +119,12 @@ class AndroidConfigurator extends ProjectConfigurator {
         if (isAndroidApp) {
             def buildType = project.android.buildTypes.findByName(signingProperty.name)
 
-
-
             if (buildType == null) {
                 throw new IllegalStateException("Signing property can't apply on missing buildType : " + signingProperty.name)
             }
 
-            if(signingProperty.storeFile == null){
-                return ;
+            if (signingProperty.storeFile == null) {
+                return
             }
 
             if (!project.file(signingProperty.storeFile).exists()) {
@@ -149,7 +147,7 @@ class AndroidConfigurator extends ProjectConfigurator {
 
 
     @Override
-    public boolean handleProject(Project project) {
+    boolean handleProject(Project project) {
         return project.plugins.hasPlugin(ANDROID_PLUGIN_ID) || project.plugins.hasPlugin(ANDROID_LIBRARY_PLUGIN_ID)
     }
 }
