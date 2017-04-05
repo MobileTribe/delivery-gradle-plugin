@@ -1,15 +1,13 @@
 package com.leroymerlin.plugins.test.integration
 
 import com.leroymerlin.plugins.cli.Executor
-import groovy.io.FileType
-import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 
 /**
  * Created by alexandre on 04/04/17.
  */
-class AndroidDeliveryTest extends AbstractIntegrationTest {
+class DeliveryTest extends AbstractIntegrationTest {
 
     @Override
     String getProjectName() {
@@ -40,32 +38,28 @@ delivery {
             def releaseBranch = "release/${project.versionId}-$releaseVersion"
             def matcher = releaseVersion =~ /(\\d+)([^\\d]*$)/
             def newVersion = System.getProperty("NEW_VERSION", matcher.replaceAll("${(matcher[0][1] as int) + 1}${matcher[0][2]}")) - "-SNAPSHOT" + "-SNAPSHOT"
-            def baseBranch = System.getProperty("BASE_BRANCH", 'master')
             def workBranch = System.getProperty("BRANCH", 'develop')
             def newVersionId = Integer.parseInt(project.versionId) + 1
-            
+                            
             branch workBranch, true // we create a branch
             add
             commit "feat (android) : first commit"
-            branch releaseBranch, true
             changeProperties releaseVersion // we change the version
             add 'version.properties'
             commit "chore (version) : Update version to $releaseVersion"
             build // we build the project
             tag "$project.projectName-$project.versionId-$releaseVersion" // we tag the commit
-            if (baseBranch) {
-                branch baseBranch, true
-                merge releaseBranch
-                push // we push the changes
-            }
-            branch releaseBranch
+            branch releaseBranch, true
             changeProperties newVersion, newVersionId
             add 'version.properties'
             commit "chore (version) : Update to new version $releaseVersion and versionId $newVersionId"
             push
             branch workBranch
-            merge releaseBranch
-            push
+            merge releaseBranch // we merge the branch
+            delete releaseBranch // we delete the branch we just merged
+            push // we push the changes
+            cmd "touch hello.world" // we execute a command
+            discardChange // we undo the changes
         }
     }
     // we declare our properties file to sign the application
@@ -77,11 +71,5 @@ delivery {
 }
 ''')
         testTask('releaseFlow')
-        def list = []
-        archiveDirectory.eachFileRecurse(FileType.FILES, {
-            f ->
-                list << f
-        })
-        Assert.assertEquals("archive folder should contain 12 files", 12, list.size());
     }
 }

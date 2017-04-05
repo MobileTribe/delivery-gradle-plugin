@@ -61,13 +61,11 @@ IMPORTANT: You can set the properties inside *build.gradle*, without using a *si
 
 == Sample
 
-Delivery provide default methods.
-
 :sourcedir: ../../delivery-plugin/src/test/groovy
 
 [source,groovy]
 ----
-include::{sourcedir}/com/leroymerlin/plugins/test/integration/AndroidDeliveryTest.groovy[]
+include::{sourcedir}/com/leroymerlin/plugins/test/integration/DeliveryTest.groovy[]
 ----
 
 == Usage

@@ -13,10 +13,6 @@ buildscript {
 
 apply plugin: 'com.leroymerlin.delivery'
 
-
-
-
-
 if (file('extra.gradle').exists()) {
     apply from: 'extra.gradle'
 }
