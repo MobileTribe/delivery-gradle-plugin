@@ -51,7 +51,6 @@ You can use system properties to override default behaviour. Here is the list of
 * *SCM_EMAIL* // git email
 * *SCM_USER* // git username
 * *VERSION* // actual version
-* *NEW_VERSION* // new version
 
 === Flows
 
@@ -62,7 +61,6 @@ Once a flow is configured you can run it by calling the gradle task named yourFl
 [source,groovy]
 ----
 include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[tags=flowExample]
-
 ----
 
 NOTE: To simplify your life Delivery suggest an implementation of git release flow.
@@ -70,23 +68,36 @@ NOTE: To simplify your life Delivery suggest an implementation of git release fl
 [source,groovy]
 ----
 include::{groovyDir}com/leroymerlin/plugins/DeliveryPlugin.groovy[tags=gitReleaseFlow]
-
 ----
 
-For Android and iOS applications, don’t forget to configure your own *signing.properties* file outside of your git repository. +
-Android:
-----
-storePassword=myStorePassword
-keyPassword=myKeyPassword
-keyAlias=myKeyAlias
-storeFile=myStoreFileLocation
-----
-iOS:
+=== Signing config
 
+You can sign your mobile projects with a signing configuration. +
+You need to set a key/value pair inside a https://en.wikipedia.org/wiki/.properties[properties file]
+
+[source,groovy]
 ----
-certificateURI=myCertificate
-certificatePassword=myPassword
-mobileProvisionURI=myMobileProvision
+include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[tags=signingAndroidExample]
 ----
 
-IMPORTANT: You can set the properties inside *build.gradle*, without using a *signing.properties*.
+.Android
+|==========================
+|storePassword  |Your keystore file password
+|keyPassword |Your keystore password
+|keyAlias  |Your keystore alias
+|storeFile  |Your keystore file
+|==========================
+
+[source,groovy]
+----
+include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[tags=signingiOSExample]
+----
+
+.iOS
+|==========================
+|certificateURI  |Your certificate
+|certificatePassword |Your certificate's password
+|mobileProvisionURI  |Your developer provisioning profile
+|==========================
+
+IMPORTANT: Don't forget to put it outside of your git repository.

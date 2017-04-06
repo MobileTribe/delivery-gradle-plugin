@@ -54,75 +54,57 @@ class DeliveryPluginTest {
                 release { //will generate releaseFlow task
                     /**
                      * change and create scm branch
-                     *
                      * @param name
                      * @param create (default false)
                      */
                     branch 'branchName', false
-
                     /**
                      * add files to be committed, if files is not set, all files will be added
-                     *
                      * @param files
                      */
                     add 'test.txt'
-
                     /**
                      * commit files, if addAll is true, will add files before commit
-                     *
                      * @param message
                      * @param addAll (default false)
                      */
                     commit 'first commit', false
-
                     /**
                      * tag a commit
-                     *
                      * @param message (default "")
                      * @param annotation (default "")
                      */
                     tag 'a message', 'an annotation'
-
                     /**
                      * merge a branch
-                     *
                      * @param branch
                      */
                     merge 'branchName'
-
                     /**
                      * push changes
                      */
                     push
-
                     /**
                      * delete a branch
-                     *
                      * @param branchName
                      */
                     delete 'branchName'
-
                     /**
                      * change the properties of the version.properties
-                     *
                      * @param version (default null)
                      * @param versionId (default null)
                      * @param projectName (default null)
                      */
                     changeProperties '1.0.0', '3'
-
                     /**
                      * build the project
                      */
                     build
-
                     /**
                      * execute a command in the folder
-                     *
                      * @param cmd
                      */
                     cmd 'a command'
-
                     /**
                      * cancel all changes not committed
                      */
@@ -134,5 +116,34 @@ class DeliveryPluginTest {
         }
         project.evaluate()
         Asserts.notNull(project.tasks.findByPath('releaseFlow'), "Flow release")
+    }
+
+    void testSigningMethods() {
+        project.delivery {
+            //tag::signingAndroidExample[]
+            //...
+            signingProperties {
+                releaseAndroid {
+                    propertiesFile = file("signing_android.properties")
+                }
+            }
+            //...
+            //end::signingAndroidExample[]
+            //tag::signingiOSExample[]
+            //...
+            signingProperties {
+                releaseiOS {
+                    /**
+                     * For iOS you need to set a target and a scheme
+                     */
+                    target = "delivery"
+                    scheme = "delivery"
+                    propertiesFile = file("signing_ios.properties")
+                }
+            }
+            //...
+            //end::signingiOSExample[]
+        }
+        project.evaluate()
     }
 }
