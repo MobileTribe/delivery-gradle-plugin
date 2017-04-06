@@ -134,7 +134,6 @@ class DeliveryPluginTest {
             signingProperties {
                 // the name you set here will be the variant name
                 variantName {
-                    propertiesFile = file('path/to/my/signing.properties')
                     storeFile='path/to/my/store.jks'
                     storePassword='myStorePassword'
                     keyAlias='myAlias'
@@ -153,10 +152,9 @@ class DeliveryPluginTest {
                      */
                     target = "delivery"
                     scheme = "delivery"
-                    propertiesFile = file("path/to/my/signing_ios.properties")
                     certificateURI='path/to/my/certificat.p12'
                     certificatePassword='myPass'
-                    mobileProvisionURI='path/to/my/Provisioning_Profile.mobileprovision'
+                    mobileProvisionURI='path/to/my/Provisioning_Profile.mobileprovision,path/to/my/Provisioning_Profile2.mobileprovision'
                 }
             }
             //...
@@ -166,10 +164,11 @@ class DeliveryPluginTest {
             signingProperties {
                 // you have to use android or ios name for ionic signing configs
                 android {
-                    propertiesFile = file("path/to/my/signing.properties")
+                    //See android needed properties
                 }
                 ios {
-                    propertiesFile = file("path/to/my/signing_ios.properties")
+                    //See ios needed properties
+                    //target and scheme are optionals
                 }
             }
             //...

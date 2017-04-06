@@ -73,27 +73,20 @@ include::{groovyDir}com/leroymerlin/plugins/DeliveryPlugin.groovy[tags=gitReleas
 
 === Signing config
 
-You can sign your mobile projects with a signing configuration. +
-You have to set a key/value pair inside a https://en.wikipedia.org/wiki/.properties[properties file]
+SigningConfiguration allows you to configure artifact signature. +
+A configuration is a set of key/value pair.
+You can externalize criticals informations using a https://en.wikipedia.org/wiki/.properties[properties file]
 
-IMPORTANT: Don't forget to put it outside of your git repository.
+IMPORTANT: You should considere not to put keystore and credential inside of your repository.
 
-==== Android
+
+==== Android signing config
 
 [source,groovy]
 ----
 include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[tags=signingAndroidExample]
 ----
 
-.Android
-[cols="^,^",options="header"]
-|==========================
-|Key  |Value
-|storePassword  |Your keystore file password
-|keyPassword |Your keystore password
-|keyAlias  |Your keystore alias
-|storeFile  |Your keystore file
-|==========================
 
 ==== iOS
 
@@ -102,14 +95,6 @@ include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[t
 include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[tags=signingiOSExample]
 ----
 
-.iOS
-[cols="^,^",options="header"]
-|==========================
-|Key  |Value
-|certificateURI  |Your certificate
-|certificatePassword |Your certificate's password
-|mobileProvisionURI  |Your developer provisioning profile
-|==========================
 
 ==== Ionic
 
