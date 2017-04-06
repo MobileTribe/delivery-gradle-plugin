@@ -3,11 +3,9 @@ include::./Header.adoc[]
 = Tutorial
 Delivery v{deliveryVersion}, {generationDate}
 
-
 == Configuration
 
 To use delivery, you just have to apply the plugin in your project.
-
 
 ```Groovy
 buildscript {
@@ -44,26 +42,27 @@ delivery {
 }
 ```
 
-NOTE: You can find more documentation about RepositoryHandler on the https://docs.gradle.org/current/dsl/org.gradle.api.artifacts.dsl.RepositoryHandler.html[official groovy website]
+NOTE: You can find more documentation about archiveRepositories on the https://docs.gradle.org/current/dsl/org.gradle.api.artifacts.dsl.RepositoryHandler.html[official groovy website]. +
+Flows and signingProperties DSL is base on http://mrhaki.blogspot.fr/2016/02/gradle-goodness-create-objects-with-dsl.html[Gradle NamedDomainObjectContainer].
 
-You can use system properties to inject scm credentials and to set your project version.
+You can use system properties to inject scm credentials and set your project version.
 
 * *SCM_EMAIL* // git email
 * *SCM_USER* // git username
 * *VERSION* // actual version
 
-=== Flows
+== Flows
 
-Flow allows you to configure release steps that fit your project. +
+Flow allows you to configure release steps. +
 Once a flow is configured you can run it by calling the gradle task named "yourFlowName+*Flow*".
 
-.Methods provide by Delivery:
+.Methods provided by Delivery:
 [source,groovy]
 ----
 include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[tags=flowExample]
 ----
 
-NOTE: To simplify your life Delivery suggest an implementation of git release flow. +
+NOTE: To simplify your life, Delivery provides an implementation of git release flow. +
 You just have to call *releaseGitFlow* to use it.
 
 [source,groovy]
@@ -71,34 +70,55 @@ You just have to call *releaseGitFlow* to use it.
 include::{groovyDir}com/leroymerlin/plugins/DeliveryPlugin.groovy[tags=gitReleaseFlow]
 ----
 
-=== Signing config
+== Signing config
 
-SigningConfiguration allows you to configure artifact signature. +
+SigningConfiguration allows you to configure artifacts signatures. +
 A configuration is a set of key/value pair.
 You can externalize criticals informations using a https://en.wikipedia.org/wiki/.properties[properties file]
 
-IMPORTANT: You should considere not to put keystore and credential inside of your repository.
+.Example:
+[source,groovy]
+----
+include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[tags=signingFileExample]
+----
 
+IMPORTANT: You should consider not to put keystore and credential inside of your repository.
 
-==== Android signing config
+=== Android
 
 [source,groovy]
 ----
 include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[tags=signingAndroidExample]
 ----
 
+=== iOS
 
-==== iOS
+NOTE: iOS support is based on the open source project https://github.com/openbakery/gradle-xcodePlugin[gradle-xcodePlugin]
 
 [source,groovy]
 ----
 include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[tags=signingiOSExample]
 ----
 
-
-==== Ionic
+=== Ionic
 
 [source,groovy]
 ----
 include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[tags=signingIonicExample]
+----
+
+== Custom projects
+
+If your project doesn't answer to the Delivery's supported configurations (iOS, Android, Ionic, Java, Groovy), you can define your own configurator.
+
+[source,groovy]
+----
+include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[tags=configuratorExample]
+----
+
+To achieve your project's build, you have to create one or more DeliveryBuild tasks, and define the variant names and output files.
+
+[source,groovy]
+----
+include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[tags=deliveryBuildExample]
 ----

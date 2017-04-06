@@ -1,6 +1,8 @@
 package com.leroymerlin.plugins.test
 
 import com.leroymerlin.plugins.DeliveryPlugin
+import com.leroymerlin.plugins.entities.SigningProperty
+import com.leroymerlin.plugins.tasks.build.DeliveryBuild
 import org.gradle.api.Project
 import org.gradle.internal.impldep.org.apache.http.util.Asserts
 import org.gradle.testfixtures.ProjectBuilder
@@ -129,15 +131,29 @@ class DeliveryPluginTest {
 
     void testSigningMethods() {
         project.delivery {
+            //tag::signingFileExample[]
+            //...
+            signingProperties {
+                all {
+                    // load file properties into all the signing property
+                    propertiesFile = file("path/to/my/signing.properties")
+                }
+                specificBuildType {
+                    // override singing properties for specific buildtype
+                    propertiesFile = file("path/to/my/specific.properties")
+                }
+            }
+            //...
+            //end::signingFileExample[]
             //tag::signingAndroidExample[]
             //...
             signingProperties {
-                // the name you set here will be the variant name
-                variantName {
-                    storeFile='path/to/my/store.jks'
-                    storePassword='myStorePassword'
-                    keyAlias='myAlias'
-                    keyPassword='myPass'
+                // the name you set here has to match a buildtype
+                buildTypeName {
+                    storeFile = 'path/to/my/store.jks'
+                    storePassword = 'myStorePassword'
+                    keyAlias = 'myAlias'
+                    keyPassword = 'myPass'
                 }
             }
             //...
@@ -145,16 +161,15 @@ class DeliveryPluginTest {
             //tag::signingiOSExample[]
             //...
             signingProperties {
-                // you can set the name you want for iOS
+                // you can set the name you want
+                // for each signingProperty, you'll archive an IPA
                 nameYouWant {
-                    /**
-                     * For iOS you need to set a target and a scheme
-                     */
                     target = "delivery"
                     scheme = "delivery"
-                    certificateURI='path/to/my/certificat.p12'
-                    certificatePassword='myPass'
-                    mobileProvisionURI='path/to/my/Provisioning_Profile.mobileprovision,path/to/my/Provisioning_Profile2.mobileprovision'
+                    certificateURI = 'path/to/my/certificat.p12'
+                    certificatePassword = 'myPass'
+                    // you can specify multiple files separated by a comma
+                    mobileProvisionURI = 'path/to/my/Provisioning_Profile.mobileprovision,path/to/my/Provisioning_Profile2.mobileprovision'
                 }
             }
             //...
@@ -168,11 +183,42 @@ class DeliveryPluginTest {
                 }
                 ios {
                     //See ios needed properties
-                    //target and scheme are optionals
+                    //target and scheme are optionals for ionic
                 }
             }
             //...
             //end::signingIonicExample[]
+            //tag::deliveryBuildExample[]
+            //...
+            task buildVariant(type: DeliveryBuild) {
+                variantName = 'variant'
+                outputFiles = ["release": file('build/variant.txt')]
+            } << {
+                cmd('java -jar delivery-test.jar variant')
+            }
+            //...
+            //end::deliveryBuildExample[]
+            //tag::configuratorExample[]
+            //...
+            delivery {
+                configurator = [
+                        /**
+                         * Configure your project
+                         */
+                        configure: {/*...*/ },
+                        /**
+                         * Apply some properties to your project
+                         */
+                        applyProperties: {/*...*/ },
+                        /**
+                         * Apply the signing properties to your project
+                         * @param property
+                         */
+                        applySigningProperty: { property -> /*...*/ }
+                ]
+            }
+            //...
+            //end::configuratorExample[]
         }
         project.evaluate()
     }

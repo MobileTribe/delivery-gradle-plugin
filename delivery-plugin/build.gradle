@@ -1,5 +1,5 @@
 apply plugin: 'groovy'
-apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'maven'
 
 
 task sourcesJar(type: Jar) {
@@ -17,7 +17,6 @@ uploadArchives {
 
 repositories {
     jcenter()
-    maven { url 'http://dl.bintray.com/content/noamt/gradle-plugins' }
     maven { url('http://repository.openbakery.org/') }
     mavenCentral()
 }

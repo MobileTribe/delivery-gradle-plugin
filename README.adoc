@@ -1,151 +1,45 @@
 # Gradle delivery plugin
 :hardbreaks:
 
+:htmlPath:
+ifdef::env-github[:htmlPath: http://mobiletribe.github.io/delivery-gradle-plugin/]
 
 image:https://api.bintray.com/packages/mobiletribe/maven/com.leroymerlin.plugins:delivery-plugin/images/download.svg[link="https://bintray.com/mobiletribe/maven/com.leroymerlin.plugins:delivery-plugin/_latestVersion"] image:http://img.shields.io/badge/license-ASF2-blue.svg["Apache License 2", link="http://www.apache.org/licenses/LICENSE-2.0.txt"]
 
+[.text-center]
+image:./delivery-doc/assets/logo.png[Delivery,300,align="center"]
+_Delivery yourself from painful build process_
+
 ## Note
 
-This plugin is compatible with java, groovy, android and android-library projects. It handles the following parts of your continuous delivery process :
+Delivery is the gradle plugin you need to simplify your project industrialization.
 
-- git release workflow (http://nvie.com/posts/a-successful-git-branching-model/)
-- apk signing configuration with external properties
-- artifacts upload to maven (jar, aar, apk-debug, apk-test, apk-release, mapping.txt, sources)
+It's *easy to use*. Don't lose your time installing many tools. *Adjust it* for your needs. Handle *any type* of project.
 
+This plugin support natively java, groovy, android, android library, iOS and Ionic projects but you can easily extend the support to any project type.
+
+Delivery handles the following parts of your continuous delivery process :
+
+- powerful workflow
+- simple build and sign artifacts
+- archive all you need into space
 
 This plugin is based on 2 others plugins :
 
-- https://github.com/dcendents/android-maven-gradle-plugin[Android Maven plugin] from dcendents
-- https://github.com/researchgate/gradle-release[Gradle Release plugin] from researchgate
+- https://docs.gradle.org/current/userguide/maven_plugin.html[Maven plugin] from gradle
+- https://github.com/openbakery/gradle-xcodePlugin[gradle-xcodePlugin] from openbakery
 
+## Changelog
 
-## Configuration
+### *3.0.0* - (2017-04-25)
+link:{htmlPath}delivery-doc/html/Tutorial.html[Features]
 
-To use delivery, you just have to apply the plugin in your java / android / android-library project.
+## Get Started
 
-```java
-buildscript {
-	repositories {
-		jcenter()
-	}
+To learn how to use the plugin, please read link:{htmlPath}delivery-doc/html/Tutorial.html[tutorial part] of this wiki.
 
-	dependencies {
-		classpath 'com.leroymerlin.plugins:delivery-plugin:LAST_VERSION'
-	}
-}
-
-apply plugin: 'delivery'
-```
-
-Create *version.properties* in your module. This file will contain your module *version*, *versionId* and *projectName* the plugin needs.
-
-```java
-version=2.0.0-SNAPSHOT
-projectName=MyAwesomeApp
-versionId=200
-```
-
-and don't forget to use those values in your build.gradle
-
-```java
-android {
-    ...
-
-    defaultConfig {
-        ...
-        versionCode Integer.valueOf(versionId)
-        versionName version
-    }
-```
-
-NOTE: You can override the version.properties file path with *versionFilePath* property. This property has to be in *gradle.properties* or eventually in *delivery.properties*. You could also override other properties name with *versionKey*, *versionIdKey* and *projectNameKey*.
-
-
-Configure the delivery gradle extension in your build.gradle to fit your need
-
-```java
-
-delivery {
-
-    newVersionCommitPattern = 'chore (version) : Update version to $version'
-    
-    releaseTagPattern = '$projectName-$versionId-$version'
-    
-    releaseBranchPattern = 'release/$versionId-$version'
-    
-    //please refer to https://docs.gradle.org/current/userguide/maven_plugin.html[Maven plugin]
-    archiveRepositories = {
-        mavenDeployer {
-             repository(url: "MY_MAVEN_URL") {
-                  authentication([userName: 'myusername', password: 'mypassword'])
-             }
-             snapshotRepository(url: "MY_MAVEN_URL") {
-                  authentication([userName: 'myusername', password: 'mypassword'])
-             }
-        }
-    }
-    
-    failOnSnapshotDependency = true
-    
-    versionPatterns = [
-                // Increments last number: "2.5-SNAPSHOT" => "2.6-SNAPSHOT"
-                /(\d+)([^\d]*$)/: { Matcher m, Project p -> m.replaceAll("${(m[0][1] as int) + 1}${m[0][2]}") }
-        ]
-        
-    gitConfig {
-        requireBranch = System.getProperty('BRANCH', 'develop')
-        pushToRemote = 'origin' // needs to be def as can be boolean or string
-        password = System.getProperty('SCM_PASSWORD')
-        user = System.getProperty('SCM_USER')
-    }
-        
-    //Android only
-    signingProperties {
-        all {
-            propertiesFile = project.file("debug_signing.properties")
-        }
-        release {
-            propertiesFile = project.file("signing.properties")
-            storeFileField = "storeFile"
-            storePasswordField = "storePassword"
-            keyAliasField = "keyAlias"
-            keyAliasPasswordField = "keyAliasPassword"
-        }
-    }    
-}
-```
-
-For Android applications, don't forget to configure your own signing.properties file outside of your git repository.
-Here is an example :
-
-```java
-
-storeFile=/path/to/my/store.jks
-storePassword=myStorePassword
-keyAlias=myAlias
-keyAliasPassword=myAliasPass
-
-```
-## Usage
-
-Delivery will generate two main tasks :
-
-- *delivery* will create a release branch, unsnapshot your version, build and archive your release artifacts
-- *validateDelivery* will merge your release branch to master, tag with the version pattern and merge and increment the new version number to your develop branch
-
-
-NOTE: To archive a "snapshot" version you can use *upload{variantName}Artifacts* tasks. It will build the project variants you need and archive them to maven
-
-
-You can use system properties to override default behaviour. Here is the list of all properties supported :
-
-- *VERSION* //version that will be used to release
-- *VERSION_CODE* //version code that will be used to release
-- *NEW_VERSION* //new version to use after the release
-- *BRANCH* //develop branch name
-- *SCM_PASSWORD* //git password
-- *SCM_USER* //git user
-
+Please remember that Delivery is an *open source* project
+Do not hesitate to participate by sharing your questions, bug fixes or improvements.
 
 ## License
 
