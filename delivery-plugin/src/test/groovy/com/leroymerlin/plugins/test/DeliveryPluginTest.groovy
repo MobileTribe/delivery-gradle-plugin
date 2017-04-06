@@ -55,31 +55,33 @@ class DeliveryPluginTest {
                     /**
                      * change and create scm branch
                      * @param name
-                     * @param create (default false)
+                     * @param @optional create (default: false)
                      */
-                    branch 'branchName', false
+                    branch 'release', false
                     /**
-                     * add files to be committed, if files is not set, all files will be added
+                     * add files to be committed
+                     * if files is not set, all files will be added
                      * @param files
                      */
                     add 'test.txt'
                     /**
-                     * commit files, if addAll is true, will add files before commit
+                     * commit files
+                     * if addAll is true, will add all files before commit
                      * @param message
-                     * @param addAll (default false)
+                     * @param @optional addAll (default: false)
                      */
                     commit 'first commit', false
                     /**
                      * tag a commit
-                     * @param message (default "")
-                     * @param annotation (default "")
+                     * @param @optional message (default: "")
+                     * @param @optional annotation (default: "")
                      */
                     tag 'a message', 'an annotation'
                     /**
                      * merge a branch
                      * @param branch
                      */
-                    merge 'branchName'
+                    merge 'develop'
                     /**
                      * push changes
                      */
@@ -88,12 +90,12 @@ class DeliveryPluginTest {
                      * delete a branch
                      * @param branchName
                      */
-                    delete 'branchName'
+                    delete 'develop'
                     /**
                      * change the properties of the version.properties
-                     * @param version (default null)
-                     * @param versionId (default null)
-                     * @param projectName (default null)
+                     * @param @optional version (default: null)
+                     * @param @optional versionId (default: null)
+                     * @param @optional projectName (default: null)
                      */
                     changeProperties '1.0.0', '3'
                     /**
@@ -109,6 +111,13 @@ class DeliveryPluginTest {
                      * cancel all changes not committed
                      */
                     discardChange
+                    /**
+                     * call a task by its name
+                     * if newBuild is true, executes a Gradle build
+                     * @param taskName
+                     * @param @optional newBuild (default: false)
+                     */
+                    task 'customTask'
                 }
             }
             //...
@@ -123,8 +132,13 @@ class DeliveryPluginTest {
             //tag::signingAndroidExample[]
             //...
             signingProperties {
-                releaseAndroid {
-                    propertiesFile = file("signing_android.properties")
+                // the name you set here will be the variant name
+                variantName {
+                    propertiesFile = file('path/to/my/signing.properties')
+                    storeFile='path/to/my/store.jks'
+                    storePassword='myStorePassword'
+                    keyAlias='myAlias'
+                    keyPassword='myPass'
                 }
             }
             //...
@@ -132,17 +146,34 @@ class DeliveryPluginTest {
             //tag::signingiOSExample[]
             //...
             signingProperties {
-                releaseiOS {
+                // you can set the name you want for iOS
+                nameYouWant {
                     /**
                      * For iOS you need to set a target and a scheme
                      */
                     target = "delivery"
                     scheme = "delivery"
-                    propertiesFile = file("signing_ios.properties")
+                    propertiesFile = file("path/to/my/signing_ios.properties")
+                    certificateURI='path/to/my/certificat.p12'
+                    certificatePassword='myPass'
+                    mobileProvisionURI='path/to/my/Provisioning_Profile.mobileprovision'
                 }
             }
             //...
             //end::signingiOSExample[]
+            //tag::signingIonicExample[]
+            //...
+            signingProperties {
+                // you have to use android or ios name for ionic signing configs
+                android {
+                    propertiesFile = file("path/to/my/signing.properties")
+                }
+                ios {
+                    propertiesFile = file("path/to/my/signing_ios.properties")
+                }
+            }
+            //...
+            //end::signingIonicExample[]
         }
         project.evaluate()
     }

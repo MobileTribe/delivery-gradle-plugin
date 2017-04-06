@@ -10,8 +10,6 @@ buildscript {
 
 apply plugin: 'com.leroymerlin.delivery'
 
-
-
 delivery {
   archiveRepositories = {
     maven {
@@ -24,10 +22,9 @@ delivery {
     }
   }
 
-
   if (file("${System.properties['user.home']}/.gradle/signing_ios.properties").exists()) {
     signingProperties {
-      android{
+      android {
         propertiesFile = file("../../signing.properties")
       }
       ios {
@@ -35,5 +32,4 @@ delivery {
       }
     }
   }
-
 }

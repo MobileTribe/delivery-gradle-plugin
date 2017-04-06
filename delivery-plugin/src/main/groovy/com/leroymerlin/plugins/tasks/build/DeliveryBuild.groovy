@@ -10,12 +10,12 @@ import org.gradle.api.tasks.Input
 /**
  * Created by alexandre on 15/02/2017.
  */
-public class DeliveryBuild extends DefaultTask {
+class DeliveryBuild extends DefaultTask {
 
     String variantName
 
     @Input
-    public String setVariant(String variantName) {
+    String setVariant(String variantName) {
         this.variantName = variantName
     }
 
@@ -28,9 +28,9 @@ public class DeliveryBuild extends DefaultTask {
         }
         return outputFiles.collect { classifier, file ->
             String extension = "";
-            int i = file.name.lastIndexOf('.');
+            int i = file.name.lastIndexOf('.')
             if (i > 0) {
-                extension = file.name.substring(i + 1);
+                extension = file.name.substring(i + 1)
             }
             return new ArchiveArtifact(variantName, extension, classifier, file, this)
         }
@@ -38,7 +38,7 @@ public class DeliveryBuild extends DefaultTask {
 
 
     def cmd(String cmd) {
-        return Executor.exec(Executor.convertToCommandLine(cmd), directory: project.projectDir);
+        return Executor.exec(Executor.convertToCommandLine(cmd), directory: project.projectDir)
     }
 
     def cmd(

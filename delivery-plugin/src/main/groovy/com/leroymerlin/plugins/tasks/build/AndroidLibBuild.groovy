@@ -7,7 +7,6 @@ import org.gradle.api.tasks.bundling.Jar
  * Created by alexandre on 15/02/2017.
  */
 class AndroidLibBuild extends DeliveryBuild {
-
     @Input
     void addVariant(variant) {
         def classifier = variant.buildType.name
