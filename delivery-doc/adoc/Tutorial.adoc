@@ -20,11 +20,11 @@ buildscript {
 
 apply plugin: 'com.leroymerlin.delivery'
 ```
-Create *version.properties* in your module. This file will contain your module *version*, *versionId* and *projectName* the plugin needs.
+Create a *version.properties* file in your module. This file will contain your module *version*, *versionId* and *projectName* the plugin needs.
 
 NOTE: You can override the version.properties file path with *versionFilePath* property. This property has to be in *gradle.properties* or eventually in *delivery.properties*. You could also override other properties name with *versionKey*, *versionIdKey* and *projectNameKey*.
 
-Configure the delivery gradle extension in your build.gradle to fit your need
+Configure the delivery gradle extension in your build.gradle to fit your need.
 
 ```Groovy
 delivery {
@@ -43,7 +43,7 @@ delivery {
 ```
 
 NOTE: You can find more documentation about archiveRepositories on the https://docs.gradle.org/current/dsl/org.gradle.api.artifacts.dsl.RepositoryHandler.html[official groovy website]. +
-Flows and signingProperties DSL is base on http://mrhaki.blogspot.fr/2016/02/gradle-goodness-create-objects-with-dsl.html[Gradle NamedDomainObjectContainer].
+Flows and signingProperties DSL are based on http://mrhaki.blogspot.fr/2016/02/gradle-goodness-create-objects-with-dsl.html[Gradle NamedDomainObjectContainer].
 
 You can use system properties to inject scm credentials and set your project version.
 
@@ -54,7 +54,7 @@ You can use system properties to inject scm credentials and set your project ver
 == Flows
 
 Flow allows you to configure release steps. +
-Once a flow is configured you can run it by calling the gradle task named "yourFlowName+*Flow*".
+Once a flow is configured, you can run it by calling the gradle task named "yourFlowName+*Flow*".
 
 .Methods provided by Delivery:
 [source,groovy]
@@ -74,7 +74,7 @@ include::{groovyDir}com/leroymerlin/plugins/DeliveryPlugin.groovy[tags=gitReleas
 
 SigningConfiguration allows you to configure artifacts signatures. +
 A configuration is a set of key/value pair.
-You can externalize criticals informations using a https://en.wikipedia.org/wiki/.properties[properties file]
+You can externalize critical data using a https://en.wikipedia.org/wiki/.properties[properties file]
 
 .Example:
 [source,groovy]
@@ -82,7 +82,7 @@ You can externalize criticals informations using a https://en.wikipedia.org/wiki
 include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[tags=signingFileExample]
 ----
 
-IMPORTANT: You should consider not to put keystore and credential inside of your repository.
+IMPORTANT: You should consider not to put keystore and credentials inside your repository.
 
 === Android
 
@@ -109,7 +109,7 @@ include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[t
 
 == Custom projects
 
-If your project doesn't answer to the Delivery's supported configurations (iOS, Android, Ionic, Java, Groovy), you can define your own configurator.
+If your project doesn't answer the Delivery's supported configurations (iOS, Android, Ionic, Java, Groovy), you can define your own configurator.
 
 [source,groovy]
 ----
