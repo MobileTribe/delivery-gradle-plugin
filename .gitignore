@@ -44,6 +44,7 @@ local.properties
 nbproject/private/
 /build/
 /delivery-plugin/build/
+/delivery-doc/build/
 nbbuild/
 dist/
 nbdist/
