@@ -1,3 +1,1 @@
-//include ':delivery-test'
-include 'delivery-plugin'
-
+include 'delivery-plugin', 'delivery-doc'

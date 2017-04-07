@@ -1,5 +1,5 @@
 apply plugin: 'groovy'
-apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'maven'
 
 
 task sourcesJar(type: Jar) {
@@ -12,35 +12,57 @@ artifacts {
 }
 
 uploadArchives {
-    repositories project.ext.properties.containsKey('bintrayRepositories')?project.ext.bintrayRepositories : {}
+    repositories project.ext.properties.containsKey('bintrayRepositories') ? project.ext.bintrayRepositories : {}
 }
 
 repositories {
     jcenter()
-    maven { url 'http://dl.bintray.com/content/noamt/gradle-plugins' }
+    maven { url('http://repository.openbakery.org/') }
+    mavenCentral()
 }
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 
+configurations {
+    // configuration that holds jars to include in the jar
+    extraLibs
+}
+
+jar {
+    from {
+        configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
 dependencies {
     compile gradleApi()
     compile localGroovy()
-    compile 'com.github.dcendents:android-maven-gradle-plugin:1.4.1'
-    compile 'com.google.guava:guava:13.0.1'
+
+    compile("commons-io:commons-io:2.4")
+    compile("commons-collections:commons-collections:3.2.2")
+    compile("commons-configuration:commons-configuration:1.10")
+    compile("com.google.guava:guava:18.0")
+
+    extraLibs("org.openbakery:xcode-plugin:0.14.5") {
+        exclude group: 'commons-io', module: 'commons-io'
+        exclude group: 'commons-collections', module: 'commons-collections'
+        exclude group: 'commons-configuration', module: 'commons-configuration'
+        exclude group: 'com.google.guava', module: 'guava'
+    }
     testCompile 'junit:junit:4.11'
-    testCompile 'com.android.tools.build:gradle:2.1.0'
+    testCompile 'com.android.tools.build:gradle:2.3.0'
 }
 
+/*
 task(copyLocalProperties, type: Copy) {
     from('../local.properties')
     into('src/test/resources/android-app')
 }
 classes.finalizedBy copyLocalProperties
+*/
 
-test{
+test {
     workingDir project.projectDir.getParentFile()
 }
-
-

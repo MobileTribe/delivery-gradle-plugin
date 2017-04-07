@@ -1,273 +1,225 @@
 package com.leroymerlin.plugins.test
 
 import com.leroymerlin.plugins.DeliveryPlugin
-import com.leroymerlin.plugins.DeliveryPluginExtension
-import com.leroymerlin.plugins.utils.ScmFlowMethods
-import com.leroymerlin.plugins.utils.Utils
+import com.leroymerlin.plugins.entities.SigningProperty
+import com.leroymerlin.plugins.tasks.build.DeliveryBuild
+import org.gradle.api.Project
+import org.gradle.internal.impldep.org.apache.http.util.Asserts
+import org.gradle.testfixtures.ProjectBuilder
 import org.junit.After
-import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+
 /**
  * Created by florian on 17/12/15.
  */
-class DeliveryPluginTest extends BasePluginTest {
+class DeliveryPluginTest {
+
+    Project project
 
     @Before
-    public void setUp() {
-        super.setUp()
-        setupProject()
+    void setUp() {
+        project = ProjectBuilder.builder().build()
+        def manager = project.pluginManager
+        manager.apply(DeliveryPlugin.class)
     }
 
     @After
-    public void tearDown() {
-        super.tearDown()
+    void tearDown() {
+        project = null
     }
 
-    /**
-     *
-     * Testing Methods
-     *
-     */
-
+    @Test
+    void testDeliveryExtension() {
+        Asserts.notNull(project.delivery, "Delivery extension don't exist")
+    }
 
     @Test
-    public void testCustomGitConfig() {
+    void testBuildTaskGeneration() {
         project.delivery {
-            git {
-                requireBranch = 'banane'
+            flows {
+                azerty {
+                }
             }
         }
-
         project.evaluate()
-
-        Assert.assertEquals("banane", project.delivery.gitConfig.requireBranch)
-        Assert.assertEquals("origin", project.delivery.gitConfig.pushToRemote)
-    }
-
-
-
-
-
-
-    @Test
-    public void testSaveLatestReleaseInfos() {
-        File file = new File(project.projectDir.path+"/delivery.properties")
-        file.delete()
-
-        project.version = "1.0.0-SNAPSHOT";
-        ScmFlowMethods scmFlowMethods = new ScmFlowMethods(project, project.plugins.getPlugin(DeliveryPlugin))
-        scmFlowMethods.saveLatestReleaseInfos()
-
-        Assert.assertNotEquals(0, file.length())
-    }
-
-    /**
-     *
-     * Testing Conf
-     *
-     */
-    @Test
-    public void testBasicTagName() {
-        project.evaluate()
-        Assert.assertEquals(project.projectName +"-"+ project.versionId + "-" + project.version, Utils.tagName(this.project, this.project.extensions['delivery'] as DeliveryPluginExtension))
+        Asserts.notNull(project.tasks.findByPath('azertyFlow'), "Flow azerty")
     }
 
 
     @Test
-    public void testCustomTagName() {
+    void testFlowMethods() {
         project.delivery {
-            releaseTagPattern = '$projectName(v$version)'
+            //tag::flowExample[]
+            //...
+            flows {
+                release { //will generate releaseFlow task
+                    /**
+                     * change and create scm branch
+                     * @param name
+                     * @param @optional create (default: false)
+                     */
+                    branch 'release', false
+                    /**
+                     * add files to be committed
+                     * if files is not set, all files will be added
+                     * @param files
+                     */
+                    add 'test.txt'
+                    /**
+                     * commit files
+                     * if addAll is true, will add all files before commit
+                     * @param message
+                     * @param @optional addAll (default: false)
+                     */
+                    commit 'first commit', false
+                    /**
+                     * tag a commit
+                     * @param @optional message (default: "")
+                     * @param @optional annotation (default: "")
+                     */
+                    tag 'a message', 'an annotation'
+                    /**
+                     * merge a branch
+                     * @param branch
+                     */
+                    merge 'develop'
+                    /**
+                     * push changes
+                     */
+                    push
+                    /**
+                     * delete a branch
+                     * @param branchName
+                     */
+                    delete 'develop'
+                    /**
+                     * change the properties of the version.properties
+                     * @param @optional version (default: null)
+                     * @param @optional versionId (default: null)
+                     * @param @optional projectName (default: null)
+                     */
+                    changeProperties '1.0.0', '3'
+                    /**
+                     * build the project
+                     */
+                    build
+                    /**
+                     * execute a command in the folder
+                     * @param cmd
+                     */
+                    cmd 'a command'
+                    /**
+                     * cancel all changes not committed
+                     */
+                    discardChange
+                    /**
+                     * call a task by its name
+                     * if newBuild is true, executes a Gradle build
+                     * @param taskName
+                     * @param @optional newBuild (default: false)
+                     */
+                    task 'customTask'
+                }
+            }
+            //...
+            //end::flowExample[]
         }
-
         project.evaluate()
-
-        String string = "${project.name}(v" + project.version + ")"
-        String name = Utils.tagName(this.project, this.project.extensions['delivery'] as DeliveryPluginExtension)
-        Assert.assertEquals(string, name)
+        Asserts.notNull(project.tasks.findByPath('releaseFlow'), "Flow release")
     }
 
-    @Test
-    public void testBasicReleaseBranchName() {
-        project.evaluate()
-        def version = project.version
-
-        String string = "release/$project.versionId-$version"
-
-        String branchName = Utils.releaseBranchName(this.project, this.project.extensions['delivery'] as DeliveryPluginExtension)
-        assert string.equals(branchName)
-    }
-
-
-    @Test
-    public void testCustomReleaseBranchName() {
+    void testSigningMethods() {
         project.delivery {
-            releaseBranchPattern = '$projectName(v$version)'
-        }
-
-        project.evaluate()
-        def version = project.version - '-SNAPSHOT'
-        assert "${project.name}(v" + version + ")".equals(Utils.releaseBranchName(this.project, this.project.extensions['delivery'] as DeliveryPluginExtension))
-    }
-
-    @Test
-    public void testBasicReleaseMessage() {
-        project.evaluate()
-        def version = project.version
-        def message = "chore (version) : Update version to " + version
-
-        Assert.assertEquals(message, Utils.newVersionCommitMessage(this.project, this.project.extensions['delivery'] as DeliveryPluginExtension))
-    }
-
-
-    @Test
-    public void testCustomReleaseMessage() {
-        project.delivery {
-            newVersionCommitPattern = 'new version commit $version $versionId'
-        }
-
-        project.evaluate()
-
-        Assert.assertEquals("new version commit " + project.version + " " + project.versionId, Utils.newVersionCommitMessage(this.project, this.project.extensions['delivery'] as DeliveryPluginExtension))
-    }
-
-
-    @Test
-    public void testAddExtensionToProject() {
-        assert project.delivery instanceof DeliveryPluginExtension
-        project.delivery {
+            //tag::signingFileExample[]
+            //...
             signingProperties {
                 all {
-                    propertiesFile = project.file("signing.properties")
+                    // load file properties into all the signing property
+                    propertiesFile = file("path/to/my/signing.properties")
                 }
-                release {
-                    propertiesFile = project.file("signing.properties")
-                    keyAliasField = "keyAliasRelease"
+                specificBuildType {
+                    // override singing properties for specific buildtype
+                    propertiesFile = file("path/to/my/specific.properties")
                 }
             }
-        }
-        assert project.android.signingConfigs.releaseSigning.keyAlias == "releaseAlias"
-        assert project.android.signingConfigs.debugSigning.keyAlias == "delivery"
-
-        project.evaluate()
-    }
-
-    /**
-     * Testing Tasks
-     */
-    @Test
-    public void testInitReleaseTask() {
-        project.evaluate()
-        Assert.assertNotNull(project.tasks['delivery'])
-
-        def arrayOfTasks = this.retrieveArray(project.tasks['delivery'].getDependsOn())
-        Assert.assertEquals(3, arrayOfTasks.size())
-        Assert.assertTrue(arrayOfTasks.contains('runBuildTasks'))
-
-
-        project.tasks['delivery'].execute()
-    }
-
-    @Test
-    public void testUploadApks() {
-        project.delivery {
+            //...
+            //end::signingFileExample[]
+            //tag::signingAndroidExample[]
+            //...
             signingProperties {
-                all {
-                    propertiesFile = project.file("signing.properties")
-                }
-                release {
-                    propertiesFile = project.file("signing.properties")
-                    keyAliasField = "keyAliasRelease"
+                // the name you set here has to match a buildtype
+                buildTypeName {
+                    storeFile = 'path/to/my/store.jks'
+                    storePassword = 'myStorePassword'
+                    keyAlias = 'myAlias'
+                    keyPassword = 'myPass'
                 }
             }
-        }
-        project.evaluate()
-        Assert.assertNotNull(project.tasks['uploadTestQualifArtifacts'])
-
-
-        Assert.assertEquals(9, project.configurations.testQualifConfig.allArtifacts.size())
-
-        project.tasks['tasks'].execute()
-
-
-
-
-    }
-
-    @Test
-    public void testValidateReleaseTask() {
-        project.evaluate()
-        Assert.assertNotNull(project.tasks['validateDelivery'])
-
-        def arrayOfTasks = this.retrieveArray(project.tasks['validateDelivery'].getDependsOn())
-        Assert.assertEquals(2, arrayOfTasks.size())
-        Assert.assertTrue(arrayOfTasks.contains('prepareNextVersion'));
-
-        project.tasks['validateDelivery'].execute()
-    }
-
-
-    @Test
-    public void testCheckSnapshotDependenciesTask() {
-        project.evaluate()
-        Assert.assertNotNull(project.tasks['checkSnapshotDependencies'])
-    }
-
-
-    @Test
-    public void testCommitBranch() {
-        project.evaluate()
-        Assert.assertNotNull(project.tasks['commitBranch'])
-    }
-
-    @Test
-    public void testCreateReleaseBranchTask() {
-        project.evaluate()
-        Assert.assertNotNull(project.tasks['createReleaseBranch'])
-    }
-
-    @Test
-    public void testMergeOnDevelopTask() {
-        project.evaluate()
-        Assert.assertNotNull(project.tasks['mergeOnDevelop'])
-    }
-
-
-    @Test
-    public void testMergeReleaseBranchTask() {
-        project.evaluate()
-        Assert.assertNotNull(project.tasks['mergeReleaseBranch'])
-    }
-
-
-    @Test
-    public void testPrepareNextVersionTask() {
-        project.evaluate()
-        Assert.assertNotNull(project.tasks['prepareNextVersion'])
-    }
-
-
-    @Test
-    public void testUpdateVersionsFileTask() {
-        project.evaluate()
-        Assert.assertNotNull(project.tasks['updateVersionsFile'])
-    }
-
-
-    @Test
-    public void testUpdateVersionsDoingNothingTask() {
-        project.evaluate()
-        Assert.assertNotNull(project.tasks['updateVersionsFile'])
-    }
-
-
-    ArrayList<String> retrieveArray(def inputArray) {
-        def arrayToReturn = new ArrayList<String>()
-        inputArray.each { object ->
-            if (object.class == ArrayList.class) {
-                arrayToReturn = object
+            //...
+            //end::signingAndroidExample[]
+            //tag::signingiOSExample[]
+            //...
+            signingProperties {
+                // you can set the name you want
+                // for each signingProperty, you'll archive an IPA
+                nameYouWant {
+                    target = "delivery"
+                    scheme = "delivery"
+                    certificateURI = 'path/to/my/certificat.p12'
+                    certificatePassword = 'myPass'
+                    // you can specify multiple files separated by a comma
+                    mobileProvisionURI = 'path/to/my/Provisioning_Profile.mobileprovision,path/to/my/Provisioning_Profile2.mobileprovision'
+                }
             }
+            //...
+            //end::signingiOSExample[]
+            //tag::signingIonicExample[]
+            //...
+            signingProperties {
+                // you have to use android or ios name for ionic signing configs
+                android {
+                    //See android needed properties
+                }
+                ios {
+                    //See ios needed properties
+                    //target and scheme are optionals for ionic
+                }
+            }
+            //...
+            //end::signingIonicExample[]
+            //tag::deliveryBuildExample[]
+            //...
+            task buildVariant(type: DeliveryBuild) {
+                variantName = 'variant'
+                outputFiles = ["release": file('build/variant.txt')]
+            } << {
+                cmd('java -jar delivery-test.jar variant')
+            }
+            //...
+            //end::deliveryBuildExample[]
+            //tag::configuratorExample[]
+            //...
+            delivery {
+                configurator = [
+                        /**
+                         * Configure your project
+                         */
+                        configure: {/*...*/ },
+                        /**
+                         * Apply some properties to your project
+                         */
+                        applyProperties: {/*...*/ },
+                        /**
+                         * Apply the signing properties to your project
+                         * @param property
+                         */
+                        applySigningProperty: { property -> /*...*/ }
+                ]
+            }
+            //...
+            //end::configuratorExample[]
         }
-        return arrayToReturn;
+        project.evaluate()
     }
 }

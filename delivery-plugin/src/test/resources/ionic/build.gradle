@@ -1,0 +1,35 @@
+buildscript {
+  repositories {
+    mavenLocal()
+    jcenter()
+  }
+  dependencies {
+    classpath "com.leroymerlin.plugins:delivery-plugin:${System.getProperty("DELIVERY_VERSION")}"
+  }
+}
+
+apply plugin: 'com.leroymerlin.delivery'
+
+delivery {
+  archiveRepositories = {
+    maven {
+      url uri("../../build/archive_ionic")
+    }
+  }
+  flows {
+    ionic {
+      build
+    }
+  }
+
+  if (file("${System.properties['user.home']}/.gradle/signing_ios.properties").exists()) {
+    signingProperties {
+      android {
+        propertiesFile = file("../../signing.properties")
+      }
+      ios {
+        propertiesFile = file("${System.properties['user.home']}/.gradle/signing_ios.properties")
+      }
+    }
+  }
+}
