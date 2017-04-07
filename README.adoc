@@ -26,7 +26,7 @@ Delivery handles the following parts of your continuous delivery process :
 
 This plugin is based on 2 other plugins :
 
-- https://docs.gradle.org/current/userguide/maven_plugin.html[Maven plugin] from gradle
+- https://docs.gradle.org/current/userguide/maven_plugin.html[Maven plugin]
 - https://github.com/openbakery/gradle-xcodePlugin[gradle-xcodePlugin] from openbakery
 
 ## Changelog
@@ -40,6 +40,10 @@ To learn how to use the plugin, please read link:{htmlPath}delivery-doc/html/Tut
 
 Please remember that Delivery is an *open source* project.
 Do not hesitate to participate by sharing your questions, bug fixes or improvements.
+
+## Partner
+
+image:./delivery-doc/assets/partner/lm.jpg[Leroy Merlin,120,120]
 
 ## License
 
