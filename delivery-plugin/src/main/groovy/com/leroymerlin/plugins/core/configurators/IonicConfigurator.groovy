@@ -92,10 +92,9 @@ class IonicConfigurator extends ProjectConfigurator {
             def settingsGradle = project.file("platforms/${signingName}/${signingName == 'android' ? "delivery-" : ""}settings.gradle")
 
             project.task(preparePlatformTask).doFirst {
-                Executor.exec(["ionic", "platform", "add", signingName], directory: project.projectDir)
-                Executor.exec(["ionic", "resources"], directory: project.projectDir)
-                Executor.exec(["ionic", "platform", "remove", signingName], directory: project.projectDir)
-                Executor.exec(["ionic", "platform", "add", signingName], directory: project.projectDir)
+                if (!new File(project.getProjectDir().toString() + "/platforms").list().contains(signingName)) {
+                    Executor.exec(["ionic", "platform", "add", signingName], directory: project.projectDir)
+                }
                 Executor.exec(["ionic", "build", signingName, "--release"], directory: project.projectDir)
 
                 newBuildGradleFile.delete()
