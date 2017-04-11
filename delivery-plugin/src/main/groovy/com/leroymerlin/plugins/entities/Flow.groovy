@@ -1,5 +1,6 @@
 package com.leroymerlin.plugins.entities
 
+import com.leroymerlin.plugins.DeliveryPlugin
 import com.leroymerlin.plugins.DeliveryPluginExtension
 import com.leroymerlin.plugins.cli.Executor
 import com.leroymerlin.plugins.tasks.ChangePropertiesTask
@@ -25,7 +26,7 @@ class Flow {
         this.name = name
         this.project = extension.project
         this.delivery = extension
-        taskFlow = project.task(name + Flow.simpleName)
+        taskFlow = project.task(name + Flow.simpleName, group: DeliveryPlugin.TASK_GROUP)
     }
 
     private String formatTaskName(String baseName) {
@@ -34,7 +35,7 @@ class Flow {
 
     private void createTask(Class className, HashMap<String, Object> parameters) {
 
-        Task task = project.task(formatTaskName(className.simpleName), type: className);
+        Task task = project.task(formatTaskName(className.simpleName), type: className, group: DeliveryPlugin.TASK_GROUP)
         if (task.hasProperty("scmAdapter")) {
             task.setProperty("scmAdapter", delivery.getScmAdapter())
         }

@@ -1,5 +1,6 @@
 package com.leroymerlin.plugins.tasks.build
 
+import com.leroymerlin.plugins.DeliveryPlugin
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.bundling.Jar
 
@@ -20,7 +21,7 @@ class AndroidLibBuild extends DeliveryBuild {
             outputFiles.put("mapping", variant.mappingFile)
         }
 
-        def sourcesJar = project.task("sources${variant.name.capitalize()}Jar", type: Jar) {
+        def sourcesJar = project.task("sources${variant.name.capitalize()}Jar", type: Jar, group: DeliveryPlugin.TASK_GROUP) {
             classifier = 'sources'
             from variant.javaCompile.destinationDir
         }

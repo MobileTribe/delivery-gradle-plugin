@@ -55,7 +55,7 @@ class IOSConfigurator extends ProjectConfigurator {
 
             def parameter = project.getGradle().startParameter.newInstance()
             parameter.systemPropertiesArgs.put("xcodebuild", property.name)
-            project.task(taskName + "Process", type: GradleBuild) {
+            project.task(taskName + "Process", type: GradleBuild, group: DeliveryPlugin.TASK_GROUP) {
                 startParameter = parameter
                 tasks = ['archive', 'package']
             }

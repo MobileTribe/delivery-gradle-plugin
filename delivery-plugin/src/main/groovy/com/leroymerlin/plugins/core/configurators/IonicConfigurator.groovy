@@ -31,7 +31,7 @@ class IonicConfigurator extends ProjectConfigurator {
         }
         nestedConfigurator?.setup(project, extension)
 
-        project.task("prepareNpm").doFirst {
+        project.task("prepareNpm", group: DeliveryPlugin.TASK_GROUP).doFirst {
             Executor.exec(["npm", "install"], directory: project.projectDir)
         }
     }
@@ -83,7 +83,7 @@ class IonicConfigurator extends ProjectConfigurator {
         if (signingName == 'android' || signingName == 'ios') {
             def preparePlatformTask = "prepareIonic${signingName.capitalize()}Platform"
 
-            project.task(buildTaskName, type: Upload) {
+            project.task(buildTaskName, type: Upload, group: DeliveryPlugin.TASK_GROUP) {
                 configuration = project.configurations.create("ionic${signingName.capitalize()}")
                 repositories {}
             }.dependsOn([preparePlatformTask, "${buildTaskName}Process"])
@@ -91,7 +91,7 @@ class IonicConfigurator extends ProjectConfigurator {
             def newBuildGradleFile = project.file("platforms/${signingName}/${signingName == 'android' ? "delivery-" : ""}build.gradle")
             def settingsGradle = project.file("platforms/${signingName}/${signingName == 'android' ? "delivery-" : ""}settings.gradle")
 
-            project.task(preparePlatformTask).doFirst {
+            project.task(preparePlatformTask, group: DeliveryPlugin.TASK_GROUP).doFirst {
                 if (!new File(project.getProjectDir().toString() + "/resources/${signingName}").exists()) {
                     new File(project.getProjectDir().toString() + "/platforms")?.deleteDir()
                     Executor.exec(["ionic", "platform", "add", signingName], directory: project.projectDir)
@@ -129,7 +129,7 @@ class IonicConfigurator extends ProjectConfigurator {
             }
             newStartParameter.projectDir = settingsGradle.getParentFile()
 
-            project.task("${buildTaskName}Process", type: GradleBuild) {
+            project.task("${buildTaskName}Process", type: GradleBuild, group: DeliveryPlugin.TASK_GROUP) {
                 startParameter = newStartParameter
                 tasks = ['uploadArtifacts']
             }.shouldRunAfter preparePlatformTask

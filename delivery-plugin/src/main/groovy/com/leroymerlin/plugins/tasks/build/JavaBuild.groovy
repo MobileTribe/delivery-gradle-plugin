@@ -1,5 +1,6 @@
 package com.leroymerlin.plugins.tasks.build
 
+import com.leroymerlin.plugins.DeliveryPlugin
 import org.gradle.api.tasks.bundling.Jar
 
 /**
@@ -14,7 +15,7 @@ class JavaBuild extends DeliveryBuild {
         dependsOn.add(project.build)
         dependsOn.add(project.jar)
 
-        def sourcesJar = project.task("sources${variantName}Jar", type: Jar) {
+        def sourcesJar = project.task("sources${variantName}Jar", type: Jar, group: DeliveryPlugin.TASK_GROUP) {
             classifier = 'sources'
             from project.compileJava.destinationDir
         }
