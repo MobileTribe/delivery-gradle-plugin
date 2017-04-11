@@ -92,9 +92,20 @@ class IonicConfigurator extends ProjectConfigurator {
             def settingsGradle = project.file("platforms/${signingName}/${signingName == 'android' ? "delivery-" : ""}settings.gradle")
 
             project.task(preparePlatformTask).doFirst {
-                if (!new File(project.getProjectDir().toString() + "/platforms").list().contains(signingName)) {
+                if (!new File(project.getProjectDir().toString() + "/resources/${signingName}").exists()) {
+                    new File(project.getProjectDir().toString() + "/platforms")?.deleteDir()
+                    Executor.exec(["ionic", "platform", "add", signingName], directory: project.projectDir)
+                    if (signingName == "ios") {
+                        Executor.exec(["ionic", "resources", signingName], directory: project.projectDir)
+                        Executor.exec(["ionic", "platform", "remove", signingName], directory: project.projectDir)
+                        Executor.exec(["ionic", "platform", "add", signingName], directory: project.projectDir)
+                    }
+                } else {
+                    Executor.exec(["ionic", "resources", signingName], directory: project.projectDir)
+                    new File(project.getProjectDir().toString() + "/platforms")?.deleteDir()
                     Executor.exec(["ionic", "platform", "add", signingName], directory: project.projectDir)
                 }
+
                 Executor.exec(["ionic", "build", signingName, "--release"], directory: project.projectDir)
 
                 newBuildGradleFile.delete()
@@ -142,6 +153,6 @@ class IonicConfigurator extends ProjectConfigurator {
 
     @Override
     boolean handleProject(Project project) {
-        return System.getProperty(IONIC_BUILD) != null || (project.file('ionic.config.json').exists() && project.file('config.xml').exists())
+        return System.getProperty(IONIC_BUILD) != null || project.file('ionic.project').exists() || (project.file('ionic.config.json').exists())
     }
 }

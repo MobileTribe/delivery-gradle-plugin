@@ -16,7 +16,8 @@ class SigningProperty {
         if (!propertiesFile.exists()) {
             Executor.logger?.warn("Can't load ${propertiesFile.path} in $name signingProperty")
         } else {
-            Properties fileProp = new Properties();
+            Executor.logger?.warn("$name signingProperty loaded from ${propertiesFile.path}")
+            Properties fileProp = new Properties()
             propertiesFile.withInputStream {
                 stream -> fileProp.load(stream)
             }
