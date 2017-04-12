@@ -90,11 +90,12 @@ class DeliveryPlugin implements Plugin<Project> {
     def baseBranch = System.getProperty("BASE_BRANCH", 'master')
     def workBranch = System.getProperty("BRANCH", 'develop')
     def newVersionId = Integer.parseInt(project.versionId) + 1
+    def propertyFile = project.delivery.plugin.getVersionFile()
 
     branch workBranch
     branch releaseBranch, true
     changeProperties releaseVersion
-    add 'version.properties'
+    add propertyFile.path
     commit "chore (version) : Update version to $releaseVersion"
     build
     tag "$project.projectName-$project.versionId-$releaseVersion"
@@ -105,7 +106,7 @@ class DeliveryPlugin implements Plugin<Project> {
     }
     branch releaseBranch
     changeProperties newVersion, newVersionId
-    add 'version.properties'
+    add propertyFile.path
     commit "chore (version) : Update to new version $releaseVersion and versionId $newVersionId"
     push
     branch workBranch
