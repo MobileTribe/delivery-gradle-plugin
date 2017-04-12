@@ -16,7 +16,7 @@ class SigningProperty {
         if (!propertiesFile.exists()) {
             Executor.logger?.warn("Can't load ${propertiesFile.path} in $name signingProperty")
         } else {
-            Executor.logger?.warn("$name signingProperty loaded from ${propertiesFile.path}")
+            Executor.logger?.info("$name signingProperty loaded from ${propertiesFile.path}")
             Properties fileProp = new Properties()
             propertiesFile.withInputStream {
                 stream -> fileProp.load(stream)
@@ -32,7 +32,11 @@ class SigningProperty {
 
     @Override
     void setProperty(String property, Object newValue) {
-        properties.put(property, newValue)
+        if (property == "propertiesFile") {
+            setPropertiesFile(newValue as File)
+        } else {
+            properties.put(property, newValue)
+        }
     }
 
     def get(String name) {

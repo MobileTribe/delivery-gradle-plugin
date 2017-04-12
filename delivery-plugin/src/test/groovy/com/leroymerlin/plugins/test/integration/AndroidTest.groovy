@@ -62,7 +62,7 @@ delivery{
         }
     }
     signingProperties {
-        release {
+        all {
             propertiesFile = file("signing.properties")
         }
     }
