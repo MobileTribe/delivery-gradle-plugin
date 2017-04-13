@@ -84,10 +84,17 @@ class DeliveryPluginTest {
                      */
                     merge 'develop'
                     /**
-                     * push changes to actual branch, if branch is not set
+                     * push changes to branch
+                     * if branch is not set, push changes to actual branch
                      * @param @optional branch (default: "")
                      */
                     push
+                    /**
+                     * push tag
+                     * if tagName is not set, push sane tags
+                     * @param @optional tagName (default = null)
+                     */
+                    pushTag
                     /**
                      * delete a branch
                      * @param branchName

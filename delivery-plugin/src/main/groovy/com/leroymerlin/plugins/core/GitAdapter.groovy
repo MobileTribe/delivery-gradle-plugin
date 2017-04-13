@@ -56,14 +56,12 @@ class GitAdapter extends Executor implements BaseScmAdapter {
             params.add(2, "-B")
         }
         def result = exec(generateGitCommand(params), directory: project.rootDir, errorMessage: "Couldn't switch to $branchName", errorPatterns: ['[rejected]', 'error: ', 'fatal: '])
-
         return result
     }
 
     @Override
     String tag(String annotation, String message) {
         def result = exec(generateGitCommand(['git', 'tag', '-a', annotation, '-m', '\'' + message + '\'']), directory: project.rootDir, errorMessage: "Duplicate tag [$annotation]", errorPatterns: ['already exists'])
-
         return result
     }
 
@@ -81,8 +79,7 @@ class GitAdapter extends Executor implements BaseScmAdapter {
 
     @Override
     String pushTag(String tagName) {
-        def result = ""
-
+        def result
         if (tagName == null) {
             // If no tag is specified, push all sane tags (means annotated and reachable)
             result = exec(generateGitCommand(['git', 'push', '--follow-tags']), directory: project.rootDir, errorMessage: ' Failed to push tags to remote ', errorPatterns: ['[rejected] ', ' error: ', ' fatal: '])
@@ -90,7 +87,6 @@ class GitAdapter extends Executor implements BaseScmAdapter {
             // If a tag is specified, only push this one
             result = exec(generateGitCommand(['git', 'push', 'origin', tagName]), directory: project.rootDir, errorMessage: ' Failed to push tag to remote ', errorPatterns: ['[rejected] ', ' error: ', ' fatal: '])
         }
-
         return result
     }
 
