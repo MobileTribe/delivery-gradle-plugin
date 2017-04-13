@@ -80,6 +80,21 @@ class GitAdapter extends Executor implements BaseScmAdapter {
     }
 
     @Override
+    String pushTag(String tagName) {
+        def result = ""
+
+        if (tagName == null) {
+            // If no tag is specified, push all sane tags (means annotated and reachable)
+            result = exec(generateGitCommand(['git', 'push', '--follow-tags']), directory: project.rootDir, errorMessage: ' Failed to push tags to remote ', errorPatterns: ['[rejected] ', ' error: ', ' fatal: '])
+        } else {
+            // If a tag is specified, only push this one
+            result = exec(generateGitCommand(['git', 'push', 'origin', tagName]), directory: project.rootDir, errorMessage: ' Failed to push tag to remote ', errorPatterns: ['[rejected] ', ' error: ', ' fatal: '])
+        }
+
+        return result
+    }
+
+    @Override
     List<String> generateGitCommand(List<String> command) {
         list = command
         if (username != null && email != null)
