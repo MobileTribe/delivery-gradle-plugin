@@ -220,8 +220,9 @@ delivery{
         gitStatus = getGitStatus()
         Assert.assertTrue("Commit init file should be :\n$gitStatus", gitStatus.contains("nothing to commit"))
         testTask('switchBranchFlow')
-        println getGitStatus()
-        Assert.assertTrue("Didn't try to push", testTask('pushFlow').contains("'origin' does not appear to be a git repository"));
+        gitStatus = getGitStatus()
+        Assert.assertTrue("Didn't switch", gitStatus.contains("On branch branchTest"))
+        testTask('pushFlow')
         gitStatus = getGitStatus()
         Assert.assertTrue("Could not push :\n$gitStatus", gitStatus.contains("nothing to commit"))
     }
