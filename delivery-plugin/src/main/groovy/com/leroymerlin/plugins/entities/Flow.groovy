@@ -65,7 +65,7 @@ class Flow {
         createTask(CommitTask, [message: message])
     }
 
-    def tag(def message = "", def annotation = "") {
+    def tag(def annotation = "", def message = "") {
         createTask(TagTask, [annotation: annotation, message: message])
     }
 
