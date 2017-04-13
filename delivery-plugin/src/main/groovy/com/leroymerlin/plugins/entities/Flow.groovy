@@ -4,6 +4,7 @@ import com.leroymerlin.plugins.DeliveryPlugin
 import com.leroymerlin.plugins.DeliveryPluginExtension
 import com.leroymerlin.plugins.cli.Executor
 import com.leroymerlin.plugins.tasks.ChangePropertiesTask
+import com.leroymerlin.plugins.tasks.StepTask
 import com.leroymerlin.plugins.tasks.scm.*
 import org.gradle.api.GradleException
 import org.gradle.api.Project
@@ -19,7 +20,6 @@ class Flow {
     ArrayList<String> tasksList = new ArrayList<>()
     Task taskFlow
     DeliveryPluginExtension delivery
-
     String name
 
     Flow(String name, DeliveryPluginExtension extension) {
@@ -33,9 +33,8 @@ class Flow {
         "${name}Step${tasksList.size()}${baseName}"
     }
 
-    private void createTask(Class className, HashMap<String, Object> parameters) {
-
-        Task task = project.task(formatTaskName(className.simpleName), type: className, group: DeliveryPlugin.TASK_GROUP)
+    private void createTask(Class className, HashMap<String, Object> parameters, String taskName = formatTaskName(className.simpleName)) {
+        Task task = project.task(taskName, type: className, group: DeliveryPlugin.TASK_GROUP)
         if (task.hasProperty("scmAdapter")) {
             task.setProperty("scmAdapter", delivery.getScmAdapter())
         }
@@ -65,7 +64,7 @@ class Flow {
         createTask(CommitTask, [message: message])
     }
 
-    def tag(def message = "", def annotation = "") {
+    def tag(def annotation = "", def message = "") {
         createTask(TagTask, [annotation: annotation, message: message])
     }
 
@@ -73,8 +72,12 @@ class Flow {
         createTask(MergeTask, [from: branch])
     }
 
-    def push() {
-        createTask(PushTask, null)
+    def push(String branch = "") {
+        createTask(PushTask, [branch: branch])
+    }
+
+    def pushTag(String tagName) {
+        createTask(PushTagTask, [tagName: tagName])
     }
 
     def delete(String branchName) {
@@ -116,6 +119,10 @@ class Flow {
                 taskFlow.dependsOn(tasksList)
             }
         }
+    }
+
+    def step(String stepName, String title) {
+        createTask(StepTask, [title: title], "${tasksList.last()}Step${stepName}")
     }
 
     def get(String name) {

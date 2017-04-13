@@ -11,7 +11,7 @@ import org.gradle.api.Project
 
 class GitAdapter extends Executor implements BaseScmAdapter {
 
-    private String email, username, password, branchToUse
+    private String email, username, password
     private List<String> list
     private Project project
 
@@ -75,21 +75,17 @@ fi
 
     @Override
     String switchBranch(String branchName, boolean createIfNeeded) {
-        branchToUse = branchName
-
         def params = ['git', 'checkout', branchName]
         if (createIfNeeded) {
             params.add(2, "-B")
         }
         def result = exec(generateGitCommand(params), env: gitEnv, directory: project.rootDir, errorMessage: "Couldn't switch to $branchName", errorPatterns: ['[rejected]', 'error: ', 'fatal: '])
-
         return result
     }
 
     @Override
     String tag(String annotation, String message) {
         def result = exec(generateGitCommand(['git', 'tag', '-a', annotation, '-m', '\'' + message + '\'']), env: gitEnv, directory: project.rootDir, errorMessage: "Duplicate tag [$annotation]", errorPatterns: ['already exists'])
-
         return result
     }
 
@@ -100,8 +96,25 @@ fi
     }
 
     @Override
-    String push() {
-        def result = exec(generateGitCommand(['git', 'push', '-u', 'origin', branchToUse != null ? branchToUse : 'master']), env: gitEnv, directory: project.rootDir, errorMessage: ' Failed to push to remote ', errorPatterns: ['[rejected] ', ' error: ', ' fatal: '])
+    String push(String branch = "") {
+        def params = ['git', 'push', '-u', 'origin']
+        if (!branch.isEmpty()) {
+            params << branch
+        }
+        def result = exec(generateGitCommand(params), env: gitEnv, directory: project.rootDir, errorMessage: ' Failed to push to remote ', errorPatterns: ['[rejected] ', ' error: ', ' fatal: '])
+        return result
+    }
+
+    @Override
+    String pushTag(String tagName) {
+        def result
+        if (tagName == null) {
+            // If no tag is specified, push all sane tags (means annotated and reachable)
+            result = exec(generateGitCommand(['git', 'push', '--follow-tags']), directory: project.rootDir, errorMessage: ' Failed to push tags to remote ', errorPatterns: ['[rejected] ', ' error: ', ' fatal: '])
+        } else {
+            // If a tag is specified, only push this one
+            result = exec(generateGitCommand(['git', 'push', 'origin', tagName]), directory: project.rootDir, errorMessage: ' Failed to push tag to remote ', errorPatterns: ['[rejected] ', ' error: ', ' fatal: '])
+        }
         return result
     }
 
