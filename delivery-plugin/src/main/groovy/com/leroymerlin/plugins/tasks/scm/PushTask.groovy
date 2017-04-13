@@ -7,8 +7,10 @@ import org.gradle.api.tasks.TaskAction
  */
 class PushTask extends ScmBaseTask {
 
+    String branch
+
     @TaskAction
     push() {
-        scmAdapter.push()
+        scmAdapter.push(branch)
     }
 }

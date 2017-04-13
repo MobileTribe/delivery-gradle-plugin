@@ -22,7 +22,7 @@ interface BaseScmAdapter {
 
     String merge(String from)
 
-    String push()
+    String push(String branch)
 
     List<String> generateGitCommand(List<String> command)
 
