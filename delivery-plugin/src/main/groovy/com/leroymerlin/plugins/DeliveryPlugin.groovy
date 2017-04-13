@@ -83,11 +83,11 @@ class DeliveryPlugin implements Plugin<Project> {
                         //tag::gitReleaseFlow[]
 'releaseGit',
 {
-
     def releaseVersion = PropertiesUtils.getSystemProperty("VERSION", project.version - '-SNAPSHOT')
     def releaseBranch = "release/${project.versionId}-$releaseVersion"
     def matcher = releaseVersion =~ /(\d+)([^\d]*$)/
     def newVersion = PropertiesUtils.getSystemProperty("NEW_VERSION", matcher.replaceAll("${(matcher[0][1] as int) + 1}${matcher[0][2]}")) - "-SNAPSHOT" + "-SNAPSHOT"
+    //Use 'false' value to skip merge to base branch
     def baseBranch = PropertiesUtils.getSystemProperty("BASE_BRANCH", 'master')
     def workBranch = PropertiesUtils.getSystemProperty("BRANCH", 'develop')
     def newVersionId = Integer.parseInt(project.versionId) + 1
@@ -100,7 +100,7 @@ class DeliveryPlugin implements Plugin<Project> {
     commit "chore (version) : Update version to $releaseVersion"
     build
     tag "$project.projectName-$project.versionId-$releaseVersion"
-    if (baseBranch) {
+    if (baseBranch!='false') {
         branch baseBranch
         merge releaseBranch
         push

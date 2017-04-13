@@ -49,7 +49,8 @@ You can use system properties to inject scm credentials and set your project ver
 
 * *SCM_EMAIL* // git email
 * *SCM_USER* // git username
-* *VERSION* // actual version
+* *SCM_PASSWORD* // git password
+* *VERSION* // override actual version
 
 == Flows
 
