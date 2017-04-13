@@ -73,7 +73,11 @@ class GitAdapter extends Executor implements BaseScmAdapter {
 
     @Override
     String push(String branch = "") {
-        def result = exec(generateGitCommand(['git', 'push', '-u', 'origin', branch]), directory: project.rootDir, errorMessage: ' Failed to push to remote ', errorPatterns: ['[rejected] ', ' error: ', ' fatal: '])
+        def params = ['git', 'push', '-u', 'origin']
+        if (!branch.isEmpty()) {
+            params << branch
+        }
+        def result = exec(generateGitCommand(params), directory: project.rootDir, errorMessage: ' Failed to push to remote ', errorPatterns: ['[rejected] ', ' error: ', ' fatal: '])
         return result
     }
 

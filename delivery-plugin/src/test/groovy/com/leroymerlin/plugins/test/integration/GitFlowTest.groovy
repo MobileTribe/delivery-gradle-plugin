@@ -29,6 +29,7 @@ delivery{
     flows{
         initCommit{
             commit 'init commit', true
+            step 'myStep','hello'
         }
     }
 }
