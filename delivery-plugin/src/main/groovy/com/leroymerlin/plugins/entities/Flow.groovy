@@ -73,8 +73,8 @@ class Flow {
         createTask(MergeTask, [from: branch])
     }
 
-    def push() {
-        createTask(PushTask, null)
+    def push(String branch) {
+        createTask(PushTask, [branch: branch])
     }
 
     def delete(String branchName) {
