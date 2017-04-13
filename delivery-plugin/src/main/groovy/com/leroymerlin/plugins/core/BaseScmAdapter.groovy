@@ -24,6 +24,8 @@ interface BaseScmAdapter {
 
     String push()
 
+    String pushTag(String tagName)
+
     List<String> generateGitCommand(List<String> command)
 
     String discardChange()
