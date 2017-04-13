@@ -1,6 +1,6 @@
 package com.leroymerlin.plugins.tasks
 
-import com.leroymerlin.plugins.utils.PropertiesFileUtils
+import com.leroymerlin.plugins.utils.PropertiesUtils
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.tasks.TaskAction
@@ -18,13 +18,13 @@ class ChangePropertiesTask extends DefaultTask {
         File versionFile = project.delivery.plugin.getVersionFile()
 
         if (version != null) {
-            PropertiesFileUtils.setProperty(versionFile, project.ext.versionKey, version)
+            PropertiesUtils.setProperty(versionFile, project.ext.versionKey, version)
         }
         if (versionId != null) {
-            PropertiesFileUtils.setProperty(versionFile, project.ext.versionIdKey, versionId)
+            PropertiesUtils.setProperty(versionFile, project.ext.versionIdKey, versionId)
         }
         if (projectName != null) {
-            PropertiesFileUtils.setProperty(versionFile, project.ext.projectNameKey, projectName)
+            PropertiesUtils.setProperty(versionFile, project.ext.projectNameKey, projectName)
         }
         project.delivery.plugin.applyDeliveryProperties(versionFile)
     }

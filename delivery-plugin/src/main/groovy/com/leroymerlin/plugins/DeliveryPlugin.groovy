@@ -3,7 +3,7 @@ package com.leroymerlin.plugins
 import com.leroymerlin.plugins.cli.Executor
 import com.leroymerlin.plugins.core.configurators.*
 import com.leroymerlin.plugins.tasks.build.DeliveryBuild
-import com.leroymerlin.plugins.utils.PropertiesFileUtils
+import com.leroymerlin.plugins.utils.PropertiesUtils
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -83,14 +83,15 @@ class DeliveryPlugin implements Plugin<Project> {
                         //tag::gitReleaseFlow[]
 'releaseGit',
 {
-    def releaseVersion = System.getProperty("VERSION", project.version - '-SNAPSHOT')
+
+    def releaseVersion = PropertiesUtils.getSystemProperty("VERSION", project.version - '-SNAPSHOT')
     def releaseBranch = "release/${project.versionId}-$releaseVersion"
     def matcher = releaseVersion =~ /(\d+)([^\d]*$)/
-    def newVersion = System.getProperty("NEW_VERSION", matcher.replaceAll("${(matcher[0][1] as int) + 1}${matcher[0][2]}")) - "-SNAPSHOT" + "-SNAPSHOT"
-    def baseBranch = System.getProperty("BASE_BRANCH", 'master')
-    def workBranch = System.getProperty("BRANCH", 'develop')
+    def newVersion = PropertiesUtils.getSystemProperty("NEW_VERSION", matcher.replaceAll("${(matcher[0][1] as int) + 1}${matcher[0][2]}")) - "-SNAPSHOT" + "-SNAPSHOT"
+    def baseBranch = PropertiesUtils.getSystemProperty("BASE_BRANCH", 'master')
+    def workBranch = PropertiesUtils.getSystemProperty("BRANCH", 'develop')
     def newVersionId = Integer.parseInt(project.versionId) + 1
-    def propertyFile = project.delivery.plugin.getVersionFile()
+    def propertyFile = getVersionFile()
 
     branch workBranch
     branch releaseBranch, true
@@ -122,36 +123,36 @@ class DeliveryPlugin implements Plugin<Project> {
 
     void setupProperties() {
         //Read and apply Delivery.properties file to override default version.properties path and version, versionId, projectName keys
-        PropertiesFileUtils.readAndApplyPropertiesFile(project, project.file(DELIVERY_CONF_FILE))
+        PropertiesUtils.readAndApplyPropertiesFile(project, project.file(DELIVERY_CONF_FILE))
 
         //Apply default value if needed
         File versionFile = getVersionFile()
         if (!project.hasProperty('versionIdKey')) {
             project.ext.versionIdKey = 'versionId'
         }
-        PropertiesFileUtils.setDefaultProperty(versionFile, project.ext.versionIdKey, "2")
+        PropertiesUtils.setDefaultProperty(versionFile, project.ext.versionIdKey, "2")
 
         if (!project.hasProperty('versionKey')) {
             project.ext.versionKey = 'version'
         }
-        PropertiesFileUtils.setDefaultProperty(versionFile, project.ext.versionKey, "1.0.0-SNAPSHOT")
+        PropertiesUtils.setDefaultProperty(versionFile, project.ext.versionKey, "1.0.0-SNAPSHOT")
 
         if (!project.hasProperty('projectNameKey')) {
             project.ext.projectNameKey = 'projectName'
         }
-        PropertiesFileUtils.setDefaultProperty(versionFile, project.ext.projectNameKey, project.name)
+        PropertiesUtils.setDefaultProperty(versionFile, project.ext.projectNameKey, project.name)
 
-        if (System.getProperty(VERSION_ID_ARG) != null) {
-            PropertiesFileUtils.setProperty(versionFile, project.ext.versionIdKey, System.getProperty(VERSION_ID_ARG))
+        if (PropertiesUtils.getSystemProperty(VERSION_ID_ARG)) {
+            PropertiesUtils.setProperty(versionFile, project.ext.versionIdKey, PropertiesUtils.getSystemProperty(VERSION_ID_ARG))
         }
-        if (System.getProperty(VERSION_ARG) != null) {
-            PropertiesFileUtils.setProperty(versionFile, project.ext.versionKey, System.getProperty(VERSION_ARG))
+        if (PropertiesUtils.getSystemProperty(VERSION_ARG)) {
+            PropertiesUtils.setProperty(versionFile, project.ext.versionKey, PropertiesUtils.getSystemProperty(VERSION_ARG))
         }
-        if (System.getProperty(GROUP_ARG) != null) {
-            PropertiesFileUtils.setProperty(versionFile, 'group', System.getProperty(GROUP_ARG))
+        if (PropertiesUtils.getSystemProperty(GROUP_ARG)) {
+            PropertiesUtils.setProperty(versionFile, 'group', PropertiesUtils.getSystemProperty(GROUP_ARG))
         }
-        if (System.getProperty(PROJECT_NAME_ARG) != null) {
-            PropertiesFileUtils.setProperty(versionFile, project.ext.projectNameKey, System.getProperty(PROJECT_NAME_ARG))
+        if (PropertiesUtils.getSystemProperty(PROJECT_NAME_ARG)) {
+            PropertiesUtils.setProperty(versionFile, project.ext.projectNameKey, PropertiesUtils.getSystemProperty(PROJECT_NAME_ARG))
         }
         applyDeliveryProperties(versionFile)
     }
@@ -165,7 +166,7 @@ class DeliveryPlugin implements Plugin<Project> {
     }
 
     void applyDeliveryProperties(File versionFile) {
-        PropertiesFileUtils.readAndApplyPropertiesFile(project, versionFile)
+        PropertiesUtils.readAndApplyPropertiesFile(project, versionFile)
         project.ext.versionId = project.ext."${project.ext.versionIdKey}"
         project.ext.version = project.ext."${project.ext.versionKey}"
         project.version = project.ext."${project.ext.versionKey}"
