@@ -1,7 +1,6 @@
 package com.leroymerlin.plugins.test
 
 import com.leroymerlin.plugins.DeliveryPlugin
-import com.leroymerlin.plugins.entities.SigningProperty
 import com.leroymerlin.plugins.tasks.build.DeliveryBuild
 import org.gradle.api.Project
 import org.gradle.internal.impldep.org.apache.http.util.Asserts
@@ -85,7 +84,8 @@ class DeliveryPluginTest {
                      */
                     merge 'develop'
                     /**
-                     * push changes
+                     * push changes to actual branch, if branch is not set
+                     * @param @optional branch (default: "")
                      */
                     push
                     /**
@@ -205,11 +205,11 @@ class DeliveryPluginTest {
                         /**
                          * Configure your project
                          */
-                        configure: {/*...*/ },
+                        configure           : {/*...*/ },
                         /**
                          * Apply some properties to your project
                          */
-                        applyProperties: {/*...*/ },
+                        applyProperties     : {/*...*/ },
                         /**
                          * Apply the signing properties to your project
                          * @param property

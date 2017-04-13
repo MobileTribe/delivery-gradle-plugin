@@ -11,7 +11,7 @@ import org.gradle.api.Project
 
 class GitAdapter extends Executor implements BaseScmAdapter {
 
-    private String email, username, branchToUse
+    private String email, username
     private List<String> list
     private Project project
 
@@ -51,8 +51,6 @@ class GitAdapter extends Executor implements BaseScmAdapter {
 
     @Override
     String switchBranch(String branchName, boolean createIfNeeded) {
-        branchToUse = branchName
-
         def params = ['git', 'checkout', branchName]
         if (createIfNeeded) {
             params.add(2, "-B")
@@ -76,8 +74,8 @@ class GitAdapter extends Executor implements BaseScmAdapter {
     }
 
     @Override
-    String push(String branch) {
-        def result = exec(generateGitCommand(['git', 'push', '-u', 'origin', branch != null ? branch : branchToUse != null ? branchToUse : "master"]), directory: project.rootDir, errorMessage: ' Failed to push to remote ', errorPatterns: ['[rejected] ', ' error: ', ' fatal: '])
+    String push(String branch = "") {
+        def result = exec(generateGitCommand(['git', 'push', '-u', 'origin', branch]), directory: project.rootDir, errorMessage: ' Failed to push to remote ', errorPatterns: ['[rejected] ', ' error: ', ' fatal: '])
         return result
     }
 
