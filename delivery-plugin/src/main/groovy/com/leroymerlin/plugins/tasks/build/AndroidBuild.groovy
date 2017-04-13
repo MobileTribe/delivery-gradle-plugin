@@ -19,10 +19,14 @@ class AndroidBuild extends DeliveryBuild {
                 dependsOn.add(variant.testVariant.assemble)
             }
             if (variant.mappingFile) {
-                if (!variant.mappingFile.exists()) {
-                    variant.mappingFile.parentFile.mkdirs()
-                    variant.mappingFile.createNewFile()
+                doLast {
+                    if (!variant.mappingFile.exists()) {
+                        variant.mappingFile.parentFile.mkdirs()
+                        variant.mappingFile.createNewFile()
+                    }
                 }
+
+
                 outputFiles.put("mapping-$classifier", variant.mappingFile)
             }
 
@@ -36,4 +40,7 @@ class AndroidBuild extends DeliveryBuild {
             logger.warn("$classifier has no valid signing config and will not be archived")
         }
     }
+
+
+
 }
