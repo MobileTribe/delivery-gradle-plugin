@@ -73,10 +73,13 @@ class AndroidConfigurator extends ProjectConfigurator {
                 String flavorName = project.projectName.toString().split(' ').collect({ m -> return m.toLowerCase().capitalize() }).join("") + currentVariant.flavorName.capitalize()
                 flavorName = flavorName[0].toLowerCase() + flavorName.substring(1)
 
+                String flavorNameNexus = project.projectName.toString().split(' ').collect({ m -> return m.toLowerCase() }).join("-") + currentVariant.flavorName.toLowerCase()
+
+
                 def buildTaskName = "build${flavorName.capitalize()}Artifacts"
                 if (project.tasks.findByPath(buildTaskName) == null) {
                     project.task(buildTaskName, type: AndroidBuild, group: DeliveryPlugin.TASK_GROUP) {
-                        variantName flavorName
+                        variantName flavorNameNexus
                     }
                 }
                 project.tasks.findByPath(buildTaskName).addVariant(currentVariant)
