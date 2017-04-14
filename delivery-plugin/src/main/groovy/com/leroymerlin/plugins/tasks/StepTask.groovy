@@ -12,11 +12,13 @@ class StepTask extends DefaultTask {
 
     String title
     StringBuilder space = new StringBuilder()
-    final String equals = "=========================================================================================="
+    String equals = "=========================================================================================="
 
     @TaskAction
     step() {
         space.append("\n")
+        if (title.size() % 2 != 0)
+            equals += "="
         space.append("${equals}\n")
         for (int i = 0; i < (equals.size() / 2 - title.size() / 2); i++) {
             space.append(" ")
@@ -24,6 +26,5 @@ class StepTask extends DefaultTask {
         space.append("${title.toUpperCase()}\n")
         space.append("${equals}\n")
         Logger.global.info(space.toString())
-        //ajouter dans la doc + workflow
     }
 }

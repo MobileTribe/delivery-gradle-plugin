@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.4">
-<meta name="author" content="Delivery v3.0.0-BETA2-SNAPSHOT, Thu Apr 13 16:13:12 CEST 2017">
+<meta name="author" content="Delivery v3.0.0-BETA2-SNAPSHOT, Fri Apr 14 10:22:01 CEST 2017">
 <title>Tutorial</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -513,7 +513,7 @@ table.CodeRay td.code>pre{padding:0}
 <div id="header">
 <h1>Tutorial</h1>
 <div class="details">
-<span id="author" class="author">Delivery v3.0.0-BETA2-SNAPSHOT, Thu Apr 13 16:13:12 CEST 2017</span><br>
+<span id="author" class="author">Delivery v3.0.0-BETA2-SNAPSHOT, Fri Apr 14 10:22:01 CEST 2017</span><br>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -613,7 +613,10 @@ Flows and signingProperties DSL are based on <a href="http://mrhaki.blogspot.fr/
 <p><strong>SCM_USER</strong> // git username</p>
 </li>
 <li>
-<p><strong>VERSION</strong> // actual version</p>
+<p><strong>SCM_PASSWORD</strong> // git password</p>
+</li>
+<li>
+<p><strong>VERSION</strong> // override actual version</p>
 </li>
 </ul>
 </div>
@@ -706,6 +709,13 @@ Once a flow is configured, you can run it by calling the gradle task named "your
                      * @param @optional newBuild (default: false)
                      */</span>
                     task <span class="string"><span class="delimiter">'</span><span class="content">customTask</span><span class="delimiter">'</span></span>
+                    <span class="comment">/**
+                     * display a title in log
+                     * @param stepName
+                     * @param @optional title (default: stepName)
+                     * @param @optional taskName (default: flowName+Step+stepName)
+                     */</span>
+                    step <span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">hello world</span><span class="delimiter">'</span></span>
                 }
             }
             <span class="comment">//...</span></code></pre>
@@ -728,33 +738,39 @@ You just have to call <strong>releaseGitFlow</strong> to use it.
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="string"><span class="delimiter">'</span><span class="content">releaseGit</span><span class="delimiter">'</span></span>,
 {
-
     <span class="keyword">def</span> releaseVersion = PropertiesUtils.getSystemProperty(<span class="string"><span class="delimiter">&quot;</span><span class="content">VERSION</span><span class="delimiter">&quot;</span></span>, project.version - <span class="string"><span class="delimiter">'</span><span class="content">-SNAPSHOT</span><span class="delimiter">'</span></span>)
     <span class="keyword">def</span> releaseBranch = <span class="string"><span class="delimiter">&quot;</span><span class="content">release/</span><span class="inline"><span class="inline-delimiter">${</span>project.versionId<span class="inline-delimiter">}</span></span><span class="content">-</span><span class="inline"><span class="inline-delimiter">$</span>releaseVersion</span><span class="delimiter">&quot;</span></span>
     <span class="keyword">def</span> matcher = releaseVersion =~ <span class="regexp"><span class="delimiter">/</span><span class="content">(</span><span class="char">\d</span><span class="content">+)([^</span><span class="char">\d</span><span class="content">]*</span><span class="content">$</span><span class="content">)</span><span class="delimiter">/</span></span>
     <span class="keyword">def</span> newVersion = PropertiesUtils.getSystemProperty(<span class="string"><span class="delimiter">&quot;</span><span class="content">NEW_VERSION</span><span class="delimiter">&quot;</span></span>, matcher.replaceAll(<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>(matcher[<span class="integer">0</span>][<span class="integer">1</span>] <span class="keyword">as</span> <span class="type">int</span>) + <span class="integer">1</span><span class="inline-delimiter">}</span></span><span class="inline"><span class="inline-delimiter">${</span>matcher[<span class="integer">0</span>][<span class="integer">2</span>]<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>)) - <span class="string"><span class="delimiter">&quot;</span><span class="content">-SNAPSHOT</span><span class="delimiter">&quot;</span></span> + <span class="string"><span class="delimiter">&quot;</span><span class="content">-SNAPSHOT</span><span class="delimiter">&quot;</span></span>
+    <span class="comment">//Use 'false' value to skip merge to base branch</span>
     <span class="keyword">def</span> baseBranch = PropertiesUtils.getSystemProperty(<span class="string"><span class="delimiter">&quot;</span><span class="content">BASE_BRANCH</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">master</span><span class="delimiter">'</span></span>)
     <span class="keyword">def</span> workBranch = PropertiesUtils.getSystemProperty(<span class="string"><span class="delimiter">&quot;</span><span class="content">BRANCH</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">develop</span><span class="delimiter">'</span></span>)
     <span class="keyword">def</span> newVersionId = <span class="predefined-type">Integer</span>.parseInt(project.versionId) + <span class="integer">1</span>
     <span class="keyword">def</span> propertyFile = getVersionFile()
 
     branch workBranch
+    step <span class="string"><span class="delimiter">'</span><span class="content">prepareReleaseVersion</span><span class="delimiter">'</span></span>
     branch releaseBranch, <span class="predefined-constant">true</span>
     changeProperties releaseVersion
     add propertyFile.path
     commit <span class="string"><span class="delimiter">&quot;</span><span class="content">chore (version) : Update version to </span><span class="inline"><span class="inline-delimiter">$</span>releaseVersion</span><span class="delimiter">&quot;</span></span>
+    step <span class="string"><span class="delimiter">'</span><span class="content">stepBuild</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">build</span><span class="delimiter">'</span></span>
     build
+    step <span class="string"><span class="delimiter">'</span><span class="content">stepTagVersion</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">tag the commit</span><span class="delimiter">'</span></span>
     tag <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">$</span>project</span><span class="content">.projectName-</span><span class="inline"><span class="inline-delimiter">$</span>project</span><span class="content">.versionId-</span><span class="inline"><span class="inline-delimiter">$</span>releaseVersion</span><span class="delimiter">&quot;</span></span>
-    <span class="keyword">if</span> (baseBranch) {
+    <span class="keyword">if</span> (baseBranch!=<span class="string"><span class="delimiter">'</span><span class="content">false</span><span class="delimiter">'</span></span>) {
+        step <span class="string"><span class="delimiter">'</span><span class="content">stepMergeToBaseBranch</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">merge to base branch</span><span class="delimiter">'</span></span>
         branch baseBranch
         merge releaseBranch
         push
     }
+    step <span class="string"><span class="delimiter">'</span><span class="content">updateVersion</span><span class="delimiter">'</span></span>
     branch releaseBranch
     changeProperties newVersion, newVersionId
     add propertyFile.path
     commit <span class="string"><span class="delimiter">&quot;</span><span class="content">chore (version) : Update to new version </span><span class="inline"><span class="inline-delimiter">$</span>releaseVersion</span><span class="content"> and versionId </span><span class="inline"><span class="inline-delimiter">$</span>newVersionId</span><span class="delimiter">&quot;</span></span>
     push
+    step <span class="string"><span class="delimiter">'</span><span class="content">mergeDevelop</span><span class="delimiter">'</span></span>
     branch workBranch
     merge releaseBranch
     push
@@ -921,7 +937,7 @@ iOS support is based on the open source project <a href="https://github.com/open
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-04-07 10:27:03 +02:00
+Last updated 2017-04-14 09:33:18 +02:00
 </div>
 </div>
 </body>

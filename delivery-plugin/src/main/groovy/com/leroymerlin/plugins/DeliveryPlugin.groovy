@@ -94,22 +94,28 @@ class DeliveryPlugin implements Plugin<Project> {
     def propertyFile = getVersionFile()
 
     branch workBranch
+    step 'prepareReleaseVersion'
     branch releaseBranch, true
     changeProperties releaseVersion
     add propertyFile.path
     commit "chore (version) : Update version to $releaseVersion"
+    step 'stepBuild', 'build'
     build
+    step 'stepTagVersion', 'tag the commit'
     tag "$project.projectName-$project.versionId-$releaseVersion"
     if (baseBranch!='false') {
+        step 'stepMergeToBaseBranch', 'merge to base branch'
         branch baseBranch
         merge releaseBranch
         push
     }
+    step 'updateVersion'
     branch releaseBranch
     changeProperties newVersion, newVersionId
     add propertyFile.path
     commit "chore (version) : Update to new version $releaseVersion and versionId $newVersionId"
     push
+    step 'mergeDevelop'
     branch workBranch
     merge releaseBranch
     push
