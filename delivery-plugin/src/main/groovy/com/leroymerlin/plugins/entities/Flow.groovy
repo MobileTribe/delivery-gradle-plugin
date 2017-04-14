@@ -121,8 +121,8 @@ class Flow {
         }
     }
 
-    def step(String stepName, String title) {
-        createTask(StepTask, [title: title], "${tasksList.last()}Step${stepName}")
+    def step(String stepName, String title = stepName, String taskName = "${name}Step${stepName}") {
+        createTask(StepTask, [title: title], taskName)
     }
 
     def get(String name) {

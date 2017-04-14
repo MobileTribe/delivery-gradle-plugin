@@ -28,8 +28,8 @@ class GitFlowTest extends AbstractIntegrationTest {
 delivery{
     flows{
         initCommit{
+            step 'initProject', 'first commit'
             commit 'init commit', true
-            step 'myStep','hello'
         }
     }
 }

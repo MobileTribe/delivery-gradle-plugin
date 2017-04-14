@@ -129,6 +129,13 @@ class DeliveryPluginTest {
                      * @param @optional newBuild (default: false)
                      */
                     task 'customTask'
+                    /**
+                     * display a title in log
+                     * @param stepName
+                     * @param @optional title (default: stepName)
+                     * @param @optional taskName (default: flowName+Step+stepName)
+                     */
+                    step 'name', 'hello world'
                 }
             }
             //...
