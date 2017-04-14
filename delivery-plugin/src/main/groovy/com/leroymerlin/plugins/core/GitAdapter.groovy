@@ -44,7 +44,7 @@ fi
 ''';
                 credentialFile.setExecutable(true)
                 credentialFile.deleteOnExit()
-                logger.warn("GIT_ASKPASS configured " + credentialFile.absolutePath)
+                logger.warn("GIT_ASKPASS configured")
                 gitEnv.put("GIT_ASKPASS", credentialFile.absolutePath)
 
             }
@@ -85,7 +85,8 @@ fi
 
     @Override
     String tag(String annotation, String message) {
-        def result = exec(generateGitCommand(['git', 'tag', '-a', annotation, '-m', '\'' + message + '\'']), env: gitEnv, directory: project.rootDir, errorMessage: "Duplicate tag [$annotation]", errorPatterns: ['already exists'])
+        def tagName = annotation.replace(" ", "")
+        def result = exec(generateGitCommand(['git', 'tag', '-a', tagName, '-m', '\'' + message + '\'']), env: gitEnv, directory: project.rootDir, errorMessage: "Duplicate tag [$annotation]", errorPatterns: ['already exists'])
         return result
     }
 
@@ -97,14 +98,14 @@ fi
 
     @Override
     String push(String branch = "", boolean tags) {
-        def params = ['git', 'push', '-u', 'origin']
-        if (!branch.isEmpty()) {
-            params << branch
+        if (branch == null || branch.isEmpty()) {
+            branch = exec(['git', 'rev-parse', '--abbrev-ref', "HEAD"], env: gitEnv, directory: project.rootDir, errorPatterns: ['HEAD'], errorMessage: "Can't push detached HEAD").replace("\n", "").replace("\r", "")
         }
-        if(tags){
+        def params = ['git', 'push', '-u', 'origin', branch]
+        if (tags) {
             params << '--follow-tags'
         }
-        def result = exec(generateGitCommand(params), env: gitEnv, directory: project.rootDir, errorMessage: ' Failed to push to remote ', errorPatterns: ['[rejected] ', ' error: ', ' fatal: '])
+        def result = exec(generateGitCommand(params), env: gitEnv, directory: project.rootDir, errorMessage: ' Failed to push to remote ', errorPatterns: ['[rejected] ', 'error: ', 'fatal: '])
         return result
     }
 
@@ -113,10 +114,10 @@ fi
         def result
         if (tagName == null) {
             // If no tag is specified, push all sane tags (means annotated and reachable)
-            result = exec(generateGitCommand(['git', 'push', '--follow-tags']), directory: project.rootDir, errorMessage: ' Failed to push tags to remote ', errorPatterns: ['[rejected] ', ' error: ', ' fatal: '])
+            result = exec(generateGitCommand(['git', 'push', '--follow-tags']), directory: project.rootDir, errorMessage: ' Failed to push tags to remote ', errorPatterns: ['[rejected] ', 'error: ', 'fatal: '])
         } else {
             // If a tag is specified, only push this one
-            result = exec(generateGitCommand(['git', 'push', 'origin', tagName]), directory: project.rootDir, errorMessage: ' Failed to push tag to remote ', errorPatterns: ['[rejected] ', ' error: ', ' fatal: '])
+            result = exec(generateGitCommand(['git', 'push', 'origin', tagName]), directory: project.rootDir, errorMessage: ' Failed to push tag to remote ', errorPatterns: ['[rejected] ', 'error: ', 'fatal: '])
         }
         return result
     }

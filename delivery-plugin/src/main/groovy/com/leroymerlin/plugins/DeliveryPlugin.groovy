@@ -94,12 +94,12 @@ class DeliveryPlugin implements Plugin<Project> {
     def propertyFile = getVersionFile()
 
     branch workBranch
-    step 'prepareReleaseVersion'
+    step 'prepareReleaseVersion', "prepare branch $releaseBranch"
     branch releaseBranch, true
     changeProperties releaseVersion
     add propertyFile.path
     commit "chore (version) : Update version to $releaseVersion"
-    step 'stepBuild', 'build'
+    step 'stepBuild', 'build and archive'
     build
     step 'stepTagVersion', 'tag the commit'
     tag "$project.projectName-$project.versionId-$releaseVersion"
@@ -109,13 +109,13 @@ class DeliveryPlugin implements Plugin<Project> {
         merge releaseBranch
         push
     }
-    step 'updateVersion'
+    step 'updateVersion', "Update version to $newVersionId - $newVersion"
     branch releaseBranch
     changeProperties newVersion, newVersionId
     add propertyFile.path
     commit "chore (version) : Update to new version $releaseVersion and versionId $newVersionId"
     push
-    step 'mergeDevelop'
+    step 'mergeDevelop', "Merge release branch to $workBranch"
     branch workBranch
     merge releaseBranch
     push

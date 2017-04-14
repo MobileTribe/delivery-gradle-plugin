@@ -121,7 +121,7 @@ class Flow {
         }
     }
 
-    def step(String stepName, String title = stepName, String taskName = "${name}Step${stepName}") {
+    def step(String stepName, String title = stepName, String taskName = "${name}Step${stepName.capitalize()}") {
         createTask(StepTask, [title: title], taskName)
     }
 

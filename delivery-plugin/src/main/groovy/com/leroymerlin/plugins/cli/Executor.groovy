@@ -13,7 +13,7 @@ class Executor {
     public static Logger logger
     public static Map optionsMap
     public static List<String> commandsList
-    public static LogLevel level
+    public static LogLevel levelError = LogLevel.ERROR, levelLog = LogLevel.INFO
 
     static String exec(
             Map options = [:],
@@ -25,12 +25,18 @@ class Executor {
         StringBuffer out = new StringBuffer()
 
         File directory = options['directory'] ? options['directory'] as File : null
-        level = options['logLevel'] ? options['logLevel'] as LogLevel : null
+        if (options.hasProperty('logError')) {
+            levelError = options['logError'] ? LogLevel.ERROR : null
+        }
+        if (options.hasProperty('logLevel')) {
+            levelLog = options['logLevel'] as LogLevel
+        }
         List processEnv = options['env'] ? ((options['env'] as Map) << System.getenv()).collect {
             "$it.key=$it.value"
         } : null
-        if (level != null)
-            logger?.log(level, "Running $commands in [$directory]")
+        if (levelLog != null) {
+            logger?.log(levelLog, "Running $commands in [$directory]")
+        }
         Process process = commands.execute(processEnv, directory)
         waitForProcessOutput(process, out)
 
@@ -46,22 +52,37 @@ class Executor {
     }
 
     static void waitForProcessOutput(Process process, Appendable output) {
-        Thread tout = new Thread(new TextDumper(process.getInputStream(), false, output))
-        Thread terr = new Thread(new TextDumper(process.getErrorStream(), true, output))
+        def dumperOut = new TextDumper(process.getInputStream(), false, output)
+        def dumperErr = new TextDumper(process.getErrorStream(), true, output)
+
+        Thread tout = new Thread(dumperOut)
+        Thread terr = new Thread(dumperErr)
 
         tout.start()
         terr.start()
         tout.join()
         terr.join()
 
+
+
         process.waitFor()
         process.closeStreams()
+
+        if (dumperOut.exception) {
+            throw dumperOut.exception;
+        }
+        if (dumperErr.exception) {
+            throw dumperErr.exception;
+        }
+
     }
 
     private static class TextDumper implements Runnable {
         InputStream input
         boolean catchError
         Appendable app
+
+        Exception exception;
 
         TextDumper(InputStream inputStream, boolean catchError, Appendable app) {
             this.input = inputStream
@@ -82,14 +103,14 @@ class Executor {
                     }
                     if (catchError) {
                         if (optionsMap['failOnStderr'] as boolean) {
-                            throw new GradleException("Running $commandsList produced an error: ${next}")
+                            throw new GradleException("Running '${commandsList.join(' ')}' produced an error: ${next}")
                         } else {
-                            if (level != null)
-                                logger?.log(level, next)
+                            if (levelError != null)
+                                logger?.log(levelError, next)
                         }
                     } else {
-                        if (level != null)
-                            logger?.log(level, next)
+                        if (levelLog != null)
+                            logger?.log(levelLog, next)
                     }
 
                     if (optionsMap['errorPatterns'] && [next]*.toString().any { String s ->
@@ -97,11 +118,13 @@ class Executor {
                             s.contains(it)
                         }
                     }) {
-                        throw new GradleException("${optionsMap['errorMessage'] ? optionsMap['errorMessage'] as String : 'Failed to run [' + commandsList.join(' ') + ']'} - [$next]")
+                        throw new GradleException(optionsMap['errorMessage'] ? optionsMap['errorMessage'] as String : "Failed to run '${commandsList.join(' ')}' - $next")
                     }
                 }
             } catch (IOException var5) {
                 throw new GroovyRuntimeException("exception while reading process stream", var5)
+            } catch (GradleException ex) {
+                exception = ex;
             }
         }
     }

@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.4">
-<meta name="author" content="Delivery v3.0.0-BETA2-SNAPSHOT, Fri Apr 14 10:42:10 CEST 2017">
+<meta name="author" content="Delivery v3.0.0-BETA2-SNAPSHOT, Fri Apr 14 13:59:42 CEST 2017">
 <title>Tutorial</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -513,7 +513,7 @@ table.CodeRay td.code>pre{padding:0}
 <div id="header">
 <h1>Tutorial</h1>
 <div class="details">
-<span id="author" class="author">Delivery v3.0.0-BETA2-SNAPSHOT, Fri Apr 14 10:42:10 CEST 2017</span><br>
+<span id="author" class="author">Delivery v3.0.0-BETA2-SNAPSHOT, Fri Apr 14 13:59:42 CEST 2017</span><br>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -751,12 +751,12 @@ You just have to call <strong>releaseGitFlow</strong> to use it.
     <span class="keyword">def</span> propertyFile = getVersionFile()
 
     branch workBranch
-    step <span class="string"><span class="delimiter">'</span><span class="content">prepareReleaseVersion</span><span class="delimiter">'</span></span>
+    step <span class="string"><span class="delimiter">'</span><span class="content">prepareReleaseVersion</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">prepare branch </span><span class="inline"><span class="inline-delimiter">$</span>releaseBranch</span><span class="delimiter">&quot;</span></span>
     branch releaseBranch, <span class="predefined-constant">true</span>
     changeProperties releaseVersion
     add propertyFile.path
     commit <span class="string"><span class="delimiter">&quot;</span><span class="content">chore (version) : Update version to </span><span class="inline"><span class="inline-delimiter">$</span>releaseVersion</span><span class="delimiter">&quot;</span></span>
-    step <span class="string"><span class="delimiter">'</span><span class="content">stepBuild</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">build</span><span class="delimiter">'</span></span>
+    step <span class="string"><span class="delimiter">'</span><span class="content">stepBuild</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">build and archive</span><span class="delimiter">'</span></span>
     build
     step <span class="string"><span class="delimiter">'</span><span class="content">stepTagVersion</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">tag the commit</span><span class="delimiter">'</span></span>
     tag <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">$</span>project</span><span class="content">.projectName-</span><span class="inline"><span class="inline-delimiter">$</span>project</span><span class="content">.versionId-</span><span class="inline"><span class="inline-delimiter">$</span>releaseVersion</span><span class="delimiter">&quot;</span></span>
@@ -766,13 +766,13 @@ You just have to call <strong>releaseGitFlow</strong> to use it.
         merge releaseBranch
         push
     }
-    step <span class="string"><span class="delimiter">'</span><span class="content">updateVersion</span><span class="delimiter">'</span></span>
+    step <span class="string"><span class="delimiter">'</span><span class="content">updateVersion</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Update version to </span><span class="inline"><span class="inline-delimiter">$</span>newVersionId</span><span class="content"> - </span><span class="inline"><span class="inline-delimiter">$</span>newVersion</span><span class="delimiter">&quot;</span></span>
     branch releaseBranch
     changeProperties newVersion, newVersionId
     add propertyFile.path
     commit <span class="string"><span class="delimiter">&quot;</span><span class="content">chore (version) : Update to new version </span><span class="inline"><span class="inline-delimiter">$</span>releaseVersion</span><span class="content"> and versionId </span><span class="inline"><span class="inline-delimiter">$</span>newVersionId</span><span class="delimiter">&quot;</span></span>
     push
-    step <span class="string"><span class="delimiter">'</span><span class="content">mergeDevelop</span><span class="delimiter">'</span></span>
+    step <span class="string"><span class="delimiter">'</span><span class="content">mergeDevelop</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Merge release branch to </span><span class="inline"><span class="inline-delimiter">$</span>workBranch</span><span class="delimiter">&quot;</span></span>
     branch workBranch
     merge releaseBranch
     push
