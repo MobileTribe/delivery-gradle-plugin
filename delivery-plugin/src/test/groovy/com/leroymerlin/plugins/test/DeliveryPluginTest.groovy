@@ -74,8 +74,8 @@ class DeliveryPluginTest {
                     commit 'first commit', false
                     /**
                      * tag a commit
-                     * @param @optional message (default: "")
-                     * @param @optional annotation (default: "")
+                     * @param @optional message
+                     * @param @optional annotation
                      */
                     tag 'a message', 'an annotation'
                     /**
@@ -86,13 +86,15 @@ class DeliveryPluginTest {
                     /**
                      * push changes to branch
                      * if branch is not set, push changes to actual branch
-                     * @param @optional branch (default: "")
+                     * if tags is true push all tags to remote
+                     * @param @optional branch (default: current branch)
+                     * @param @optional tags (default: true)
                      */
                     push
                     /**
                      * push tag
                      * if tagName is not set, push sane tags
-                     * @param @optional tagName (default = null)
+                     * @param @optional tagName (default = all commit)
                      */
                     pushTag
                     /**

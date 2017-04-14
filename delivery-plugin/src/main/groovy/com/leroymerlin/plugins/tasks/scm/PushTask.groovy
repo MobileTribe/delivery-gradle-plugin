@@ -9,8 +9,10 @@ class PushTask extends ScmBaseTask {
 
     String branch
 
+    boolean tags
+
     @TaskAction
     push() {
-        scmAdapter.push(branch)
+        scmAdapter.push(branch, tags)
     }
 }

@@ -22,7 +22,7 @@ interface BaseScmAdapter {
 
     String merge(String from)
 
-    String push(String branch)
+    String push(String branch, boolean tags)
 
     String pushTag(String tagName)
 

@@ -96,10 +96,13 @@ fi
     }
 
     @Override
-    String push(String branch = "") {
+    String push(String branch = "", boolean tags) {
         def params = ['git', 'push', '-u', 'origin']
         if (!branch.isEmpty()) {
             params << branch
+        }
+        if(tags){
+            params << '--follow-tags'
         }
         def result = exec(generateGitCommand(params), env: gitEnv, directory: project.rootDir, errorMessage: ' Failed to push to remote ', errorPatterns: ['[rejected] ', ' error: ', ' fatal: '])
         return result

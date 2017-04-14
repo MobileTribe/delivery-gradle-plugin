@@ -72,8 +72,8 @@ class Flow {
         createTask(MergeTask, [from: branch])
     }
 
-    def push(String branch = "") {
-        createTask(PushTask, [branch: branch])
+    def push(String branch = "", boolean tags = true) {
+        createTask(PushTask, [branch: branch, tags: true])
     }
 
     def pushTag(String tagName) {
