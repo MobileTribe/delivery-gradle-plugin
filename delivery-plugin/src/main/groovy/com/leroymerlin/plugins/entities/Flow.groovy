@@ -73,7 +73,7 @@ class Flow {
     }
 
     def push(String branch = "", boolean tags = true) {
-        createTask(PushTask, [branch: branch, tags: true])
+        createTask(PushTask, [branch: branch, tags: tags])
     }
 
     def pushTag(String tagName) {
