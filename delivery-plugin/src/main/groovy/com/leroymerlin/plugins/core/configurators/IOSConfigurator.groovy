@@ -50,7 +50,7 @@ class IOSConfigurator extends ProjectConfigurator {
         if (buildTask == null) {
             project.task(taskName, type: DeliveryBuild, group: DeliveryPlugin.TASK_GROUP) {
                 variantName project.projectName.toString().split(' ').collect({ m -> return m.toLowerCase() }).join("-") + "-" + scheme.trim().toLowerCase()
-                outputFiles = ["${target.trim().toLowerCase()}" : project.file("${project.getBuildDir()}/package/${variantCodeName}.ipa")]
+                outputFiles = ["${target.trim().toLowerCase()}": project.file("${project.getBuildDir()}/package/${variantCodeName}.ipa")]
             }.dependsOn(taskName + "Process")
 
             def parameter = project.getGradle().startParameter.newInstance()
@@ -60,7 +60,7 @@ class IOSConfigurator extends ProjectConfigurator {
                 tasks = ['archive', 'package']
             }
         }
-        if (System.getProperty("xcodebuild")?.equals(property.name)) {
+        if (System.getProperty("xcodebuild") == property.name) {
             project.xcodebuild.target = target
             project.xcodebuild.scheme = scheme
             project.xcodebuild {
@@ -86,7 +86,7 @@ class IOSConfigurator extends ProjectConfigurator {
         return file != null
     }
 
-    private File getProjectFile(Project project) {
+    private static File getProjectFile(Project project) {
         def files = project.projectDir.listFiles(new FilenameFilter() {
             @Override
             boolean accept(File dir, String name) {

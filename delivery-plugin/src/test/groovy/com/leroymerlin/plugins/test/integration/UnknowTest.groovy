@@ -17,9 +17,8 @@ class UnknowTest extends AbstractIntegrationTest {
     @Test
     void testBuildTaskGeneration() {
 
-        def archiveDirectory = new File(workingDirectory, "build/archive_ipa")
+        def archiveDirectory = new File(workingDirectory, "build/archive")
         applyExtraGradle('''
-
 
 task ('buildVariant1', type: DeliveryBuild, group: 'delivery'){
     variantName = 'variant1'
@@ -63,6 +62,6 @@ delivery{
             f ->
                 list << f
         })
-        Assert.assertEquals("archive folder should contain 4 files", 4, list.size());
+        Assert.assertEquals("archive folder should contain 4 files", 4, list.size())
     }
 }

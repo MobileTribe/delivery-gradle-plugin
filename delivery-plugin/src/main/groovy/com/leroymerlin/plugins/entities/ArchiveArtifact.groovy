@@ -21,7 +21,7 @@ class ArchiveArtifact implements PublishArtifact {
         this.classifier = classifier
         this.file = file
         this.date = new Date()
-        this.dependencyTask = dependencyTask;
+        this.dependencyTask = dependencyTask
     }
 
     @Override

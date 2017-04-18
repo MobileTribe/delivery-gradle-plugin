@@ -53,6 +53,6 @@ if(file("${System.properties['user.home']}/.gradle/signing_ios.properties").exis
             f ->
                 list << f
         })
-        Assert.assertEquals("archive folder should contain 4 files", 4, list.size());
+        Assert.assertEquals("archive folder should contain 4 files", 4, list.size())
     }
 }

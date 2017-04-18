@@ -11,9 +11,9 @@ class PropertiesUtils extends Executor {
     static String getSystemProperty(String key, String defaultValue = null) {
         def property = System.getProperty(key)
         if (property == null || property.isEmpty()) {
-            return defaultValue;
+            return defaultValue
         }
-        return property;
+        return property
     }
 
     static void setDefaultProperty(File file, String key, String value) {

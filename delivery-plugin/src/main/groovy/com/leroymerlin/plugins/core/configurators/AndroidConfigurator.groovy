@@ -84,7 +84,7 @@ class AndroidConfigurator extends ProjectConfigurator {
             }
         } else {
             project.android.libraryVariants.all { currentVariant ->
-                if (currentVariant.buildType.name.equals("release")) {
+                if (currentVariant.buildType.name == "release") {
                     def buildTaskName = "build${project.projectName.capitalize()}Artifacts"
                     if (project.tasks.findByPath(buildTaskName) == null) {
                         project.task(buildTaskName, type: AndroidLibBuild, group: DeliveryPlugin.TASK_GROUP) {

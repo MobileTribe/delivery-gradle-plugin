@@ -129,6 +129,6 @@ class Flow {
         if (this.metaClass.respondsTo(this, name)) {
             return this."$name"()
         }
-        throw new GradleException("Flow doesn't handle method $name");
+        throw new GradleException("Flow doesn't handle method $name")
     }
 }

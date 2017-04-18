@@ -69,10 +69,10 @@ class Executor {
         process.closeStreams()
 
         if (dumperOut.exception) {
-            throw dumperOut.exception;
+            throw dumperOut.exception
         }
         if (dumperErr.exception) {
-            throw dumperErr.exception;
+            throw dumperErr.exception
         }
 
     }
@@ -82,7 +82,7 @@ class Executor {
         boolean catchError
         Appendable app
 
-        Exception exception;
+        Exception exception
 
         TextDumper(InputStream inputStream, boolean catchError, Appendable app) {
             this.input = inputStream
@@ -124,7 +124,7 @@ class Executor {
             } catch (IOException var5) {
                 throw new GroovyRuntimeException("exception while reading process stream", var5)
             } catch (GradleException ex) {
-                exception = ex;
+                exception = ex
             }
         }
     }

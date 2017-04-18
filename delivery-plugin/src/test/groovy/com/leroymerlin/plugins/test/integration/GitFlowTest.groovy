@@ -179,12 +179,12 @@ delivery{
         testTask('switchBranchFlow')
         file << "salut !"
         testTask('commitAllFlow')
-        Assert.assertTrue("File should contain 'salut'", file.text.contains("salut !"));
+        Assert.assertTrue("File should contain 'salut'", file.text.contains("salut !"))
         testTask('switchToMasterFlow')
         Assert.assertTrue("Should be on master :\n$gitStatus", gitStatus.contains("master"))
-        Assert.assertTrue("File should not contain 'salut'", !file.text.contains("salut !"));
+        Assert.assertTrue("File should not contain 'salut'", !file.text.contains("salut !"))
         testTask('mergeFlow')
-        Assert.assertTrue("File should contain 'salut'", file.text.contains("salut !"));
+        Assert.assertTrue("File should contain 'salut'", file.text.contains("salut !"))
     }
 
     def getGitStatus() {

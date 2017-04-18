@@ -41,7 +41,7 @@ if [[ $1 == Username* ]] ;
 then
         echo "''' + username + '''"
 fi
-''';
+'''
                 credentialFile.setExecutable(true)
                 credentialFile.deleteOnExit()
                 logger.warn("GIT_ASKPASS configured")

@@ -26,7 +26,7 @@ class DeliveryPluginExtension {
         this.flowsContainer = project.container(Flow, { String name ->
             return Flow.newInstance(name, this)
         })
-        this.signingProperties = project.container(SigningProperty);
+        this.signingProperties = project.container(SigningProperty)
     }
 
     def archiveRepositories = project.ext.properties.containsKey('archiveRepositories') ? project.ext.archiveRepositories : {
@@ -64,12 +64,12 @@ class DeliveryPluginExtension {
 
     void setScmAdapter(BaseScmAdapter scmAdapter) {
         this.mScmAdapter = scmAdapter
-        this.mScmAdapter.setup(project, this);
+        this.mScmAdapter.setup(project, this)
     }
 
     BaseScmAdapter getScmAdapter() {
         if (mScmAdapter == null) {
-            setScmAdapter(new GitAdapter());
+            setScmAdapter(new GitAdapter())
         }
         return mScmAdapter
     }

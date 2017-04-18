@@ -52,7 +52,7 @@ class DeliveryPlugin implements Plugin<Project> {
             if (deliveryExtension.configurator == null) {
                 throw new GradleException("Configurator is null. Can't configure your project. Please set the configurator or apply the plugin after your project plugin")
             }
-            deliveryExtension.configurator.configure();
+            deliveryExtension.configurator.configure()
 
             def buildTasks = []
             buildTasks.addAll(project.tasks.withType(DeliveryBuild))

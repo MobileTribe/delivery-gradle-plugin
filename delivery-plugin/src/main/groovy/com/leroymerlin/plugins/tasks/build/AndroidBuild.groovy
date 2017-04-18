@@ -15,7 +15,7 @@ class AndroidBuild extends DeliveryBuild {
             outputFiles.put(classifier, variant.outputs.get(0).outputFile)
             dependsOn.add(variant.assemble)
             if (variant.testVariant) {
-                outputFiles.put("test-" + classifier, variant.testVariant.outputs.get(0).outputFile)
+                outputFiles.put("test-$classifier" as String, variant.testVariant.outputs.get(0).outputFile)
                 dependsOn.add(variant.testVariant.assemble)
             }
             if (variant.mappingFile) {
@@ -27,7 +27,7 @@ class AndroidBuild extends DeliveryBuild {
                 }
 
 
-                outputFiles.put("mapping-$classifier", variant.mappingFile)
+                outputFiles.put("mapping-$classifier" as String, variant.mappingFile)
             }
 
             def sourcesJar = project.task("sources${variant.name.capitalize()}Jar", type: Jar, group: DeliveryPlugin.TASK_GROUP) {

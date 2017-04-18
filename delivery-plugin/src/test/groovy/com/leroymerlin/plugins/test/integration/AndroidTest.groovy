@@ -43,7 +43,7 @@ android{
             f ->
                 list << f
         })
-        Assert.assertEquals("archive folder should contain 16 files", 16, list.size());
+        Assert.assertEquals("archive folder should contain 16 files", 16, list.size())
     }
 
     @Test
@@ -74,6 +74,6 @@ delivery{
             f ->
                 list << f
         })
-        Assert.assertEquals("archive folder should contain 12 files", 12, list.size());
+        Assert.assertEquals("archive folder should contain 12 files", 12, list.size())
     }
 }
