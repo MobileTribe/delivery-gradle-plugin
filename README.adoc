@@ -14,7 +14,7 @@ _Delivery yourself from painful build process_
 
 Delivery is the gradle plugin you need, to simplify your project industrialization.
 
-It's *easy to use*. Don't lose your time installing many tools. *Adjust it* to your needs. Handle *any type* of project.
+It's *easy to use*. Don't waste your time installing many tools. *Adjust it* to your needs. Handle *any type* of project.
 
 This plugin supports natively java, groovy, android, android library, iOS and Ionic projects, but you can easily extend the support to any project type.
 
