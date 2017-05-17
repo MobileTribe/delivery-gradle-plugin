@@ -33,6 +33,7 @@ class IonicConfigurator extends ProjectConfigurator {
 
         project.task("prepareNpm", group: DeliveryPlugin.TASK_GROUP).doFirst {
             Executor.exec(["npm", "install"], directory: project.projectDir)
+            Executor.exec(["npm", "install", "--save-dev", "--save-exact", "@ionic/cli-plugin-ionic-angular@latest", "@ionic/cli-plugin-cordova@latest"], directory: project.projectDir)
         }
     }
 
@@ -92,21 +93,7 @@ class IonicConfigurator extends ProjectConfigurator {
             def settingsGradle = project.file("platforms/${signingName}/${signingName == 'android' ? "delivery-" : ""}settings.gradle")
 
             project.task(preparePlatformTask, group: DeliveryPlugin.TASK_GROUP).doFirst {
-                if (!new File(project.getProjectDir().toString() + "/resources/${signingName}").exists()) {
-                    new File(project.getProjectDir().toString() + "/platforms")?.deleteDir()
-                    Executor.exec(["ionic", "platform", "add", signingName], directory: project.projectDir)
-                    if (signingName == "ios") {
-                        Executor.exec(["ionic", "resources", signingName], directory: project.projectDir)
-                        Executor.exec(["ionic", "platform", "remove", signingName], directory: project.projectDir)
-                        Executor.exec(["ionic", "platform", "add", signingName], directory: project.projectDir)
-                    }
-                } else {
-                    Executor.exec(["ionic", "resources", signingName], directory: project.projectDir)
-                    new File(project.getProjectDir().toString() + "/platforms")?.deleteDir()
-                    Executor.exec(["ionic", "platform", "add", signingName], directory: project.projectDir)
-                }
-
-                Executor.exec(["ionic", "build", signingName, "--release"], directory: project.projectDir)
+                Executor.exec(["ionic", "cordova", "build", signingName, "--release"], directory: project.projectDir)
 
                 newBuildGradleFile.delete()
                 if (signingName == 'android') {
