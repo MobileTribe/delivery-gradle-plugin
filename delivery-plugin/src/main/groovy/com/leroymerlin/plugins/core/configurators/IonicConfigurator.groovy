@@ -78,7 +78,7 @@ class IonicConfigurator extends ProjectConfigurator {
 
     def handleProperty(SigningProperty signingProperty) {
         def signingName = signingProperty.name.toLowerCase()
-        def buildTaskName = "buildIonic${signingName.capitalize()}Artifacts"
+        def buildTaskName = "${DeliveryPlugin.UPLOAD_TASK_PREFIX}Ionic${signingName.capitalize()}Artifacts"
 
         if (signingName == 'android' || signingName == 'ios') {
             def preparePlatformTask = "prepareIonic${signingName.capitalize()}Platform"

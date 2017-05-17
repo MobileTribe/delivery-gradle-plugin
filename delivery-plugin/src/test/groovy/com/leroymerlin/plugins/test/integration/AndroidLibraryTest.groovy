@@ -39,4 +39,10 @@ delivery{
         })
         Assert.assertEquals("archive folder should contain 4 files", 4, list.size())
     }
+
+    @Test
+    void testInstallGeneration() {
+        testTask('install')
+
+    }
 }

@@ -8,6 +8,11 @@ import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.artifacts.maven.MavenPom
+import org.gradle.api.internal.artifacts.Module
+import org.gradle.api.internal.artifacts.configurations.ConfigurationInternal
+import org.gradle.api.internal.plugins.DslObject
+import org.gradle.api.plugins.MavenRepositoryHandlerConvention
 import org.gradle.api.tasks.Upload
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -17,6 +22,8 @@ class DeliveryPlugin implements Plugin<Project> {
 
     Logger logger = LoggerFactory.getLogger('DeliveryPlugin')
 
+    public static final String UPLOAD_TASK_PREFIX = 'upload'
+    public static final String INSTALL_TASK_PREFIX = 'install'
     static final String VERSION_ARG = 'VERSION'
     static final String VERSION_ID_ARG = 'VERSION_ID'
     static final String GROUP_ARG = 'GROUP'
@@ -29,12 +36,14 @@ class DeliveryPlugin implements Plugin<Project> {
     Project project
     DeliveryPluginExtension deliveryExtension
 
+
     void apply(Project project) {
         this.project = project
         this.deliveryExtension = project.extensions.create(TASK_GROUP, DeliveryPluginExtension, project, this)
         project.plugins.apply('maven')
         Executor.logger = logger
         project.ext.DeliveryBuild = DeliveryBuild
+
 
         setupProperties()
 
@@ -45,7 +54,7 @@ class DeliveryPlugin implements Plugin<Project> {
         if (detectedConfigurator == null) {
             detectedConfigurator = [] as ProjectConfigurator
         } else {
-            logger.warn("Project of type ${detectedConfigurator.class.simpleName - "Configurator"} found")
+            logger.warn("${project.name} configured as ${detectedConfigurator.class.simpleName - "Configurator"} project")
         }
         this.deliveryExtension.configurator = detectedConfigurator
         project.afterEvaluate {
@@ -56,31 +65,55 @@ class DeliveryPlugin implements Plugin<Project> {
 
             def buildTasks = []
             buildTasks.addAll(project.tasks.withType(DeliveryBuild))
+
             buildTasks.each {
                 task ->
                     def configurationName = task.variantName + "Config"
                     if (!project.configurations.hasProperty(configurationName)) {
-                        project.configurations.create(configurationName)
+                        ConfigurationInternal config = project.configurations.create(configurationName)
                         project.dependencies.add(configurationName, 'org.apache.maven.wagon:wagon-http:2.2')
 
-                        project.task("upload${task.variantName.capitalize()}Artifacts", type: Upload, group: TASK_GROUP) {
+
+
+
+                        project.task("${UPLOAD_TASK_PREFIX}${task.variantName.capitalize()}Artifacts", type: Upload, group: TASK_GROUP) {
                             configuration = project.configurations."${configurationName}"
                             repositories deliveryExtension.archiveRepositories
                         }
+
+
+                        def installTask = project.task("${INSTALL_TASK_PREFIX}${task.variantName.capitalize()}Artifacts", type: Upload, group: TASK_GROUP) {
+                            configuration = project.configurations."${configurationName}"
+                        }
+
+                        Module module = config.getModule();
+                        MavenRepositoryHandlerConvention repositories = new DslObject(installTask.getRepositories()).getConvention().getPlugin(MavenRepositoryHandlerConvention.class);
+                        def mavenInstaller = repositories.mavenInstaller();
+                        MavenPom pom = mavenInstaller.getPom()
+                        pom.setArtifactId(module.getName())
+
+                        //installTask.getConvention().getPlugins().get("maven").mavenInstaller();
                     }
                     ((Configuration) project.configurations."${configurationName}").artifacts.addAll(task.getArtifacts())
             }
 
-            def uploadArtifacts = project.task("uploadArtifacts", group: TASK_GROUP, dependsOn: project.tasks.withType(Upload))
+            def uploadArtifacts = project.task("uploadArtifacts", group: TASK_GROUP, dependsOn: project.tasks.withType(Upload).findAll { task -> task.name.startsWith(UPLOAD_TASK_PREFIX) })
             if (project.tasks.findByPath("check") != null) {
                 uploadArtifacts.dependsOn += project.tasks.findByPath("check")
+            }
+
+
+
+            project.task("installArtifacts", group: TASK_GROUP, dependsOn: project.tasks.withType(Upload).findAll { task -> task.name.startsWith(INSTALL_TASK_PREFIX) });
+            if (project.tasks.findByPath("install") == null) {
+                project.task("install", dependsOn: ['installArtifacts'])
             }
 
             //create default release git flow
 
             if (!deliveryExtension.flowsContainer.hasProperty("releaseGit")) {
                 deliveryExtension.flowsContainer.create(
-                        //tag::gitReleaseFlow[]
+//tag::gitReleaseFlow[]
 'releaseGit',
 {
     def releaseVersion = PropertiesUtils.getSystemProperty("VERSION", project.version - '-SNAPSHOT')
@@ -103,7 +136,7 @@ class DeliveryPlugin implements Plugin<Project> {
     build
     step 'stepTagVersion', 'tag the commit'
     tag "$project.projectName-$project.versionId-$releaseVersion"
-    if (baseBranch!='false') {
+    if (baseBranch != 'false') {
         step 'stepMergeToBaseBranch', 'merge to base branch'
         branch baseBranch
         merge releaseBranch
@@ -120,7 +153,7 @@ class DeliveryPlugin implements Plugin<Project> {
     merge releaseBranch
     push
 }
-                        //end::gitReleaseFlow[]
+//end::gitReleaseFlow[]
                 )
             }
         }
