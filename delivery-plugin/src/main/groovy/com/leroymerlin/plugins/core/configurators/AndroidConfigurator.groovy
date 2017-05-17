@@ -88,7 +88,7 @@ class AndroidConfigurator extends ProjectConfigurator {
                     def buildTaskName = "build${project.projectName.capitalize()}Artifacts"
                     if (project.tasks.findByPath(buildTaskName) == null) {
                         project.task(buildTaskName, type: AndroidLibBuild, group: DeliveryPlugin.TASK_GROUP) {
-                            variantName project.projectName
+                            variantName project.name
                         }
                     }
                     project.tasks.findByPath(buildTaskName).addVariant(currentVariant)

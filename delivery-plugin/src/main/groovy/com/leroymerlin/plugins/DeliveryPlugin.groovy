@@ -24,6 +24,10 @@ class DeliveryPlugin implements Plugin<Project> {
 
     public static final String UPLOAD_TASK_PREFIX = 'upload'
     public static final String INSTALL_TASK_PREFIX = 'install'
+
+    public static final String TASK_UPLOAD = 'uploadArtifacts'
+    public static final String TASK_INSTALL = 'installArtifacts'
+
     static final String VERSION_ARG = 'VERSION'
     static final String VERSION_ID_ARG = 'VERSION_ID'
     static final String GROUP_ARG = 'GROUP'
@@ -57,6 +61,12 @@ class DeliveryPlugin implements Plugin<Project> {
             logger.warn("${project.name} configured as ${detectedConfigurator.class.simpleName - "Configurator"} project")
         }
         this.deliveryExtension.configurator = detectedConfigurator
+
+
+
+        project.task(TASK_UPLOAD, group: TASK_GROUP)
+        project.task(TASK_INSTALL, group: TASK_GROUP)
+
         project.afterEvaluate {
             if (deliveryExtension.configurator == null) {
                 throw new GradleException("Configurator is null. Can't configure your project. Please set the configurator or apply the plugin after your project plugin")
@@ -86,27 +96,25 @@ class DeliveryPlugin implements Plugin<Project> {
                             configuration = project.configurations."${configurationName}"
                         }
 
-                        Module module = config.getModule();
                         MavenRepositoryHandlerConvention repositories = new DslObject(installTask.getRepositories()).getConvention().getPlugin(MavenRepositoryHandlerConvention.class);
                         def mavenInstaller = repositories.mavenInstaller();
                         MavenPom pom = mavenInstaller.getPom()
-                        pom.setArtifactId(module.getName())
+                        pom.setArtifactId(task.variantName)
 
                         //installTask.getConvention().getPlugins().get("maven").mavenInstaller();
                     }
                     ((Configuration) project.configurations."${configurationName}").artifacts.addAll(task.getArtifacts())
             }
 
-            def uploadArtifacts = project.task("uploadArtifacts", group: TASK_GROUP, dependsOn: project.tasks.withType(Upload).findAll { task -> task.name.startsWith(UPLOAD_TASK_PREFIX) })
+            def uploadArtifacts = project.tasks.findByName(TASK_UPLOAD)
+            uploadArtifacts.dependsOn += project.tasks.withType(Upload).findAll { task -> task.name.startsWith(UPLOAD_TASK_PREFIX) }
             if (project.tasks.findByPath("check") != null) {
                 uploadArtifacts.dependsOn += project.tasks.findByPath("check")
             }
 
-
-
-            project.task("installArtifacts", group: TASK_GROUP, dependsOn: project.tasks.withType(Upload).findAll { task -> task.name.startsWith(INSTALL_TASK_PREFIX) });
+            project.tasks.findByName(TASK_INSTALL).dependsOn += project.tasks.withType(Upload).findAll { task -> task.name.startsWith(INSTALL_TASK_PREFIX) }
             if (project.tasks.findByPath("install") == null) {
-                project.task("install", dependsOn: ['installArtifacts'])
+                project.task("install", dependsOn: [TASK_INSTALL])
             }
 
             //create default release git flow
@@ -129,12 +137,14 @@ class DeliveryPlugin implements Plugin<Project> {
     branch workBranch
     step 'prepareReleaseVersion', "prepare branch $releaseBranch"
     branch releaseBranch, true
+    step 'prepareVersionFiles', "prepare version files"
     changeProperties releaseVersion
     add propertyFile.path
+    step 'commitVersionFiles', "commit version files"
     commit "chore (version) : Update version to $releaseVersion"
-    step 'stepBuild', 'build and archive'
+    step 'build', 'build and archive'
     build
-    step 'stepTagVersion', 'tag the commit'
+    step 'tagVersion', 'tag the commit'
     tag "$project.projectName-$project.versionId-$releaseVersion"
     if (baseBranch != 'false') {
         step 'stepMergeToBaseBranch', 'merge to base branch'

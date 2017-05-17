@@ -35,7 +35,7 @@ class JavaConfigurator extends ProjectConfigurator {
 
         logger.info("Generate Java Build tasks")
         project.task("build${project.projectName}Artifacts", type: JavaBuild, group: DeliveryPlugin.TASK_GROUP) {
-            variantName project.projectName
+            variantName project.name
         }
     }
 
