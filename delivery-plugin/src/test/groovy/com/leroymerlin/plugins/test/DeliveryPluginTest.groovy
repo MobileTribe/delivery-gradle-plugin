@@ -84,6 +84,10 @@ class DeliveryPluginTest {
                      */
                     merge 'develop'
                     /**
+                     * pull changes from origin
+                     */
+                    pull
+                    /**
                      * push changes to branch
                      * if branch is not set, push changes to actual branch
                      * if tags is true push all tags to remote
