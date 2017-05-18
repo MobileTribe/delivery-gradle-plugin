@@ -47,7 +47,11 @@ fi
                 logger.warn("GIT_ASKPASS configured")
                 gitEnv.put("GIT_ASKPASS", credentialFile.absolutePath)
 
+
             }
+
+            //configure origin
+            exec(['git', 'config', 'remote.origin.fetch', "'+refs/heads/*:refs/remotes/origin/*'"], directory: project.rootDir)
         }
     }
 

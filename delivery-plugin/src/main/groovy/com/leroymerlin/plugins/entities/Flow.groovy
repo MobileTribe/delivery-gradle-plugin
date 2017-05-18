@@ -91,7 +91,7 @@ class Flow {
     }
 
     def build() {
-        task("uploadArtifacts", true)
+        task(project.path+":uploadArtifacts", true)
     }
 
     def cmd(String cmd) {
