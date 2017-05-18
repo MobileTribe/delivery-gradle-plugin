@@ -127,6 +127,11 @@ fi
     }
 
     @Override
+    String pull() {
+        return exec(generateGitCommand(['git', 'pull']), directory: project.rootDir, errorMessage: ' Failed to pull from remote ', errorPatterns: ['[rejected] ', 'error: ', 'fatal: '])
+    }
+
+    @Override
     List<String> generateGitCommand(List<String> command) {
         list = command
         if (email != null && !email.isEmpty())

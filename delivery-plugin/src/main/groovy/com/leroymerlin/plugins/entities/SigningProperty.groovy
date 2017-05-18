@@ -23,9 +23,7 @@ class SigningProperty {
             }
             fileProp.each {
                 key, value ->
-                    if (!properties.containsKey(key)) {
-                        properties.put(key, value)
-                    }
+                    properties.put(key, value)
             }
         }
     }

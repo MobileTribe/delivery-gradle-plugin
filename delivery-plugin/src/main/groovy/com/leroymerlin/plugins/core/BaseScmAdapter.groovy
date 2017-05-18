@@ -25,6 +25,8 @@ interface BaseScmAdapter {
     String push(String branch, boolean tags)
 
     String pushTag(String tagName)
+    
+    String pull()
 
     List<String> generateGitCommand(List<String> command)
 

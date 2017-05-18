@@ -135,11 +135,12 @@ class DeliveryPlugin implements Plugin<Project> {
     def propertyFile = getVersionFile()
 
     branch workBranch
-    step 'prepareReleaseVersion', "prepare branch $releaseBranch"
+    step 'prepareReleaseBranch', "prepare branch $releaseBranch"
     branch releaseBranch, true
-    step 'prepareVersionFiles', "prepare version files"
+    step 'prepareVersion', "prepare version"
     changeProperties releaseVersion
     add propertyFile.path
+    step 'generateVersionFiles', "generate version files"
     step 'commitVersionFiles', "commit version files"
     commit "chore (version) : Update version to $releaseVersion"
     step 'build', 'build and archive'
