@@ -6,6 +6,7 @@ import com.leroymerlin.plugins.cli.Executor
 import com.leroymerlin.plugins.tasks.ChangePropertiesTask
 import com.leroymerlin.plugins.tasks.StepTask
 import com.leroymerlin.plugins.tasks.scm.*
+import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -33,7 +34,7 @@ class Flow {
         "${name}Step${tasksList.size()}${baseName}"
     }
 
-    private void createTask(Class className, HashMap<String, Object> parameters, String taskName = formatTaskName(className.simpleName)) {
+    private Task createTask(Class className, HashMap<String, Object> parameters, String taskName = formatTaskName(className.simpleName)) {
         Task task = project.task(taskName, type: className, group: DeliveryPlugin.TASK_GROUP)
         if (task.hasProperty("scmAdapter")) {
             task.setProperty("scmAdapter", delivery.getScmAdapter())
@@ -47,6 +48,7 @@ class Flow {
             task.dependsOn(tasksList.last())
         tasksList.add(task.name)
         taskFlow.dependsOn(tasksList)
+        return task;
     }
 
     def branch(String name, boolean create = false) {
@@ -111,13 +113,7 @@ class Flow {
                             tasks         : [taskName]
                     ])
         } else {
-            Task task = project.getTasksByName(taskName, true)[0]
-            if (task != null) {
-                if (!tasksList.isEmpty())
-                    task.dependsOn(tasksList.last())
-                tasksList.add(task.name)
-                taskFlow.dependsOn(tasksList)
-            }
+            createTask(DefaultTask, [:], formatTaskName(taskName)).dependsOn += taskName
         }
     }
 
