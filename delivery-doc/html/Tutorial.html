@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.4">
-<meta name="author" content="Delivery v3.0.0-BETA3-SNAPSHOT, Wed Apr 26 14:44:37 CEST 2017">
+<meta name="author" content="Delivery v3.0.0-BETA7, Fri May 19 09:47:09 CEST 2017">
 <title>Tutorial</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -513,7 +513,7 @@ table.CodeRay td.code>pre{padding:0}
 <div id="header">
 <h1>Tutorial</h1>
 <div class="details">
-<span id="author" class="author">Delivery v3.0.0-BETA3-SNAPSHOT, Wed Apr 26 14:44:37 CEST 2017</span><br>
+<span id="author" class="author">Delivery v3.0.0-BETA7, Fri May 19 09:47:09 CEST 2017</span><br>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -753,14 +753,16 @@ You just have to call <strong>releaseGitFlow</strong> to use it.
     branch workBranch
     step <span class="string"><span class="delimiter">'</span><span class="content">prepareReleaseVersion</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">prepare branch </span><span class="inline"><span class="inline-delimiter">$</span>releaseBranch</span><span class="delimiter">&quot;</span></span>
     branch releaseBranch, <span class="predefined-constant">true</span>
+    step <span class="string"><span class="delimiter">'</span><span class="content">prepareVersionFiles</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">prepare version files</span><span class="delimiter">&quot;</span></span>
     changeProperties releaseVersion
     add propertyFile.path
+    step <span class="string"><span class="delimiter">'</span><span class="content">commitVersionFiles</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">commit version files</span><span class="delimiter">&quot;</span></span>
     commit <span class="string"><span class="delimiter">&quot;</span><span class="content">chore (version) : Update version to </span><span class="inline"><span class="inline-delimiter">$</span>releaseVersion</span><span class="delimiter">&quot;</span></span>
-    step <span class="string"><span class="delimiter">'</span><span class="content">stepBuild</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">build and archive</span><span class="delimiter">'</span></span>
+    step <span class="string"><span class="delimiter">'</span><span class="content">build</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">build and archive</span><span class="delimiter">'</span></span>
     build
-    step <span class="string"><span class="delimiter">'</span><span class="content">stepTagVersion</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">tag the commit</span><span class="delimiter">'</span></span>
+    step <span class="string"><span class="delimiter">'</span><span class="content">tagVersion</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">tag the commit</span><span class="delimiter">'</span></span>
     tag <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">$</span>project</span><span class="content">.projectName-</span><span class="inline"><span class="inline-delimiter">$</span>project</span><span class="content">.versionId-</span><span class="inline"><span class="inline-delimiter">$</span>releaseVersion</span><span class="delimiter">&quot;</span></span>
-    <span class="keyword">if</span> (baseBranch!=<span class="string"><span class="delimiter">'</span><span class="content">false</span><span class="delimiter">'</span></span>) {
+    <span class="keyword">if</span> (baseBranch != <span class="string"><span class="delimiter">'</span><span class="content">false</span><span class="delimiter">'</span></span>) {
         step <span class="string"><span class="delimiter">'</span><span class="content">stepMergeToBaseBranch</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">merge to base branch</span><span class="delimiter">'</span></span>
         branch baseBranch
         merge releaseBranch
@@ -939,7 +941,7 @@ iOS support is based on the open source project <a href="https://github.com/open
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-04-14 09:33:18 +02:00
+Last updated 2017-05-18 18:09:05 +02:00
 </div>
 </div>
 </body>
