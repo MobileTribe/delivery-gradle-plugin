@@ -118,17 +118,17 @@ fi
         def result
         if (tagName == null) {
             // If no tag is specified, push all sane tags (means annotated and reachable)
-            result = exec(generateGitCommand(['git', 'push', '--follow-tags']), directory: project.rootDir, errorMessage: ' Failed to push tags to remote ', errorPatterns: ['[rejected] ', 'error: ', 'fatal: '])
+            result = exec(generateGitCommand(['git', 'push', '--follow-tags']), env: gitEnv, directory: project.rootDir, errorMessage: ' Failed to push tags to remote ', errorPatterns: ['[rejected] ', 'error: ', 'fatal: '])
         } else {
             // If a tag is specified, only push this one
-            result = exec(generateGitCommand(['git', 'push', 'origin', tagName]), directory: project.rootDir, errorMessage: ' Failed to push tag to remote ', errorPatterns: ['[rejected] ', 'error: ', 'fatal: '])
+            result = exec(generateGitCommand(['git', 'push', 'origin', tagName]), env: gitEnv, directory: project.rootDir, errorMessage: ' Failed to push tag to remote ', errorPatterns: ['[rejected] ', 'error: ', 'fatal: '])
         }
         return result
     }
 
     @Override
     String pull() {
-        return exec(generateGitCommand(['git', 'pull']), directory: project.rootDir, errorMessage: ' Failed to pull from remote ', errorPatterns: ['[rejected] ', 'error: ', 'fatal: '])
+        return exec(generateGitCommand(['git', 'pull']), env: gitEnv, directory: project.rootDir, errorMessage: ' Failed to pull from remote ', errorPatterns: ['[rejected] ', 'error: ', 'fatal: '])
     }
 
     @Override
