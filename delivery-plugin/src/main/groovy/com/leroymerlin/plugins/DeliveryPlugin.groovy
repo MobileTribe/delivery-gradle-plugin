@@ -9,7 +9,6 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.maven.MavenPom
-import org.gradle.api.internal.artifacts.Module
 import org.gradle.api.internal.artifacts.configurations.ConfigurationInternal
 import org.gradle.api.internal.plugins.DslObject
 import org.gradle.api.plugins.MavenRepositoryHandlerConvention
@@ -145,14 +144,15 @@ class DeliveryPlugin implements Plugin<Project> {
     commit "chore (version) : Update version to $releaseVersion"
     step 'build', 'build and archive'
     build
-    step 'tagVersion', 'tag the commit'
-    tag "$project.projectName-$project.versionId-$releaseVersion"
     if (baseBranch != 'false') {
         step 'stepMergeToBaseBranch', 'merge to base branch'
         branch baseBranch
         merge releaseBranch
         push
     }
+    step 'tagVersion', 'tag the commit'
+    tag "$project.projectName-$project.versionId-$releaseVersion"
+    pushTag
     step 'updateVersion', "Update version to $newVersionId - $newVersion"
     branch releaseBranch
     changeProperties newVersion, newVersionId
