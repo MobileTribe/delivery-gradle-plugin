@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory
 class IOSConfigurator extends ProjectConfigurator {
 
     private final Logger logger = LoggerFactory.getLogger('IOSConfigurator')
+    public boolean ionicBuild = false
 
     @Override
     void setup(Project project, DeliveryPluginExtension extension) {
@@ -49,8 +50,8 @@ class IOSConfigurator extends ProjectConfigurator {
         Task buildTask = project.tasks.findByPath(taskName)
         if (buildTask == null) {
             project.task(taskName, type: DeliveryBuild, group: DeliveryPlugin.TASK_GROUP) {
-                variantName project.projectName.toString().split(' ').collect({ m -> return m.toLowerCase() }).join("-") + "-" + scheme.trim().toLowerCase()
-                outputFiles = ["${target.trim().toLowerCase()}": project.file("${project.getBuildDir()}/package/${variantCodeName}.ipa")]
+                variantName project.projectName.toString().split(' ').collect({ m -> return m.toLowerCase() }).join("-") + (ionicBuild ? "" : "-" + target.trim().toLowerCase())
+                outputFiles = ["${scheme.trim().toLowerCase()}": project.file("${project.getBuildDir()}/package/${variantCodeName}.ipa")]
             }.dependsOn(taskName + "Process")
 
             def parameter = project.getGradle().startParameter.newInstance()

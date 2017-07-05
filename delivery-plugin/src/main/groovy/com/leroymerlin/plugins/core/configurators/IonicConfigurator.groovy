@@ -26,6 +26,7 @@ class IonicConfigurator extends ProjectConfigurator {
         def signingBuild = System.getProperty(IONIC_BUILD)
         if (signingBuild == 'ios') {
             nestedConfigurator = new IOSConfigurator()
+            nestedConfigurator.ionicBuild = true
         } else if (signingBuild == 'android') {
             nestedConfigurator = new AndroidConfigurator()
         }

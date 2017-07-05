@@ -3,6 +3,7 @@ package com.leroymerlin.plugins.test.integration
 import com.leroymerlin.plugins.test.TestUtils
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.output.TeeOutputStream
+import org.apache.tools.ant.taskdefs.Sleep
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.gradle.tooling.GradleConnector
@@ -46,6 +47,7 @@ abstract class AbstractIntegrationTest {
 
     @After
     void tearDown() {
+        Thread.sleep(1000)
         project = null
         FileUtils.deleteDirectory(workingDirectory)
     }

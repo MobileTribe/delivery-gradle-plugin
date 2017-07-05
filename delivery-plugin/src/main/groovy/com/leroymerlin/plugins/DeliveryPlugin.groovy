@@ -9,7 +9,6 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.maven.MavenPom
-import org.gradle.api.internal.artifacts.configurations.ConfigurationInternal
 import org.gradle.api.internal.plugins.DslObject
 import org.gradle.api.plugins.MavenRepositoryHandlerConvention
 import org.gradle.api.tasks.Upload
@@ -17,7 +16,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 class DeliveryPlugin implements Plugin<Project> {
-
 
     Logger logger = LoggerFactory.getLogger('DeliveryPlugin')
 
@@ -39,14 +37,12 @@ class DeliveryPlugin implements Plugin<Project> {
     Project project
     DeliveryPluginExtension deliveryExtension
 
-
     void apply(Project project) {
         this.project = project
         this.deliveryExtension = project.extensions.create(TASK_GROUP, DeliveryPluginExtension, project, this)
         project.plugins.apply('maven')
-        Executor.logger = logger
+        Executor.logger = logger as org.gradle.api.logging.Logger
         project.ext.DeliveryBuild = DeliveryBuild
-
 
         setupProperties()
 
@@ -60,8 +56,6 @@ class DeliveryPlugin implements Plugin<Project> {
             logger.warn("${project.name} configured as ${detectedConfigurator.class.simpleName - "Configurator"} project")
         }
         this.deliveryExtension.configurator = detectedConfigurator
-
-
 
         project.task(TASK_UPLOAD, group: TASK_GROUP)
         project.task(TASK_INSTALL, group: TASK_GROUP)
@@ -79,28 +73,22 @@ class DeliveryPlugin implements Plugin<Project> {
                 task ->
                     def configurationName = task.variantName + "Config"
                     if (!project.configurations.hasProperty(configurationName)) {
-                        ConfigurationInternal config = project.configurations.create(configurationName)
+                        project.configurations.create(configurationName)
                         project.dependencies.add(configurationName, 'org.apache.maven.wagon:wagon-http:2.2')
-
-
-
 
                         project.task("${UPLOAD_TASK_PREFIX}${task.variantName.capitalize()}Artifacts", type: Upload, group: TASK_GROUP) {
                             configuration = project.configurations."${configurationName}"
                             repositories deliveryExtension.archiveRepositories
                         }
 
-
                         def installTask = project.task("${INSTALL_TASK_PREFIX}${task.variantName.capitalize()}Artifacts", type: Upload, group: TASK_GROUP) {
                             configuration = project.configurations."${configurationName}"
                         }
 
-                        MavenRepositoryHandlerConvention repositories = new DslObject(installTask.getRepositories()).getConvention().getPlugin(MavenRepositoryHandlerConvention.class);
-                        def mavenInstaller = repositories.mavenInstaller();
+                        MavenRepositoryHandlerConvention repositories = new DslObject(installTask.getRepositories()).getConvention().getPlugin(MavenRepositoryHandlerConvention.class)
+                        def mavenInstaller = repositories.mavenInstaller()
                         MavenPom pom = mavenInstaller.getPom()
                         pom.setArtifactId(task.variantName)
-
-                        //installTask.getConvention().getPlugins().get("maven").mavenInstaller();
                     }
                     ((Configuration) project.configurations."${configurationName}").artifacts.addAll(task.getArtifacts())
             }
@@ -169,7 +157,6 @@ class DeliveryPlugin implements Plugin<Project> {
             }
         }
     }
-
 
     void setupProperties() {
         //Read and apply Delivery.properties file to override default version.properties path and version, versionId, projectName keys
