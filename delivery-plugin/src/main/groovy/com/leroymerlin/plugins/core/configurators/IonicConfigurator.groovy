@@ -32,10 +32,14 @@ class IonicConfigurator extends ProjectConfigurator {
         }
         nestedConfigurator?.setup(project, extension)
 
+        project.task("prepareProject", group: DeliveryPlugin.TASK_GROUP).doFirst {
+            project.file("platforms/android/build").deleteDir()
+            project.file("platforms/ios/build").deleteDir()
+        }
         project.task("prepareNpm", group: DeliveryPlugin.TASK_GROUP).doFirst {
             Executor.exec(["npm", "install"], directory: project.projectDir)
             Executor.exec(["npm", "install", "--save-dev", "--save-exact", "@ionic/cli-plugin-ionic-angular@latest", "@ionic/cli-plugin-cordova@latest"], directory: project.projectDir)
-        }
+        }.dependsOn("prepareProject")
     }
 
     @Override
