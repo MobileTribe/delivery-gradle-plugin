@@ -43,6 +43,19 @@ android{
             f ->
                 list << f
         })
+
+        for (file in list) {
+            if (!file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/2.0.0-SNAPSHOT/android-app-dev-2.0.0-SNAPSHOT-debug")
+                    && !file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/2.0.0-SNAPSHOT/android-app-dev-2.0.0-SNAPSHOT-mapping-debug")
+                    && !file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/2.0.0-SNAPSHOT/android-app-dev-2.0.0-SNAPSHOT-sources-sources")
+                    && !file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/2.0.0-SNAPSHOT/android-app-dev-2.0.0-SNAPSHOT-test-debug")
+                    && !file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/2.0.0-SNAPSHOT/android-app-prod-2.0.0-SNAPSHOT-debug")
+                    && !file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/2.0.0-SNAPSHOT/android-app-prod-2.0.0-SNAPSHOT-mapping-debug")
+                    && !file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/2.0.0-SNAPSHOT/android-app-prod-2.0.0-SNAPSHOT-sources-sources")
+                    && !file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/2.0.0-SNAPSHOT/android-app-prod-2.0.0-SNAPSHOT-test-debug"))
+                throw new AssertionError("${file.name} has not a correct name or a correct path")
+        }
+
         Assert.assertEquals("archive folder should contain 16 files", 16, list.size())
     }
 
@@ -74,6 +87,17 @@ delivery{
             f ->
                 list << f
         })
+
+        for (file in list) {
+            if (!file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/2.0.0-SNAPSHOT/android-app-2.0.0-SNAPSHOT-debug")
+                    && !file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/2.0.0-SNAPSHOT/android-app-2.0.0-SNAPSHOT-mapping-debug")
+                    && !file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/2.0.0-SNAPSHOT/android-app-2.0.0-SNAPSHOT-mapping-release")
+                    && !file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/2.0.0-SNAPSHOT/android-app-2.0.0-SNAPSHOT-release")
+                    && !file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/2.0.0-SNAPSHOT/android-app-2.0.0-SNAPSHOT-sources-sources")
+                    && !file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/2.0.0-SNAPSHOT/android-app-2.0.0-SNAPSHOT-test-debug"))
+                throw new AssertionError("${file.name} has not a correct name or a correct path")
+        }
+
         Assert.assertEquals("archive folder should contain 12 files", 12, list.size())
     }
 }
