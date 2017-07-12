@@ -46,7 +46,6 @@ class IonicConfigurator extends ProjectConfigurator {
                 java.util.logging.Logger.global.warning("Your Cordova version is not supported by Delivery")
 
             Executor.exec(["npm", "install"], directory: project.projectDir, logLevel: LogLevel.WARN)
-            Executor.exec(["npm", "install", "--save-dev", "--save-exact", "@ionic/cli-plugin-ionic-angular@latest", "@ionic/cli-plugin-cordova@latest"], directory: project.projectDir, logLevel: LogLevel.WARN)
         }.dependsOn("prepareProject")
     }
 
