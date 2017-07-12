@@ -6,6 +6,7 @@ import com.leroymerlin.plugins.cli.Executor
 import com.leroymerlin.plugins.entities.SigningProperty
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.gradle.api.logging.LogLevel
 import org.gradle.api.tasks.GradleBuild
 import org.gradle.api.tasks.Upload
 import org.slf4j.Logger
@@ -33,12 +34,19 @@ class IonicConfigurator extends ProjectConfigurator {
         nestedConfigurator?.setup(project, extension)
 
         project.task("prepareProject", group: DeliveryPlugin.TASK_GROUP).doFirst {
-            project.file("platforms/android/build").deleteDir()
-            project.file("platforms/ios/build").deleteDir()
+            project.file("platforms").deleteDir()
         }
         project.task("prepareNpm", group: DeliveryPlugin.TASK_GROUP).doFirst {
-            Executor.exec(["npm", "install"], directory: project.projectDir)
-            Executor.exec(["npm", "install", "--save-dev", "--save-exact", "@ionic/cli-plugin-ionic-angular@latest", "@ionic/cli-plugin-cordova@latest"], directory: project.projectDir)
+            String[] version = Executor.exec(["ionic", "-v"]).split("\\.")
+            if ((version[0] + "." + version[1]).toInteger() < 3.0)
+                java.util.logging.Logger.global.warning("Your Ionic version is not supported by Delivery")
+
+            version = Executor.exec(["cordova", "-v"]).split("\\.")
+            if ((version[0] + "." + version[1]).toInteger() < 7.0)
+                java.util.logging.Logger.global.warning("Your Cordova version is not supported by Delivery")
+
+            Executor.exec(["npm", "install"], directory: project.projectDir, logLevel: LogLevel.WARN)
+            Executor.exec(["npm", "install", "--save-dev", "--save-exact", "@ionic/cli-plugin-ionic-angular@latest", "@ionic/cli-plugin-cordova@latest"], directory: project.projectDir, logLevel: LogLevel.WARN)
         }.dependsOn("prepareProject")
     }
 
@@ -98,7 +106,7 @@ class IonicConfigurator extends ProjectConfigurator {
             def settingsGradle = project.file("platforms/${signingName}/${signingName == 'android' ? "delivery-" : ""}settings.gradle")
 
             project.task(preparePlatformTask, group: DeliveryPlugin.TASK_GROUP).doFirst {
-                Executor.exec(["ionic", "cordova", "build", signingName, "--release"], directory: project.projectDir)
+                Executor.exec(["ionic", "cordova", "build", signingName, "--release"], directory: project.projectDir, logLevel: LogLevel.WARN)
 
                 newBuildGradleFile.delete()
                 if (signingName == 'android') {
