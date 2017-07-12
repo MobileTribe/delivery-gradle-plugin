@@ -38,11 +38,11 @@ class IonicConfigurator extends ProjectConfigurator {
         }
         project.task("prepareNpm", group: DeliveryPlugin.TASK_GROUP).doFirst {
             String[] version = Executor.exec(["ionic", "-v"]).split("\\.")
-            if ((version[0] + "." + version[1]).toInteger() < 3.0)
+            if ((version[0] + "." + version[1]).toFloat() < 3.0)
                 java.util.logging.Logger.global.warning("Your Ionic version is not supported by Delivery")
 
             version = Executor.exec(["cordova", "-v"]).split("\\.")
-            if ((version[0] + "." + version[1]).toInteger() < 7.0)
+            if ((version[0] + "." + version[1]).toFloat() < 7.0)
                 java.util.logging.Logger.global.warning("Your Cordova version is not supported by Delivery")
 
             Executor.exec(["npm", "install"], directory: project.projectDir, logLevel: LogLevel.WARN)
