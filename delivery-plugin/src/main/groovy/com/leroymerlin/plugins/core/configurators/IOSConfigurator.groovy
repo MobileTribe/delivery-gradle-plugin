@@ -8,15 +8,14 @@ import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.tasks.GradleBuild
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+
+import java.util.logging.Logger
 
 /**
  * Created by florian on 30/01/2017.
  */
 class IOSConfigurator extends ProjectConfigurator {
 
-    private final Logger logger = LoggerFactory.getLogger('IOSConfigurator')
     public boolean ionicBuild = false
 
     @Override
@@ -30,7 +29,7 @@ class IOSConfigurator extends ProjectConfigurator {
         if (!project.group) {
             throw new GradleException("Project group is not defined. Please use a gradle properties group")
         }
-        logger.info("group used : ${project.group}")
+        Logger.global.info("group used : ${project.group}")
     }
 
     @Override

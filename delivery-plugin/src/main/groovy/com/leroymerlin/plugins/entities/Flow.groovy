@@ -48,7 +48,7 @@ class Flow {
             task.dependsOn(tasksList.last())
         tasksList.add(task.name)
         taskFlow.dependsOn(tasksList)
-        return task;
+        return task
     }
 
     def branch(String name, boolean create = false) {

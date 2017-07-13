@@ -4,6 +4,8 @@ import com.leroymerlin.plugins.DeliveryPlugin
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.bundling.Jar
 
+import java.util.logging.Logger
+
 /**
  * Created by alexandre on 15/02/2017.
  */
@@ -37,7 +39,7 @@ class AndroidBuild extends DeliveryBuild {
             outputFiles.put("sources-" + classifier, sourcesJar.outputs.getFiles().getSingleFile())
             dependsOn.add(sourcesJar)
         } else {
-            logger.warn("$classifier has no valid signing config and will not be archived")
+            Logger.global.info("$classifier has no valid signing config and will not be archived")
         }
     }
 

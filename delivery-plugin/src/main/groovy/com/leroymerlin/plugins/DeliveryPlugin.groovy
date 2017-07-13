@@ -1,6 +1,5 @@
 package com.leroymerlin.plugins
 
-import com.leroymerlin.plugins.cli.Executor
 import com.leroymerlin.plugins.core.configurators.*
 import com.leroymerlin.plugins.tasks.build.DeliveryBuild
 import com.leroymerlin.plugins.utils.PropertiesUtils
@@ -12,12 +11,10 @@ import org.gradle.api.artifacts.maven.MavenPom
 import org.gradle.api.internal.plugins.DslObject
 import org.gradle.api.plugins.MavenRepositoryHandlerConvention
 import org.gradle.api.tasks.Upload
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+
+import java.util.logging.Logger
 
 class DeliveryPlugin implements Plugin<Project> {
-
-    Logger logger = LoggerFactory.getLogger('DeliveryPlugin')
 
     public static final String UPLOAD_TASK_PREFIX = 'upload'
     public static final String INSTALL_TASK_PREFIX = 'install'
@@ -41,7 +38,6 @@ class DeliveryPlugin implements Plugin<Project> {
         this.project = project
         this.deliveryExtension = project.extensions.create(TASK_GROUP, DeliveryPluginExtension, project, this)
         project.plugins.apply('maven')
-        Executor.logger = logger as org.gradle.api.logging.Logger
         project.ext.DeliveryBuild = DeliveryBuild
 
         setupProperties()
@@ -53,7 +49,7 @@ class DeliveryPlugin implements Plugin<Project> {
         if (detectedConfigurator == null) {
             detectedConfigurator = [] as ProjectConfigurator
         } else {
-            logger.warn("${project.name} configured as ${detectedConfigurator.class.simpleName - "Configurator"} project")
+            Logger.global.warning("${project.name} configured as ${detectedConfigurator.class.simpleName - "Configurator"} project")
         }
         this.deliveryExtension.configurator = detectedConfigurator
 

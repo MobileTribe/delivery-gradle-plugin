@@ -1,6 +1,6 @@
 package com.leroymerlin.plugins.entities
 
-import com.leroymerlin.plugins.cli.Executor
+import java.util.logging.Logger
 
 class SigningProperty {
 
@@ -14,9 +14,9 @@ class SigningProperty {
 
     void setPropertiesFile(File propertiesFile) {
         if (!propertiesFile.exists()) {
-            Executor.logger?.warn("Can't load ${propertiesFile.path} in $name signingProperty")
+            Logger.global.warning("Can't load ${propertiesFile.path} in $name signingProperty")
         } else {
-            Executor.logger?.info("$name signingProperty loaded from ${propertiesFile.path}")
+            Logger.global.info("$name signingProperty loaded from ${propertiesFile.path}")
             Properties fileProp = new Properties()
             propertiesFile.withInputStream {
                 stream -> fileProp.load(stream)

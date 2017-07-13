@@ -1,8 +1,8 @@
 package com.leroymerlin.plugins.cli
 
 import org.gradle.api.GradleException
-import org.gradle.api.logging.LogLevel
-import org.gradle.api.logging.Logger
+
+import java.util.logging.Logger
 
 /**
  * Created by alexandre on 31/01/2017.
@@ -10,33 +10,24 @@ import org.gradle.api.logging.Logger
 
 class Executor {
 
-    public static Logger logger
+    public static Logger logger = Logger.global
     public static Map optionsMap
     public static List<String> commandsList
-    public static LogLevel levelError = LogLevel.ERROR, levelLog = LogLevel.INFO
+    public static boolean warning
 
-    static String exec(
-            Map options = [:],
-            List<String> commands
-    ) {
+    static String exec(List<String> commands, Map options = [:], boolean warning = false) {
         optionsMap = options
         commandsList = commands
+        this.warning = warning
 
         StringBuffer out = new StringBuffer()
 
         File directory = options['directory'] ? options['directory'] as File : null
-        if (options.hasProperty('logError')) {
-            levelError = options['logError'] ? LogLevel.ERROR : null
-        }
-        if (options.hasProperty('logLevel')) {
-            levelLog = options['logLevel'] as LogLevel
-        }
         List processEnv = options['env'] ? ((options['env'] as Map) << System.getenv()).collect {
             "$it.key=$it.value"
         } : null
-        if (levelLog != null) {
-            logger?.log(levelLog, "Running $commands in [$directory]")
-        }
+
+        logger.warning("Running $commands in [$directory]")
         Process process = commands.execute(processEnv, directory)
         waitForProcessOutput(process, out)
 
@@ -52,8 +43,8 @@ class Executor {
     }
 
     static void waitForProcessOutput(Process process, Appendable output) {
-        def dumperOut = new TextDumper(process.getInputStream(), false, output)
-        def dumperErr = new TextDumper(process.getErrorStream(), true, output)
+        def dumperOut = new TextDumper(process.getOutputStream(), process.getInputStream(), false, output)
+        def dumperErr = new TextDumper(process.getOutputStream(), process.getErrorStream(), true, output)
 
         Thread tout = new Thread(dumperOut)
         Thread terr = new Thread(dumperErr)
@@ -79,24 +70,31 @@ class Executor {
 
     private static class TextDumper implements Runnable {
         InputStream input
+        OutputStream output
         boolean catchError
         Appendable app
 
         Exception exception
 
-        TextDumper(InputStream inputStream, boolean catchError, Appendable app) {
+        TextDumper(OutputStream outputStream, InputStream inputStream, boolean catchError, Appendable app) {
             this.input = inputStream
+            this.output = outputStream
             this.catchError = catchError
             this.app = app
         }
 
         void run() {
-            InputStreamReader isr = new InputStreamReader(this.input)
-            BufferedReader br = new BufferedReader(isr)
+            BufferedReader br = new BufferedReader(new InputStreamReader(this.input))
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(this.output))
 
             try {
                 String next
                 while ((next = br.readLine()) != null) {
+                    if (next.contains("?")) {
+                        writer.write("Yes")
+                        writer.newLine()
+                        writer.flush()
+                    }
                     if (this.app != null) {
                         this.app.append(next)
                         this.app.append("\n")
@@ -105,12 +103,16 @@ class Executor {
                         if (optionsMap['failOnStderr'] as boolean) {
                             throw new GradleException("Running '${commandsList.join(' ')}' produced an error: ${next}")
                         } else {
-                            if (levelError != null)
-                                logger?.log(levelError, next)
+                            if (warning)
+                                logger.warning(next)
+                            else
+                                logger.finest(next)
                         }
                     } else {
-                        if (levelLog != null)
-                            logger?.log(levelLog, next)
+                        if (warning)
+                            logger.warning(next)
+                        else
+                            logger.finest(next)
                     }
 
                     if (optionsMap['errorPatterns'] && [next]*.toString().any { String s ->

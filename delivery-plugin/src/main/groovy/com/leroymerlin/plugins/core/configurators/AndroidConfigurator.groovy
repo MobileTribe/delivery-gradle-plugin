@@ -7,8 +7,8 @@ import com.leroymerlin.plugins.tasks.build.AndroidBuild
 import com.leroymerlin.plugins.tasks.build.AndroidLibBuild
 import org.gradle.api.GradleException
 import org.gradle.api.Project
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+
+import java.util.logging.Logger
 
 /**
  * Created by florian on 30/01/2017.
@@ -17,7 +17,6 @@ class AndroidConfigurator extends ProjectConfigurator {
 
     private final String ANDROID_PLUGIN_ID = "com.android.application"
     private final String ANDROID_LIBRARY_PLUGIN_ID = "com.android.library"
-    private final Logger logger = LoggerFactory.getLogger('AndroidConfigurator')
     boolean isAndroidApp, isAndroidLibrary
 
     @Override
@@ -66,8 +65,8 @@ class AndroidConfigurator extends ProjectConfigurator {
         if (!project.group) {
             throw new GradleException("Project group is not defined. Please use a gradle properties or configure your defaultConfig.applicationId")
         }
-        logger.info("group used : ${project.group}")
-        logger.info("Generate Android Build tasks")
+        Logger.global.info("group used : ${project.group}")
+        Logger.global.info("Generate Android Build tasks")
         if (isAndroidApp) {
             project.android.applicationVariants.all { currentVariant ->
                 String flavorName = project.projectName.toString().split(' ').collect({ m -> return m.toLowerCase().capitalize() }).join("") + (currentVariant.flavorName.capitalize() ? "-${currentVariant.flavorName.capitalize()}" : "")

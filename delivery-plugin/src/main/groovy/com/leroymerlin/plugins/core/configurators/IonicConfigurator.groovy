@@ -6,11 +6,11 @@ import com.leroymerlin.plugins.cli.Executor
 import com.leroymerlin.plugins.entities.SigningProperty
 import org.gradle.api.GradleException
 import org.gradle.api.Project
-import org.gradle.api.logging.LogLevel
 import org.gradle.api.tasks.GradleBuild
 import org.gradle.api.tasks.Upload
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+
+import java.util.logging.Level
+import java.util.logging.Logger
 
 /**
  * Created by alexandre on 27/03/2017.
@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory
 class IonicConfigurator extends ProjectConfigurator {
 
     private final String IONIC_BUILD = 'ionicBuild'
-    private final Logger logger = LoggerFactory.getLogger('IonicConfigurator')
     private ProjectConfigurator nestedConfigurator
 
     @Override
@@ -34,18 +33,11 @@ class IonicConfigurator extends ProjectConfigurator {
         nestedConfigurator?.setup(project, extension)
 
         project.task("prepareProject", group: DeliveryPlugin.TASK_GROUP).doFirst {
-            project.file("platforms").deleteDir()
+            project.file("platforms")?.deleteDir()
         }
         project.task("prepareNpm", group: DeliveryPlugin.TASK_GROUP).doFirst {
-            String[] version = Executor.exec(["ionic", "-v"]).split("\\.")
-            if ((version[0] + "." + version[1]).toFloat() < 3.0)
-                java.util.logging.Logger.global.warning("Your Ionic version is not supported by Delivery")
-
-            version = Executor.exec(["cordova", "-v"]).split("\\.")
-            if ((version[0] + "." + version[1]).toFloat() < 7.0)
-                java.util.logging.Logger.global.warning("Your Cordova version is not supported by Delivery")
-
-            Executor.exec(["npm", "install"], directory: project.projectDir, logLevel: LogLevel.WARN)
+            Logger.global.warning("Delivery support Ionic > 3.0 & Cordova > 7.0")
+            Executor.exec(["npm", "install"], [directory: project.projectDir], true)
         }.dependsOn("prepareProject")
     }
 
@@ -69,7 +61,7 @@ class IonicConfigurator extends ProjectConfigurator {
             if (!project.group) {
                 throw new GradleException("Project group is not defined. Please use a gradle properties or configure your id in config.xml")
             }
-            logger.info("group used : ${project.group}")
+            Logger.global.info("group used : ${project.group}")
 
             extension.signingProperties.each { signingProperty -> handleProperty(signingProperty) }
         }
@@ -105,7 +97,7 @@ class IonicConfigurator extends ProjectConfigurator {
             def settingsGradle = project.file("platforms/${signingName}/${signingName == 'android' ? "delivery-" : ""}settings.gradle")
 
             project.task(preparePlatformTask, group: DeliveryPlugin.TASK_GROUP).doFirst {
-                Executor.exec(["ionic", "cordova", "build", signingName, "--release"], directory: project.projectDir, logLevel: LogLevel.WARN)
+                Executor.exec(["ionic", "cordova", "build", signingName, "--release"], [directory: project.projectDir], true)
 
                 newBuildGradleFile.delete()
                 if (signingName == 'android') {
