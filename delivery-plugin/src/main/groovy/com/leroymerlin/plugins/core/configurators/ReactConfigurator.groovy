@@ -98,6 +98,9 @@ class ReactConfigurator extends ProjectConfigurator {
             newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.VERSION_ARG, project.version)
             newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.VERSION_ID_ARG, project.versionId)
             newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.PROJECT_NAME_ARG, project.projectName)
+            if (project.group)
+                newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.GROUP_ARG, project.group)
+
             if (signingName == 'android') {
                 newStartParameter.settingsFile = project.file("${signingName}/settings.gradle")
                 newStartParameter.projectDir = newBuildGradleFile.getParentFile().parentFile
