@@ -29,7 +29,7 @@ class DeliveryPlugin implements Plugin<Project> {
     static final String TASK_GROUP = 'delivery'
     static final String DELIVERY_CONF_FILE = 'delivery.properties'
 
-    def configurators = [IonicConfigurator, AndroidConfigurator, JavaConfigurator, IOSConfigurator]
+    def configurators = [ReactConfigurator, IonicConfigurator, AndroidConfigurator, JavaConfigurator, IOSConfigurator]
 
     Project project
     DeliveryPluginExtension deliveryExtension

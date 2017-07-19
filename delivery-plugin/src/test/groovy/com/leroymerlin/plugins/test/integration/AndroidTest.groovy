@@ -76,7 +76,7 @@ delivery{
     }
     signingProperties {
         all {
-            propertiesFile = file("signing.properties")
+                propertiesFile = file("${System.properties['user.home']}/.gradle/signing.properties")
         }
     }
 }

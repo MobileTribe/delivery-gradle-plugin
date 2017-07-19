@@ -33,13 +33,13 @@ class DeliveryBuild extends DefaultTask {
     }
 
     def cmd(String cmd) {
-        return Executor.exec(Executor.convertToCommandLine(cmd), directory: project.projectDir)
+        return Executor.exec(Executor.convertToCommandLine(cmd), [directory: project.projectDir])
     }
 
     static def cmd(
             List<String> commands,
             Map options = [:]
     ) {
-        Executor.exec(options, commands)
+        Executor.exec(commands, options)
     }
 }

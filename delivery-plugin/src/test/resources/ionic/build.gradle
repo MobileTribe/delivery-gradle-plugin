@@ -22,10 +22,10 @@ delivery {
     }
   }
 
-  if (file("${System.properties['user.home']}/.gradle/signing_ios.properties").exists()) {
+  if (file("${System.properties['user.home']}/.gradle/signing_ios.properties").exists() && file("${System.properties['user.home']}/.gradle/signing.properties")) {
     signingProperties {
       android {
-        propertiesFile = file("../../signing.properties")
+        propertiesFile = file("${System.properties['user.home']}/.gradle/signing.properties")
       }
       ios {
         propertiesFile = file("${System.properties['user.home']}/.gradle/signing_ios.properties")
