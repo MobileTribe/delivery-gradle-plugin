@@ -16,7 +16,7 @@ import java.util.logging.Logger
  */
 class IOSConfigurator extends ProjectConfigurator {
 
-    public boolean ionicBuild = false
+    public boolean hybridBuild = false
 
     @Override
     void setup(Project project, DeliveryPluginExtension extension) {
@@ -49,7 +49,7 @@ class IOSConfigurator extends ProjectConfigurator {
         Task buildTask = project.tasks.findByPath(taskName)
         if (buildTask == null) {
             project.task(taskName, type: DeliveryBuild, group: DeliveryPlugin.TASK_GROUP) {
-                variantName project.projectName.toString().split(' ').collect({ m -> return m.toLowerCase() }).join("-") + (ionicBuild ? "" : "-" + target.trim().toLowerCase())
+                variantName project.projectName.toString().split(' ').collect({ m -> return m.toLowerCase() }).join("-") + (hybridBuild ? "" : "-" + target.trim().toLowerCase())
                 outputFiles = ["${scheme.trim().toLowerCase().replace(" ","-")}": project.file("${project.getBuildDir()}/package/${variantCodeName}.ipa")]
             }.dependsOn(taskName + "Process")
 

@@ -24,7 +24,7 @@ class ReactConfigurator extends ProjectConfigurator {
         def signingBuild = System.getProperty(REACT_BUILD)
         if (signingBuild == 'ios') {
             nestedConfigurator = new IOSConfigurator()
-            nestedConfigurator.ionicBuild = true
+            nestedConfigurator.hybridBuild = true
         } else if (signingBuild == 'android') {
             nestedConfigurator = new AndroidConfigurator()
         }
