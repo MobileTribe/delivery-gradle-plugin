@@ -3,18 +3,42 @@ package com.leroymerlin.plugins
 import com.leroymerlin.plugins.core.configurators.*
 import com.leroymerlin.plugins.tasks.build.DeliveryBuild
 import com.leroymerlin.plugins.utils.PropertiesUtils
+import org.gradle.api.Action
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.artifacts.maven.MavenPom
+import org.gradle.api.internal.artifacts.dsl.DefaultRepositoryHandler
+import org.gradle.api.internal.artifacts.ivyservice.projectmodule.ProjectPublicationRegistry
+import org.gradle.api.internal.artifacts.mvnsettings.LocalMavenRepositoryLocator
+import org.gradle.api.internal.artifacts.mvnsettings.MavenSettingsProvider
+import org.gradle.api.internal.file.FileResolver
 import org.gradle.api.internal.plugins.DslObject
+import org.gradle.api.plugins.Convention
+import org.gradle.api.plugins.MavenPluginConvention
 import org.gradle.api.plugins.MavenRepositoryHandlerConvention
+import org.gradle.api.publication.maven.internal.DefaultDeployerFactory
+import org.gradle.api.publication.maven.internal.DefaultMavenRepositoryHandlerConvention
+import org.gradle.api.publication.maven.internal.MavenFactory
 import org.gradle.api.tasks.Upload
+import org.gradle.internal.Factory
+import org.gradle.internal.logging.LoggingManagerInternal
 
+import javax.inject.Inject
 import java.util.logging.Logger
 
 class DeliveryPlugin implements Plugin<Project> {
+
+    public static final int COMPILE_PRIORITY = 300;
+    public static final int RUNTIME_PRIORITY = 200;
+    public static final int TEST_COMPILE_PRIORITY = 150;
+    public static final int TEST_RUNTIME_PRIORITY = 100;
+
+    public static final int PROVIDED_COMPILE_PRIORITY = COMPILE_PRIORITY + 100;
+    public static final int PROVIDED_RUNTIME_PRIORITY = COMPILE_PRIORITY + 150;
+
 
     public static final String UPLOAD_TASK_PREFIX = 'upload'
     public static final String INSTALL_TASK_PREFIX = 'install'
@@ -34,10 +58,58 @@ class DeliveryPlugin implements Plugin<Project> {
     Project project
     DeliveryPluginExtension deliveryExtension
 
+    private final Factory<LoggingManagerInternal> loggingManagerFactory;
+    private final FileResolver fileResolver;
+    //private final ProjectConfigurationActionContainer configurationActionContainer;
+    private final MavenSettingsProvider mavenSettingsProvider;
+    private final LocalMavenRepositoryLocator mavenRepositoryLocator;
+    //private final ImmutableModuleIdentifierFactory moduleIdentifierFactory;
+
+    MavenPluginConvention mavenPluginConvention;
+
+    @Inject
+    public DeliveryPlugin(Factory<LoggingManagerInternal> loggingManagerFactory,
+                          FileResolver fileResolver,
+                          ProjectPublicationRegistry publicationRegistry,
+                          MavenSettingsProvider mavenSettingsProvider,
+                          LocalMavenRepositoryLocator mavenRepositoryLocator) {
+        this.loggingManagerFactory = loggingManagerFactory;
+        this.fileResolver = fileResolver;
+        this.mavenSettingsProvider = mavenSettingsProvider;
+        this.mavenRepositoryLocator = mavenRepositoryLocator;
+        //this.moduleIdentifierFactory = moduleIdentifierFactory;
+    }
+
+
     void apply(Project project) {
         this.project = project
-        this.deliveryExtension = project.extensions.create(TASK_GROUP, DeliveryPluginExtension, project, this)
         project.plugins.apply('maven')
+        this.deliveryExtension = project.extensions.create(TASK_GROUP, DeliveryPluginExtension, project, this)
+
+
+        MavenFactory mavenFactory = project.getServices().get(MavenFactory.class);
+        this.mavenPluginConvention = new MavenPluginConvention(project, mavenFactory);
+        Convention convention = project.getConvention();
+        convention.getPlugins().put("maven", mavenPluginConvention);
+        DefaultDeployerFactory deployerFactory = new DefaultDeployerFactory(
+                mavenFactory,
+                loggingManagerFactory,
+                fileResolver,
+                mavenPluginConvention,
+                project.getConfigurations(),
+                mavenPluginConvention.getConf2ScopeMappings(),
+                mavenSettingsProvider,
+                mavenRepositoryLocator);
+
+        project.getTasks().withType(Upload.class, new Action<Upload>() {
+            public void execute(Upload upload) {
+                RepositoryHandler repositories = upload.getRepositories();
+                DefaultRepositoryHandler handler = (DefaultRepositoryHandler) repositories;
+                DefaultMavenRepositoryHandlerConvention repositoryConvention = new DefaultMavenRepositoryHandlerConvention(handler, deployerFactory);
+                new DslObject(repositories).getConvention().getPlugins().put("maven", repositoryConvention);
+            }
+        });
+
         project.ext.DeliveryBuild = DeliveryBuild
 
         setupProperties()
@@ -81,10 +153,13 @@ class DeliveryPlugin implements Plugin<Project> {
                             configuration = project.configurations."${configurationName}"
                         }
 
+
+
                         MavenRepositoryHandlerConvention repositories = new DslObject(installTask.getRepositories()).getConvention().getPlugin(MavenRepositoryHandlerConvention.class)
                         def mavenInstaller = repositories.mavenInstaller()
                         MavenPom pom = mavenInstaller.getPom()
                         pom.setArtifactId(task.variantName)
+
                     }
                     ((Configuration) project.configurations."${configurationName}").artifacts.addAll(task.getArtifacts())
             }
@@ -151,6 +226,12 @@ class DeliveryPlugin implements Plugin<Project> {
 //end::gitReleaseFlow[]
                 )
             }
+        }
+    }
+
+    void mapToMavenConfiguration(int priority, String fromConfig, String toConfig) {
+        if (project.configurations.hasProperty(fromConfig)) {
+            this.mavenPluginConvention.conf2ScopeMappings.addMapping(priority, project.configurations.getByName(fromConfig), toConfig)
         }
     }
 
