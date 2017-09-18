@@ -1,17 +1,8 @@
 apply plugin: 'groovy'
-apply plugin: 'maven'
+apply plugin: 'com.leroymerlin.delivery'
 
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-artifacts {
-    archives sourcesJar
-}
-
-uploadArchives {
-    repositories project.ext.properties.containsKey('bintrayRepositories') ? project.ext.bintrayRepositories : {}
+delivery {
+    archiveRepositories = project.ext.properties.containsKey('bintrayRepositories') ? project.ext.bintrayRepositories : {}
 }
 
 repositories {
