@@ -8,7 +8,6 @@ import com.leroymerlin.plugins.tasks.build.AndroidLibBuild
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.artifacts.maven.Conf2ScopeMappingContainer
-import org.gradle.api.plugins.JavaPlugin
 
 import java.util.logging.Logger
 
@@ -92,7 +91,7 @@ class AndroidConfigurator extends ProjectConfigurator {
                     def buildTaskName = "build${project.projectName.capitalize()}Artifacts"
                     if (project.tasks.findByPath(buildTaskName) == null) {
                         project.task(buildTaskName, type: AndroidLibBuild, group: DeliveryPlugin.TASK_GROUP) {
-                            variantName project.name
+                            variantName project.projectName
                         }
                     }
                     project.tasks.findByPath(buildTaskName).addVariant(currentVariant)

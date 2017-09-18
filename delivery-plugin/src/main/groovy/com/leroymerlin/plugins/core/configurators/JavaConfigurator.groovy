@@ -6,8 +6,6 @@ import com.leroymerlin.plugins.tasks.build.JavaBuild
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.artifacts.maven.Conf2ScopeMappingContainer
-import org.gradle.api.plugins.JavaLibraryPlugin
-import org.gradle.api.plugins.JavaPlugin
 
 import java.util.logging.Logger
 
@@ -37,7 +35,7 @@ class JavaConfigurator extends ProjectConfigurator {
         this.extension.plugin.mapToMavenConfiguration(DeliveryPlugin.TEST_COMPILE_PRIORITY, "testCompile", Conf2ScopeMappingContainer.TEST)
         this.extension.plugin.mapToMavenConfiguration(DeliveryPlugin.TEST_RUNTIME_PRIORITY, "testRuntime", Conf2ScopeMappingContainer.TEST)
         this.extension.plugin.mapToMavenConfiguration(DeliveryPlugin.TEST_RUNTIME_PRIORITY, "testImplementation", Conf2ScopeMappingContainer.TEST)
-        if(project.plugins.hasPlugin("java-library")){
+        if (project.plugins.hasPlugin("java-library")) {
             this.extension.plugin.mapToMavenConfiguration(DeliveryPlugin.COMPILE_PRIORITY, "api", Conf2ScopeMappingContainer.COMPILE)
         }
 
@@ -48,7 +46,7 @@ class JavaConfigurator extends ProjectConfigurator {
 
         Logger.global.info("Generate Java Build tasks")
         project.task("build${project.projectName}Artifacts", type: JavaBuild, group: DeliveryPlugin.TASK_GROUP) {
-            variantName project.name
+            variantName project.projectName
         }
     }
 
