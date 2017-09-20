@@ -21,7 +21,8 @@ class GitAdapter extends Executor implements BaseScmAdapter {
     void setup(Project project, DeliveryPluginExtension extension) {
         this.project = project
         if ("git status".execute().errorStream.text.length() > 0) {
-            throw new GradleException("Git error")
+            throw new GradleException("Delivery threw an error \n" +
+                    "git status".execute().errorStream.text + "Please fix this before continue")
         } else {
             email = System.getProperty('SCM_EMAIL')
             username = System.getProperty('SCM_USER')
