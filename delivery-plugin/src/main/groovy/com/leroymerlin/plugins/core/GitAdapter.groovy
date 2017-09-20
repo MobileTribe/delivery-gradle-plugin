@@ -20,8 +20,8 @@ class GitAdapter extends Executor implements BaseScmAdapter {
     @Override
     void setup(Project project, DeliveryPluginExtension extension) {
         this.project = project
-        if (!"git --version".execute().text.contains('git version')) {
-            throw new GradleException("Git not found, install Git before continue")
+        if ("git status".execute().errorStream.text.length() > 0) {
+            throw new GradleException("Git error")
         } else {
             email = System.getProperty('SCM_EMAIL')
             username = System.getProperty('SCM_USER')
