@@ -66,7 +66,7 @@ class IOSConfigurator extends ProjectConfigurator {
             project.xcodebuild {
                 bundleName = scheme
                 ipaFileName = variantCodeName
-                configuration = "release"
+                configuration = "Release"
                 simulator = false
                 signing {
                     certificateURI = project.file(property.certificateURI).toURI()

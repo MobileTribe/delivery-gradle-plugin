@@ -60,7 +60,7 @@ abstract class AbstractIntegrationTest {
                 .forProjectDirectory(workingDirectory)
                 .connect()
         Properties props = new Properties()
-        props.load(new FileInputStream(new File(TestUtils.getPluginBaseDir(), "../gradle.properties")))
+        props.load(new FileInputStream(new File(TestUtils.getPluginBaseDir(), "../version.properties")))
         def versionPlugin = props.getProperty('version')
 
 

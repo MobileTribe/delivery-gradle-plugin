@@ -1,6 +1,6 @@
 //
 //  AppDelegate.swift
-//  delivery
+//  deliveryBis
 //
 //  Created by Alexandre Lecerf on 20/09/2017.
 //  Copyright © 2017 Leroy Merlin. All rights reserved.
