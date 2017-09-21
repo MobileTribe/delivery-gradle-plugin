@@ -49,7 +49,7 @@ class IOSConfigurator extends ProjectConfigurator {
         Task buildTask = project.tasks.findByPath(taskName)
         if (buildTask == null) {
             project.task(taskName, type: DeliveryBuild, group: DeliveryPlugin.TASK_GROUP) {
-                variantName project.projectName.toString().split(' ').collect({ m -> return m.toLowerCase() }).join("-") + (hybridBuild ? "" : "-" + target.trim().toLowerCase())
+                variantName project.artifact.toString().split(' ').collect({ m -> return m.toLowerCase() }).join("-") + (hybridBuild ? "" : "-" + target.trim().toLowerCase())
                 outputFiles = ["${scheme.trim().toLowerCase().replace(" ","-")}": project.file("${project.getBuildDir()}/package/${variantCodeName}.ipa")]
             }.dependsOn(taskName + "Process")
 
@@ -66,7 +66,7 @@ class IOSConfigurator extends ProjectConfigurator {
             project.xcodebuild {
                 bundleName = scheme
                 ipaFileName = variantCodeName
-                configuration = "release"
+                configuration = "Release"
                 simulator = false
                 signing {
                     certificateURI = project.file(property.certificateURI).toURI()

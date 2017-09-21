@@ -1,17 +1,8 @@
 apply plugin: 'groovy'
-apply plugin: 'maven'
+apply plugin: 'com.leroymerlin.delivery'
 
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-artifacts {
-    archives sourcesJar
-}
-
-uploadArchives {
-    repositories project.ext.properties.containsKey('bintrayRepositories') ? project.ext.bintrayRepositories : {}
+delivery {
+    archiveRepositories = project.ext.properties.containsKey('bintrayRepositories') ? project.ext.bintrayRepositories : {}
 }
 
 repositories {
@@ -43,7 +34,7 @@ dependencies {
     compile("commons-configuration:commons-configuration:1.10")
     compile("com.google.guava:guava:18.0")
 
-    extraLibs("org.openbakery:xcode-plugin:0.14.5") {
+    extraLibs("org.openbakery:xcode-plugin:0.15.0.develop.+") {
         exclude group: 'commons-io', module: 'commons-io'
         exclude group: 'commons-collections', module: 'commons-collections'
         exclude group: 'commons-configuration', module: 'commons-configuration'

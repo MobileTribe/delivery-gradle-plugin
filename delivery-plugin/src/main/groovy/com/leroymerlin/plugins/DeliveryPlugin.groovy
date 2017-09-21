@@ -210,7 +210,7 @@ class DeliveryPlugin implements Plugin<Project> {
         push
     }
     step 'tagVersion', 'tag the commit'
-    tag "$project.projectName-$project.versionId-$releaseVersion"
+    tag "$project.artifact-$project.versionId-$releaseVersion"
     pushTag
     step 'updateVersion', "Update version to $newVersionId - $newVersion"
     branch releaseBranch
@@ -236,7 +236,7 @@ class DeliveryPlugin implements Plugin<Project> {
     }
 
     void setupProperties() {
-        //Read and apply Delivery.properties file to override default version.properties path and version, versionId, projectName keys
+        //Read and apply Delivery.properties file to override default version.properties path and version, versionId, artifact keys
         PropertiesUtils.readAndApplyPropertiesFile(project, project.file(DELIVERY_CONF_FILE))
 
         //Apply default value if needed
@@ -251,10 +251,11 @@ class DeliveryPlugin implements Plugin<Project> {
         }
         PropertiesUtils.setDefaultProperty(versionFile, project.ext.versionKey, "1.0.0-SNAPSHOT")
 
-        if (!project.hasProperty('projectNameKey')) {
-            project.ext.projectNameKey = 'projectName'
+        if (!project.hasProperty('artifactKey')) {
+            project.ext.artifactKey = 'artifact'
         }
-        PropertiesUtils.setDefaultProperty(versionFile, project.ext.projectNameKey, project.name)
+
+        PropertiesUtils.setDefaultProperty(versionFile, project.ext.artifactKey, PropertiesUtils.readPropertiesFile(versionFile).getProperty("projectName" , project.name))
 
         if (PropertiesUtils.getSystemProperty(VERSION_ID_ARG)) {
             PropertiesUtils.setProperty(versionFile, project.ext.versionIdKey, PropertiesUtils.getSystemProperty(VERSION_ID_ARG))
@@ -266,7 +267,7 @@ class DeliveryPlugin implements Plugin<Project> {
             PropertiesUtils.setProperty(versionFile, 'group', PropertiesUtils.getSystemProperty(GROUP_ARG))
         }
         if (PropertiesUtils.getSystemProperty(PROJECT_NAME_ARG)) {
-            PropertiesUtils.setProperty(versionFile, project.ext.projectNameKey, PropertiesUtils.getSystemProperty(PROJECT_NAME_ARG))
+            PropertiesUtils.setProperty(versionFile, project.ext.artifactKey, PropertiesUtils.getSystemProperty(PROJECT_NAME_ARG))
         }
         applyDeliveryProperties(versionFile)
     }
@@ -287,7 +288,7 @@ class DeliveryPlugin implements Plugin<Project> {
         if (project.extensions.getExtraProperties().has("group")) {
             project.group = project.ext.group
         }
-        project.ext.projectName = project.ext."${project.ext.projectNameKey}"
+        project.ext.artifact = project.ext."${project.ext.artifactKey}"
         deliveryExtension.configurator?.applyProperties()
     }
 }

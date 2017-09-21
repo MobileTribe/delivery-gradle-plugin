@@ -46,7 +46,7 @@ class ReactConfigurator extends ProjectConfigurator {
         } else {
             extension.signingProperties.each { signingProperty ->
                 def object = new JsonSlurper().parseText(project.file("package.json").text)
-                project.projectName = object.name
+                project.artifact = object.name
                 handleProperty(signingProperty)
             }
         }
@@ -97,7 +97,7 @@ class ReactConfigurator extends ProjectConfigurator {
             newStartParameter.systemPropertiesArgs.put(REACT_BUILD, signingName)
             newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.VERSION_ARG, project.version)
             newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.VERSION_ID_ARG, project.versionId)
-            newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.PROJECT_NAME_ARG, project.projectName)
+            newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.PROJECT_NAME_ARG, project.artifact)
             if (project.group)
                 newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.GROUP_ARG, project.group)
 
@@ -134,8 +134,8 @@ class ReactConfigurator extends ProjectConfigurator {
         if (nestedConfigurator && signingName == System.getProperty(REACT_BUILD)) {
             SigningProperty signingPropertyCopy = new SigningProperty('release')
             signingPropertyCopy.setProperties(signingProperty.properties)
-            signingPropertyCopy.target = project.projectName
-            signingPropertyCopy.scheme = project.projectName
+            signingPropertyCopy.target = project.artifact
+            signingPropertyCopy.scheme = project.artifact
             nestedConfigurator.applySigningProperty(signingPropertyCopy)
         }
     }

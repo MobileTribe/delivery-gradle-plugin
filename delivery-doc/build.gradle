@@ -7,7 +7,7 @@ asciidoctorj {
 }
 
 def prop = ant {
-    property(file: '../gradle.properties')
+    property(file: '../version.properties')
 }
 
 asciidoctor {

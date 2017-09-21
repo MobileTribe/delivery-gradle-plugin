@@ -10,7 +10,7 @@ import org.gradle.api.tasks.TaskAction
  */
 class ChangePropertiesTask extends DefaultTask {
 
-    String version, versionId, projectName
+    String version, versionId, artifact
     Project project
 
     @TaskAction
@@ -23,8 +23,8 @@ class ChangePropertiesTask extends DefaultTask {
         if (versionId != null) {
             PropertiesUtils.setProperty(versionFile, project.ext.versionIdKey, versionId)
         }
-        if (projectName != null) {
-            PropertiesUtils.setProperty(versionFile, project.ext.projectNameKey, projectName)
+        if (artifact != null) {
+            PropertiesUtils.setProperty(versionFile, project.ext.artifactKey, artifact)
         }
         project.delivery.plugin.applyDeliveryProperties(versionFile)
     }
