@@ -49,7 +49,7 @@ class IOSConfigurator extends ProjectConfigurator {
         Task buildTask = project.tasks.findByPath(taskName)
         if (buildTask == null) {
             project.task(taskName, type: DeliveryBuild, group: DeliveryPlugin.TASK_GROUP) {
-                variantName project.projectName.toString().split(' ').collect({ m -> return m.toLowerCase() }).join("-") + (hybridBuild ? "" : "-" + target.trim().toLowerCase())
+                variantName project.artifact.toString().split(' ').collect({ m -> return m.toLowerCase() }).join("-") + (hybridBuild ? "" : "-" + target.trim().toLowerCase())
                 outputFiles = ["${scheme.trim().toLowerCase().replace(" ","-")}": project.file("${project.getBuildDir()}/package/${variantCodeName}.ipa")]
             }.dependsOn(taskName + "Process")
 

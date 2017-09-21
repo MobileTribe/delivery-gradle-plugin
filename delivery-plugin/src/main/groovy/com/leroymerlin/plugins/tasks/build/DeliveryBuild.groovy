@@ -24,7 +24,7 @@ class DeliveryBuild extends DefaultTask {
 
     PublishArtifact[] getArtifacts() {
         if (variantName == null) {
-            variantName = project.projectName
+            variantName = project.artifact
         }
         return outputFiles.collect { classifier, file ->
             String extension = FilenameUtils.getExtension(file.name)

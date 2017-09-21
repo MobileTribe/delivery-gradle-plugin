@@ -16,7 +16,7 @@ Delivery is the gradle plugin you need, to simplify your project industrializati
 
 It's *easy to use*. Don't waste your time installing many tools. *Adjust it* to your needs. Handle *any type* of project.
 
-This plugin supports natively java, groovy, android, android library, iOS and Ionic projects, but you can easily extend the support to any project type.
+This plugin supports natively java, groovy, android, android library, iOS, Ionic and React Native projects, but you can easily extend the support to any project type.
 
 Delivery handles the following parts of your continuous delivery process :
 
@@ -29,9 +29,11 @@ This plugin is based on 2 other plugins :
 - https://docs.gradle.org/current/userguide/maven_plugin.html[Maven plugin]
 - https://github.com/openbakery/gradle-xcodePlugin[gradle-xcodePlugin] from openbakery
 
+*Delivery use Maven naming convention to archive*
+
 ## Changelog
 
-### *3.0.0* - (2017-04-25)
+### *3.0.0* - (2017-09-21)
 link:{htmlPath}delivery-doc/html/Tutorial.html[Features]
 
 ## Get Started

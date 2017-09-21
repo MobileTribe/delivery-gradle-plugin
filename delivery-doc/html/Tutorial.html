@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.4">
-<meta name="author" content="Delivery v3.0.0-BETA12, Mon Sep 18 17:07:39 CEST 2017">
+<meta name="author" content="Delivery v3.0.0-BETA13-SNAPSHOT, Thu Sep 21 10:53:48 CEST 2017">
 <title>Tutorial</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -513,7 +513,7 @@ table.CodeRay td.code>pre{padding:0}
 <div id="header">
 <h1>Tutorial</h1>
 <div class="details">
-<span id="author" class="author">Delivery v3.0.0-BETA12, Mon Sep 18 17:07:39 CEST 2017</span><br>
+<span id="author" class="author">Delivery v3.0.0-BETA13-SNAPSHOT, Thu Sep 21 10:53:48 CEST 2017</span><br>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -525,6 +525,7 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#android">3.1. Android</a></li>
 <li><a href="#ios">3.2. iOS</a></li>
 <li><a href="#ionic">3.3. Ionic</a></li>
+<li><a href="#react-native">3.4. React Native</a></li>
 </ul>
 </li>
 <li><a href="#custom-projects">4. Custom projects</a></li>
@@ -772,7 +773,7 @@ You just have to call <strong>releaseGitFlow</strong> to use it.
         push
     }
     step <span class="string"><span class="delimiter">'</span><span class="content">tagVersion</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">tag the commit</span><span class="delimiter">'</span></span>
-    tag <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">$</span>project</span><span class="content">.projectName-</span><span class="inline"><span class="inline-delimiter">$</span>project</span><span class="content">.versionId-</span><span class="inline"><span class="inline-delimiter">$</span>releaseVersion</span><span class="delimiter">&quot;</span></span>
+    tag <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">$</span>project</span><span class="content">.artifact-</span><span class="inline"><span class="inline-delimiter">$</span>project</span><span class="content">.versionId-</span><span class="inline"><span class="inline-delimiter">$</span>releaseVersion</span><span class="delimiter">&quot;</span></span>
     pushTag
     step <span class="string"><span class="delimiter">'</span><span class="content">updateVersion</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Update version to </span><span class="inline"><span class="inline-delimiter">$</span>newVersionId</span><span class="content"> - </span><span class="inline"><span class="inline-delimiter">$</span>newVersion</span><span class="delimiter">&quot;</span></span>
     branch releaseBranch
@@ -879,11 +880,42 @@ iOS support is based on the open source project <a href="https://github.com/open
 </div>
 <div class="sect2">
 <h3 id="ionic">3.3. Ionic</h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+Ionic support is only available with the last Ionic version
+</td>
+</tr>
+</table>
+</div>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">            <span class="comment">//...</span>
             signingProperties {
                 <span class="comment">// you have to use android or ios name for ionic signing configs</span>
+                android {
+                    <span class="comment">//See android needed properties</span>
+                }
+                ios {
+                    <span class="comment">//See ios needed properties</span>
+                    <span class="comment">//target and scheme are optionals for ionic</span>
+                }
+            }
+            <span class="comment">//...</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="react-native">3.4. React Native</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">            <span class="comment">//...</span>
+            signingProperties {
+                <span class="comment">// you have to use android or ios name for react signing configs</span>
                 android {
                     <span class="comment">//See android needed properties</span>
                 }
@@ -947,7 +979,7 @@ iOS support is based on the open source project <a href="https://github.com/open
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-05-17 10:03:17 +02:00
+Last updated 2017-09-21 09:51:17 +02:00
 </div>
 </div>
 </body>

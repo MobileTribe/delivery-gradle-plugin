@@ -56,7 +56,7 @@ class IonicConfigurator extends ProjectConfigurator {
                 project.ext.group = widget."@id"
                 project.group = project.ext.group
             }
-            project.projectName = widget.name[0].value()[0]
+            project.artifact = widget.name[0].value()[0]
 
             if (!project.group) {
                 throw new GradleException("Project group is not defined. Please use a gradle properties or configure your id in config.xml")
@@ -113,7 +113,7 @@ class IonicConfigurator extends ProjectConfigurator {
             newStartParameter.systemPropertiesArgs.put(IONIC_BUILD, signingName)
             newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.VERSION_ARG, project.version)
             newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.VERSION_ID_ARG, project.versionId)
-            newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.PROJECT_NAME_ARG, project.projectName)
+            newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.PROJECT_NAME_ARG, project.artifact)
             newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.GROUP_ARG, project.group)
             if (signingName == 'android') {
                 newStartParameter.settingsFile = settingsGradle
@@ -136,8 +136,8 @@ class IonicConfigurator extends ProjectConfigurator {
         if (nestedConfigurator && signingName == System.getProperty(IONIC_BUILD)) {
             SigningProperty signingPropertyCopy = new SigningProperty('release')
             signingPropertyCopy.setProperties(signingProperty.properties)
-            signingPropertyCopy.target = project.projectName
-            signingPropertyCopy.scheme = project.projectName
+            signingPropertyCopy.target = project.artifact
+            signingPropertyCopy.scheme = project.artifact
             nestedConfigurator.applySigningProperty(signingPropertyCopy)
         }
     }

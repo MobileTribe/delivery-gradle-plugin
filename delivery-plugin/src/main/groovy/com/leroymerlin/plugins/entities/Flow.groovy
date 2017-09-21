@@ -90,8 +90,8 @@ class Flow {
         createTask(DeleteTask, [branch: branchName])
     }
 
-    def changeProperties(version = null, versionId = null, projectName = null) {
-        createTask(ChangePropertiesTask, [version: version, versionId: versionId, projectName: projectName, project: project])
+    def changeProperties(version = null, versionId = null, artifact = null) {
+        createTask(ChangePropertiesTask, [version: version, versionId: versionId, artifact: artifact, project: project])
     }
 
     def build() {

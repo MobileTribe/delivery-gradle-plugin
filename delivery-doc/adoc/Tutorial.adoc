@@ -103,9 +103,18 @@ include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[t
 
 === Ionic
 
+NOTE: Ionic support is only available with the last Ionic version
+
 [source,groovy]
 ----
 include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[tags=signingIonicExample]
+----
+
+=== React Native
+
+[source,groovy]
+----
+include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[tags=signingReactExample]
 ----
 
 == Custom projects
