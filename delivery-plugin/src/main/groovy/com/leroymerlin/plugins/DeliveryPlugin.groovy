@@ -8,6 +8,7 @@ import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.artifacts.PublishArtifact
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.artifacts.maven.MavenPom
 import org.gradle.api.internal.artifacts.dsl.DefaultRepositoryHandler
@@ -102,25 +103,25 @@ class DeliveryPlugin implements Plugin<Project> {
             }
         })
 
-        project.ext.DeliveryBuild = DeliveryBuild
-
-        setupProperties()
-
-        ProjectConfigurator detectedConfigurator = configurators.find {
-            configurator ->
-                configurator.newInstance().handleProject(project)
-        }?.newInstance()
-        if (detectedConfigurator == null) {
-            detectedConfigurator = [] as ProjectConfigurator
-        } else {
-            Logger.global.warning("${project.name} configured as ${detectedConfigurator.class.simpleName - "Configurator"} project")
-        }
-        this.deliveryExtension.configurator = detectedConfigurator
-
-        project.task(TASK_UPLOAD, group: TASK_GROUP)
-        project.task(TASK_INSTALL, group: TASK_GROUP)
-
         project.afterEvaluate {
+            project.ext.DeliveryBuild = DeliveryBuild
+
+            setupProperties()
+
+            ProjectConfigurator detectedConfigurator = configurators.find {
+                configurator ->
+                    configurator.newInstance().handleProject(project)
+            }?.newInstance()
+            if (detectedConfigurator == null) {
+                detectedConfigurator = [] as ProjectConfigurator
+            } else {
+                Logger.global.warning("${project.name} configured as ${detectedConfigurator.class.simpleName - "Configurator"} project")
+            }
+            this.deliveryExtension.configurator = detectedConfigurator
+
+            project.task(TASK_UPLOAD, group: TASK_GROUP)
+            project.task(TASK_INSTALL, group: TASK_GROUP)
+
             if (deliveryExtension.configurator == null) {
                 throw new GradleException("Configurator is null. Can't configure your project. Please set the configurator or apply the plugin after your project plugin")
             }
@@ -150,7 +151,7 @@ class DeliveryPlugin implements Plugin<Project> {
                         MavenPom pom = mavenInstaller.getPom()
                         pom.setArtifactId(task.variantName as String)
                     }
-                    ((Configuration) project.configurations."${configurationName}").artifacts.addAll(task.getArtifacts())
+                    ((Configuration) project.configurations."${configurationName}").artifacts.addAll(task.getArtifacts() as PublishArtifact[])
             }
 
             def uploadArtifacts = project.tasks.findByName(TASK_UPLOAD)
@@ -233,51 +234,47 @@ class DeliveryPlugin implements Plugin<Project> {
         if (!project.hasProperty('versionIdKey')) {
             project.ext.versionIdKey = 'versionId'
         }
-        PropertiesUtils.setDefaultProperty(versionFile, project.ext.versionIdKey as String, "2")
+        PropertiesUtils.setDefaultProperty(versionFile, project.versionIdKey as String, "2")
 
         if (!project.hasProperty('versionKey')) {
             project.ext.versionKey = 'version'
         }
-        PropertiesUtils.setDefaultProperty(versionFile, project.ext.versionKey as String, "1.0.0-SNAPSHOT")
+        PropertiesUtils.setDefaultProperty(versionFile, project.versionKey as String, "1.0.0-SNAPSHOT")
 
         if (!project.hasProperty('artifactKey')) {
             project.ext.artifactKey = 'artifact'
         }
 
-        PropertiesUtils.setDefaultProperty(versionFile, project.ext.artifactKey as String, PropertiesUtils.readPropertiesFile(versionFile).getProperty("projectName", project.name))
+        PropertiesUtils.setDefaultProperty(versionFile, project.artifactKey as String, PropertiesUtils.readPropertiesFile(versionFile).getProperty("projectName", project.name))
 
         if (PropertiesUtils.getSystemProperty(VERSION_ID_ARG)) {
-            PropertiesUtils.setProperty(versionFile, project.ext.versionIdKey as String, PropertiesUtils.getSystemProperty(VERSION_ID_ARG))
+            PropertiesUtils.setProperty(versionFile, project.versionIdKey as String, PropertiesUtils.getSystemProperty(VERSION_ID_ARG))
         }
         if (PropertiesUtils.getSystemProperty(VERSION_ARG)) {
-            PropertiesUtils.setProperty(versionFile, project.ext.versionKey as String, PropertiesUtils.getSystemProperty(VERSION_ARG))
+            PropertiesUtils.setProperty(versionFile, project.versionKey as String, PropertiesUtils.getSystemProperty(VERSION_ARG))
         }
         if (PropertiesUtils.getSystemProperty(GROUP_ARG)) {
             PropertiesUtils.setProperty(versionFile, 'group', PropertiesUtils.getSystemProperty(GROUP_ARG))
         }
         if (PropertiesUtils.getSystemProperty(PROJECT_NAME_ARG)) {
-            PropertiesUtils.setProperty(versionFile, project.ext.artifactKey as String, PropertiesUtils.getSystemProperty(PROJECT_NAME_ARG))
+            PropertiesUtils.setProperty(versionFile, project.artifactKey as String, PropertiesUtils.getSystemProperty(PROJECT_NAME_ARG))
         }
         applyDeliveryProperties(versionFile)
     }
 
     File getVersionFile() {
-        if (project.hasProperty('versionFilePath')) {
-            return project.file(project.property('versionFilePath'))
-        } else {
-            return project.file('version.properties')
-        }
+        return project.file('version.properties')
     }
 
     void applyDeliveryProperties(File versionFile) {
         PropertiesUtils.readAndApplyPropertiesFile(project, versionFile)
-        project.ext.versionId = project.ext."${project.ext.versionIdKey}"
-        project.ext.version = project.ext."${project.ext.versionKey}"
-        project.version = project.ext."${project.ext.versionKey}"
+        project.ext.versionId = project.ext."${project.versionIdKey}"
+        project.ext.version = project.ext."${project.versionKey}"
+        project.version = project.ext."${project.versionKey}"
         if (project.extensions.getExtraProperties().has("group")) {
             project.group = project.ext.group
         }
-        project.ext.artifact = project.ext."${project.ext.artifactKey}"
+        project.ext.artifact = project.ext."${project.artifactKey}"
         deliveryExtension.configurator?.applyProperties()
     }
 }

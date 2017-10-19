@@ -1,0 +1,19 @@
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+        mavenLocal()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath "com.leroymerlin.plugins:delivery-plugin:${System.getProperty("DELIVERY_VERSION")}"
+    }
+}
+allprojects {
+    repositories {
+        mavenCentral()
+        mavenLM()
+    }
+
+    apply plugin: 'com.leroymerlin.delivery'
+}
