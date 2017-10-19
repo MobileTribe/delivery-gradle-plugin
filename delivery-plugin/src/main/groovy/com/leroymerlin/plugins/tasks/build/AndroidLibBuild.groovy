@@ -11,16 +11,15 @@ class AndroidLibBuild extends DeliveryBuild {
     @Input
     void addVariant(variant) {
         def classifier = variant.buildType.name
-        outputFiles.put("", variant.outputs.get(0).outputFile)
+        outputFiles.put("", variant.outputs.get(0).outputFile as File)
         dependsOn.add(variant.assemble)
         if (variant.mappingFile) {
             if (!variant.mappingFile.exists()) {
                 variant.mappingFile.parentFile.mkdirs()
                 variant.mappingFile.createNewFile()
             }
-            outputFiles.put("mapping", variant.mappingFile)
+            outputFiles.put("mapping", variant.mappingFile as File)
         }
-
         def sourcesJar = project.task("sources${variant.name.capitalize()}Jar", type: Jar, group: DeliveryPlugin.TASK_GROUP) {
             classifier = 'sources'
             from variant.javaCompile.destinationDir

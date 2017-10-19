@@ -14,10 +14,10 @@ class AndroidBuild extends DeliveryBuild {
     void addVariant(variant) {
         def classifier = variant.buildType.name
         if (variant.signingReady) {
-            outputFiles.put(classifier, variant.outputs.get(0).outputFile)
+            outputFiles.put(classifier as String, variant.outputs.get(0).outputFile as File)
             dependsOn.add(variant.assemble)
             if (variant.testVariant) {
-                outputFiles.put("test-$classifier" as String, variant.testVariant.outputs.get(0).outputFile)
+                outputFiles.put("test-$classifier" as String, variant.testVariant.outputs.get(0).outputFile as File)
                 dependsOn.add(variant.testVariant.assemble)
             }
             if (variant.mappingFile) {
@@ -27,11 +27,8 @@ class AndroidBuild extends DeliveryBuild {
                         variant.mappingFile.createNewFile()
                     }
                 }
-
-
-                outputFiles.put("mapping-$classifier" as String, variant.mappingFile)
+                outputFiles.put("mapping-$classifier" as String, variant.mappingFile as File)
             }
-
             def sourcesJar = project.task("sources${variant.name.capitalize()}Jar", type: Jar, group: DeliveryPlugin.TASK_GROUP) {
                 classifier = 'sources'
                 from variant.javaCompile.destinationDir
@@ -42,7 +39,4 @@ class AndroidBuild extends DeliveryBuild {
             Logger.global.info("$classifier has no valid signing config and will not be archived")
         }
     }
-
-
-
 }

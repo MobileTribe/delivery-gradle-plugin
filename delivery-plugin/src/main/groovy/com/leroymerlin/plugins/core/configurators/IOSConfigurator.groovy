@@ -50,7 +50,7 @@ class IOSConfigurator extends ProjectConfigurator {
         if (buildTask == null) {
             project.task(taskName, type: DeliveryBuild, group: DeliveryPlugin.TASK_GROUP) {
                 variantName project.artifact.toString().split(' ').collect({ m -> return m.toLowerCase() }).join("-") + (hybridBuild ? "" : "-" + target.trim().toLowerCase())
-                outputFiles = ["${scheme.trim().toLowerCase().replace(" ","-")}": project.file("${project.getBuildDir()}/package/${variantCodeName}.ipa")]
+                outputFiles = ["${scheme.trim().toLowerCase().replace(" ", "-")}": project.file("${project.getBuildDir()}/package/${variantCodeName}.ipa")]
             }.dependsOn(taskName + "Process")
 
             def parameter = project.getGradle().startParameter.newInstance()

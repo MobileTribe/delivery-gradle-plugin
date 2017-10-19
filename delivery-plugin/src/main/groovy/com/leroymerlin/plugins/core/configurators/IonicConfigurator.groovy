@@ -9,7 +9,6 @@ import org.gradle.api.Project
 import org.gradle.api.tasks.GradleBuild
 import org.gradle.api.tasks.Upload
 
-import java.util.logging.Level
 import java.util.logging.Logger
 
 /**
@@ -23,7 +22,7 @@ class IonicConfigurator extends ProjectConfigurator {
     @Override
     void setup(Project project, DeliveryPluginExtension extension) {
         super.setup(project, extension)
-        def signingBuild = System.getProperty(IONIC_BUILD)
+        String signingBuild = System.getProperty(IONIC_BUILD)
         if (signingBuild == 'ios') {
             nestedConfigurator = new IOSConfigurator()
             nestedConfigurator.hybridBuild = true
@@ -32,10 +31,10 @@ class IonicConfigurator extends ProjectConfigurator {
         }
         nestedConfigurator?.setup(project, extension)
 
-        project.task("prepareProject", group: DeliveryPlugin.TASK_GROUP).doFirst {
+        project.task("prepareProject", group: DeliveryPlugin.TASK_GROUP).doLast {
             project.file("platforms")?.deleteDir()
         }
-        project.task("prepareNpm", group: DeliveryPlugin.TASK_GROUP).doFirst {
+        project.task("prepareNpm", group: DeliveryPlugin.TASK_GROUP).doLast {
             Logger.global.warning("Delivery support Ionic > 3.0 & Cordova > 7.0")
             Executor.exec(["npm", "install"], [directory: project.projectDir], true)
         }.dependsOn("prepareProject")
@@ -46,12 +45,12 @@ class IonicConfigurator extends ProjectConfigurator {
         if (nestedConfigurator) {
             if (System.getProperty(IONIC_BUILD) == 'android') {
                 project.android.defaultConfig.versionName = project.version
-                project.android.defaultConfig.versionCode = Integer.parseInt(project.versionId)
+                project.android.defaultConfig.versionCode = Integer.parseInt(project.versionId as String)
             }
             nestedConfigurator.configure()
         } else {
-            def config = project.file("config.xml")
-            def widget = new XmlParser(false, false).parse(config)
+            File config = project.file("config.xml")
+            Node widget = new XmlParser(false, false).parse(config)
             if (!project.group) {
                 project.ext.group = widget."@id"
                 project.group = project.ext.group
@@ -96,7 +95,7 @@ class IonicConfigurator extends ProjectConfigurator {
             def newBuildGradleFile = project.file("platforms/${signingName}/${signingName == 'android' ? "delivery-" : ""}build.gradle")
             def settingsGradle = project.file("platforms/${signingName}/${signingName == 'android' ? "delivery-" : ""}settings.gradle")
 
-            project.task(preparePlatformTask, group: DeliveryPlugin.TASK_GROUP).doFirst {
+            project.task(preparePlatformTask, group: DeliveryPlugin.TASK_GROUP).doLast {
                 Executor.exec(["ionic", "cordova", "build", signingName, "--release"], [directory: project.projectDir], true)
 
                 newBuildGradleFile.delete()
@@ -111,10 +110,10 @@ class IonicConfigurator extends ProjectConfigurator {
 
             def newStartParameter = project.getGradle().startParameter.newInstance()
             newStartParameter.systemPropertiesArgs.put(IONIC_BUILD, signingName)
-            newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.VERSION_ARG, project.version)
-            newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.VERSION_ID_ARG, project.versionId)
-            newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.PROJECT_NAME_ARG, project.artifact)
-            newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.GROUP_ARG, project.group)
+            newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.VERSION_ARG, project.version as String)
+            newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.VERSION_ID_ARG, project.versionId as String)
+            newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.PROJECT_NAME_ARG, project.artifact as String)
+            newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.GROUP_ARG, project.group as String)
             if (signingName == 'android') {
                 newStartParameter.settingsFile = settingsGradle
             }

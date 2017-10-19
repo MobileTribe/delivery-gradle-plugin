@@ -11,7 +11,7 @@ class JavaBuild extends DeliveryBuild {
     void setVariantName(String variantName) {
         super.setVariantName(variantName)
 
-        outputFiles.put("", project.jar.outputs.getFiles()[0])
+        outputFiles.put("", project.jar.outputs.getFiles()[0] as File)
         dependsOn.add(project.build)
         dependsOn.add(project.jar)
 

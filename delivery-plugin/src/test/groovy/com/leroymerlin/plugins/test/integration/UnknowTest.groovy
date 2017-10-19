@@ -23,14 +23,14 @@ class UnknowTest extends AbstractIntegrationTest {
 task ('buildVariant1', type: DeliveryBuild, group: 'delivery'){
     variantName = 'variant1'
     outputFiles = ["release": file('build/variant1.txt')]
-}.doFirst{
+}.doLast{
     cmd('java -jar delivery-test.jar variant1')
 }
 
 task('buildVariant2', type: DeliveryBuild, group: 'delivery'){
     variantName = 'variant2'
     outputFiles = ["release": file('build/variant2.txt')]
-}.doFirst{
+}.doLast{
     cmd('java -jar delivery-test.jar variant2')
 }
 

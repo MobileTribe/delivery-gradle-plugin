@@ -43,6 +43,5 @@ delivery{
     @Test
     void testInstallGeneration() {
         testTask('install')
-
     }
 }

@@ -20,9 +20,6 @@ repositories {
     mavenCentral()
 }
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
-
 configurations {
     // configuration that holds jars to include in the jar
     extraLibs
@@ -50,11 +47,7 @@ dependencies {
         exclude group: 'com.google.guava', module: 'guava'
     }
     testCompile 'junit:junit:4.12'
-    testCompile 'com.android.tools.build:gradle:2.3.1'
-}
-
-test {
-    workingDir project.projectDir.getParentFile()
+    testCompile 'com.android.tools.build:gradle:2.3.3'
 }
 
 task('createDoc', dependsOn: project(':delivery-doc').getTasksByName('asciidoctor', false))

@@ -32,11 +32,11 @@ class AndroidConfigurator extends ProjectConfigurator {
         project.android {
             defaultConfig {
                 versionName project.version
-                versionCode Integer.parseInt(project.versionId)
+                versionCode Integer.parseInt(project.versionId as String)
             }
             buildTypes.all {
                 buildType ->
-                    extension.signingProperties.maybeCreate(buildType.name)
+                    extension.signingProperties.maybeCreate(buildType.name as String)
             }
         }
     }
@@ -52,7 +52,7 @@ class AndroidConfigurator extends ProjectConfigurator {
             if (!(project.android.defaultConfig.versionName == version)) {
                 throw new GradleException("app versionName is ${project.android.defaultConfig.versionName} but should be $version. Please set: android.defaultConfig.versionName version")
             }
-            if (!(project.android.defaultConfig.versionCode == Integer.parseInt(project.versionId))) {
+            if (!(project.android.defaultConfig.versionCode == Integer.parseInt(project.versionId as String))) {
                 throw new GradleException("app versionCode is ${project.android.defaultConfig.versionCode} but should be ${project.versionId}. Please set: android.defaultConfig.versionCode Integer.parseInt(versionId)")
             }
 
