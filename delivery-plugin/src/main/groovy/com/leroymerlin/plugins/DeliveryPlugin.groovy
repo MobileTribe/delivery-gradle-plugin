@@ -103,24 +103,25 @@ class DeliveryPlugin implements Plugin<Project> {
             }
         })
 
+        project.ext.DeliveryBuild = DeliveryBuild
+
+        setupProperties()
+
+        ProjectConfigurator detectedConfigurator = configurators.find {
+            configurator ->
+                configurator.newInstance().handleProject(project)
+        }?.newInstance()
+        if (detectedConfigurator == null) {
+            detectedConfigurator = [] as ProjectConfigurator
+        } else {
+            Logger.global.warning("${project.name} configured as ${detectedConfigurator.class.simpleName - "Configurator"} project")
+        }
+        this.deliveryExtension.configurator = detectedConfigurator
+
+        project.task(TASK_UPLOAD, group: TASK_GROUP)
+        project.task(TASK_INSTALL, group: TASK_GROUP)
+
         project.afterEvaluate {
-            project.ext.DeliveryBuild = DeliveryBuild
-
-            setupProperties()
-
-            ProjectConfigurator detectedConfigurator = configurators.find {
-                configurator ->
-                    configurator.newInstance().handleProject(project)
-            }?.newInstance()
-            if (detectedConfigurator == null) {
-                detectedConfigurator = [] as ProjectConfigurator
-            } else {
-                Logger.global.warning("${project.name} configured as ${detectedConfigurator.class.simpleName - "Configurator"} project")
-            }
-            this.deliveryExtension.configurator = detectedConfigurator
-
-            project.task(TASK_UPLOAD, group: TASK_GROUP)
-            project.task(TASK_INSTALL, group: TASK_GROUP)
 
             if (deliveryExtension.configurator == null) {
                 throw new GradleException("Configurator is null. Can't configure your project. Please set the configurator or apply the plugin after your project plugin")
@@ -226,11 +227,43 @@ class DeliveryPlugin implements Plugin<Project> {
     }
 
     void setupProperties() {
+
+        def parents = new ArrayList<Project>()
+
+        def actualParent = project.parent
+        while (actualParent != null) {
+            parents.add(actualParent)
+            actualParent = actualParent.parent
+        }
+
+        Collections.reverse(parents)
+
+        parents.forEach {
+            if (it.projectDir.list().contains("version.properties")) {
+                File newVersionFile = project.file('version.properties')
+                if (!project.hasProperty('versionIdKey')) {
+                    project.ext.versionIdKey = 'versionId'
+                }
+                PropertiesUtils.setDefaultProperty(newVersionFile, project.versionIdKey as String, it.versionId as String)
+
+                if (!project.hasProperty('versionKey')) {
+                    project.ext.versionKey = 'version'
+                }
+                PropertiesUtils.setDefaultProperty(newVersionFile, project.versionKey as String, it.version as String)
+
+                if (!project.hasProperty('artifactKey')) {
+                    project.ext.artifactKey = 'artifact'
+                }
+                PropertiesUtils.setDefaultProperty(newVersionFile, project.artifactKey as String, PropertiesUtils.readPropertiesFile(newVersionFile).getProperty("projectName", it.name))
+            }
+        }
+
         //Read and apply Delivery.properties file to override default version.properties path and version, versionId, artifact keys
         PropertiesUtils.readAndApplyPropertiesFile(project, project.file(DELIVERY_CONF_FILE))
 
         //Apply default value if needed
         File versionFile = getVersionFile()
+
         if (!project.hasProperty('versionIdKey')) {
             project.ext.versionIdKey = 'versionId'
         }
@@ -244,7 +277,6 @@ class DeliveryPlugin implements Plugin<Project> {
         if (!project.hasProperty('artifactKey')) {
             project.ext.artifactKey = 'artifact'
         }
-
         PropertiesUtils.setDefaultProperty(versionFile, project.artifactKey as String, PropertiesUtils.readPropertiesFile(versionFile).getProperty("projectName", project.name))
 
         if (PropertiesUtils.getSystemProperty(VERSION_ID_ARG)) {
@@ -259,6 +291,7 @@ class DeliveryPlugin implements Plugin<Project> {
         if (PropertiesUtils.getSystemProperty(PROJECT_NAME_ARG)) {
             PropertiesUtils.setProperty(versionFile, project.artifactKey as String, PropertiesUtils.getSystemProperty(PROJECT_NAME_ARG))
         }
+
         applyDeliveryProperties(versionFile)
     }
 

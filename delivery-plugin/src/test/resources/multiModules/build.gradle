@@ -1,8 +1,7 @@
 buildscript {
     repositories {
-        jcenter()
-        mavenCentral()
         mavenLocal()
+        jcenter()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.3.3'
@@ -14,6 +13,6 @@ allprojects {
         mavenCentral()
         mavenLM()
     }
-
-    apply plugin: 'com.leroymerlin.delivery'
 }
+
+apply plugin: 'com.leroymerlin.delivery'
