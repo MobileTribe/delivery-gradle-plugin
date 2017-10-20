@@ -20,11 +20,15 @@ class AndroidLibBuild extends DeliveryBuild {
             }
             outputFiles.put("mapping", variant.mappingFile as File)
         }
-        def sourcesJar = project.task("sources${variant.name.capitalize()}Jar", type: Jar, group: DeliveryPlugin.TASK_GROUP) {
-            classifier = 'sources'
-            from variant.javaCompile.destinationDir
+        variant.sourceSets.each { sourceSet ->
+            if (sourceSet.name == "main") {
+                def sourcesJar = project.task("sources${variant.name.capitalize()}Jar", type: Jar, group: DeliveryPlugin.TASK_GROUP) {
+                    classifier = 'sources'
+                    from sourceSet.java.srcDirs
+                }
+                outputFiles.put("sources-" + classifier, sourcesJar.outputs.getFiles().getSingleFile())
+                dependsOn.add(sourcesJar)
+            }
         }
-        outputFiles.put("sources", sourcesJar.outputs.getFiles().getSingleFile())
-        dependsOn.add(sourcesJar)
     }
 }
