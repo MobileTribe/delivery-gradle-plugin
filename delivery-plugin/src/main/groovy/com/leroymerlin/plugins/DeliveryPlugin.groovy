@@ -228,56 +228,57 @@ class DeliveryPlugin implements Plugin<Project> {
 
     void setupProperties() {
 
-        def parents = new ArrayList<Project>()
+        //Read and apply Delivery.properties file to override default version.properties path and version, versionId, artifact keys
+        PropertiesUtils.overrideVersionProperties(project, project.file(DELIVERY_CONF_FILE))
 
+        def parents = new ArrayList<Project>()
         def actualParent = project.parent
         while (actualParent != null) {
             parents.add(actualParent)
             actualParent = actualParent.parent
         }
-
         Collections.reverse(parents)
-
+        Properties properties = new Properties()
         parents.forEach {
-            if (it.projectDir.list().contains("version.properties")) {
-                File newVersionFile = project.file('version.properties')
-                if (!project.hasProperty('versionIdKey')) {
-                    project.ext.versionIdKey = 'versionId'
-                }
-                PropertiesUtils.setDefaultProperty(newVersionFile, project.versionIdKey as String, it.versionId as String)
-
-                if (!project.hasProperty('versionKey')) {
-                    project.ext.versionKey = 'version'
-                }
-                PropertiesUtils.setDefaultProperty(newVersionFile, project.versionKey as String, it.version as String)
-
-                if (!project.hasProperty('artifactKey')) {
-                    project.ext.artifactKey = 'artifact'
-                }
-                PropertiesUtils.setDefaultProperty(newVersionFile, project.artifactKey as String, PropertiesUtils.readPropertiesFile(newVersionFile).getProperty("projectName", it.name))
+            if (it.getProperties().get("versionId")!= null && it.versionId != null && it.versionId != "") properties.setProperty("versionId", it.versionId as String)
+            if (it.getProperties().get("version")!= null && it.version != null && it.version != "") properties.setProperty("version", it.version as String)
+            if (PropertiesUtils.readPropertiesFile(it.file('version.properties')).getProperty("projectName", it.name) != null &&
+                    PropertiesUtils.readPropertiesFile(it.file('version.properties')).getProperty("projectName", it.name) != "") {
+                properties.setProperty("artifact", PropertiesUtils.readPropertiesFile(it.file('version.properties')).getProperty("projectName", it.name))
             }
         }
 
-        //Read and apply Delivery.properties file to override default version.properties path and version, versionId, artifact keys
-        PropertiesUtils.readAndApplyPropertiesFile(project, project.file(DELIVERY_CONF_FILE))
-
-        //Apply default value if needed
         File versionFile = getVersionFile()
 
         if (!project.hasProperty('versionIdKey')) {
             project.ext.versionIdKey = 'versionId'
         }
-        PropertiesUtils.setDefaultProperty(versionFile, project.versionIdKey as String, "2")
+        String versionId
+        if (properties.getProperty("versionId") != null && properties.getProperty("versionId") != "")
+            versionId = properties.getProperty("versionId")
+        else
+            versionId = "2"
+        PropertiesUtils.setDefaultProperty(versionFile, project.versionIdKey as String, versionId)
 
         if (!project.hasProperty('versionKey')) {
             project.ext.versionKey = 'version'
         }
-        PropertiesUtils.setDefaultProperty(versionFile, project.versionKey as String, "1.0.0-SNAPSHOT")
+        String version
+        if (properties.getProperty("version") != null && properties.getProperty("version") != "")
+            version = properties.getProperty("version")
+        else
+            version = "1.0.0-SNAPSHOT"
+        PropertiesUtils.setDefaultProperty(versionFile, project.versionKey as String, version)
 
         if (!project.hasProperty('artifactKey')) {
             project.ext.artifactKey = 'artifact'
         }
-        PropertiesUtils.setDefaultProperty(versionFile, project.artifactKey as String, PropertiesUtils.readPropertiesFile(versionFile).getProperty("projectName", project.name))
+        String artifact
+        if (properties.getProperty("artifact") != null && properties.getProperty("artifact") != "")
+            artifact = properties.getProperty("artifact")
+        else
+            artifact = PropertiesUtils.readPropertiesFile(versionFile).getProperty("projectName", project.name)
+        PropertiesUtils.setDefaultProperty(versionFile, project.artifactKey as String, artifact)
 
         if (PropertiesUtils.getSystemProperty(VERSION_ID_ARG)) {
             PropertiesUtils.setProperty(versionFile, project.versionIdKey as String, PropertiesUtils.getSystemProperty(VERSION_ID_ARG))

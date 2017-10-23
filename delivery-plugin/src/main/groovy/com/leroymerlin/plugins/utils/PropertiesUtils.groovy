@@ -50,6 +50,14 @@ class PropertiesUtils extends Executor {
         return properties
     }
 
+    static void overrideVersionProperties(Project project, File file) {
+        if (file.exists()) {
+            Properties properties = readPropertiesFile(file)
+            writePropertiesFile(project.file("version.properties"), properties)
+            applyPropertiesOnProject(project, properties)
+        }
+    }
+
     static Properties readPropertiesFile(File file) {
         Properties properties = new Properties()
         if (file.exists()) {
