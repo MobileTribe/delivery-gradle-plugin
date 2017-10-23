@@ -8,6 +8,7 @@ import com.leroymerlin.plugins.tasks.build.AndroidLibBuild
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.artifacts.maven.Conf2ScopeMappingContainer
+import org.gradle.api.tasks.Delete
 
 import java.util.logging.Logger
 
@@ -43,6 +44,12 @@ class AndroidConfigurator extends ProjectConfigurator {
 
     @Override
     void configure() {
+
+        project.tasks.findByPath("assemble")
+                .dependsOn(project.task("clearGeneratedFiles", type: Delete, group: DeliveryPlugin.TASK_GROUP).doFirst {
+            delete project.rootProject.file("/build/generated")
+        })
+
         //configure project with maven convention
         this.extension.plugin.mapToMavenConfiguration(DeliveryPlugin.COMPILE_PRIORITY, "compile", Conf2ScopeMappingContainer.COMPILE)
 
