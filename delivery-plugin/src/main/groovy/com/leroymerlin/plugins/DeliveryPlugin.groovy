@@ -240,8 +240,8 @@ class DeliveryPlugin implements Plugin<Project> {
         Collections.reverse(parents)
         Properties properties = new Properties()
         parents.forEach {
-            if (it.getProperties().get("versionId")!= null && it.versionId != null && it.versionId != "") properties.setProperty("versionId", it.versionId as String)
-            if (it.getProperties().get("version")!= null && it.version != null && it.version != "") properties.setProperty("version", it.version as String)
+            if (it.getProperties().get("versionId") != null && it.versionId != null && it.versionId != "") properties.setProperty("versionId", it.versionId as String)
+            if (it.getProperties().get("version") != null && it.version != null && it.version != "") properties.setProperty("version", it.version as String)
             if (PropertiesUtils.readPropertiesFile(it.file('version.properties')).getProperty("projectName", it.name) != null &&
                     PropertiesUtils.readPropertiesFile(it.file('version.properties')).getProperty("projectName", it.name) != "") {
                 properties.setProperty("artifact", PropertiesUtils.readPropertiesFile(it.file('version.properties')).getProperty("projectName", it.name))
