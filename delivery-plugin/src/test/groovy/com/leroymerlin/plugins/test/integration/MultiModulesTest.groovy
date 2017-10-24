@@ -29,12 +29,6 @@ delivery{
         }
     } 
 }
-android{
-    productFlavors {
-        dev {}
-        prod {}
-    }
-}
 ''')
         testTask('buildFlow')
         def list = []
@@ -42,6 +36,6 @@ android{
             f ->
                 list << f
         })
-        Assert.assertEquals("archive folder should contain 24 files", 24, list.size())
+        Assert.assertEquals("archive folder should contain 16 files", 16, list.size())
     }
 }

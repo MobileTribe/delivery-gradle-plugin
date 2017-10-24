@@ -1,1 +1,1 @@
-include ':app', ':module2'
+include ':app', ':lib'
