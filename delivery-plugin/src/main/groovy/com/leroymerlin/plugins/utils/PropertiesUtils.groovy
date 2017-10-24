@@ -16,18 +16,8 @@ class PropertiesUtils extends Executor {
         return property
     }
 
-    static void setDefaultProperty(File file, String key, String value) {
-        Properties properties = readPropertiesFile(file)
-        if (properties.getProperty(key) == null) {
-            properties.setProperty(key, value)
-            writePropertiesFile(file, properties)
-        }
-    }
-
-    static void setProperty(File file, String key, String value) {
-        Properties properties = readPropertiesFile(file)
+    static void setProperty(Properties properties, String key, String value) {
         properties.setProperty(key, value)
-        writePropertiesFile(file, properties)
     }
 
     static void writePropertiesFile(File file, Properties properties) {
@@ -44,17 +34,9 @@ class PropertiesUtils extends Executor {
         out.close()
     }
 
-    static Properties readAndApplyPropertiesFile(Project project, File file) {
-        Properties properties = readPropertiesFile(file)
-        applyPropertiesOnProject(project, properties)
-        return properties
-    }
-
-    static void overrideVersionProperties(Project project, File file) {
+    static void overrideVersionProperties(Properties properties, File file) {
         if (file.exists()) {
-            Properties properties = readPropertiesFile(file)
-            writePropertiesFile(project.file("version.properties"), properties)
-            applyPropertiesOnProject(project, properties)
+            properties.putAll(readPropertiesFile(file))
         }
     }
 
