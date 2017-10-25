@@ -181,14 +181,15 @@ class DeliveryPlugin implements Plugin<Project> {
                             def baseBranch = PropertiesUtils.getSystemProperty("BASE_BRANCH", 'master')
                             def workBranch = PropertiesUtils.getSystemProperty("BRANCH", 'develop')
                             def newVersionId = Integer.parseInt(project.versionId as String) + 1
-                            //def propertyFile = getVersionFile()
 
                             branch workBranch
                             step 'prepareReleaseBranch', "prepare branch $releaseBranch"
                             branch releaseBranch, true
                             step 'prepareVersion', "prepare version"
                             changeProperties releaseVersion
-                            //add propertyFile.path
+                            getVersionFiles(project).each {
+                                add it.path
+                            }
                             step 'generateVersionFiles', "generate version files"
                             step 'commitVersionFiles', "commit version files"
                             commit "chore (version) : Update version to $releaseVersion"
@@ -206,7 +207,9 @@ class DeliveryPlugin implements Plugin<Project> {
                             step 'updateVersion', "Update version to $newVersionId - $newVersion"
                             branch releaseBranch
                             changeProperties newVersion, newVersionId
-                            //add propertyFile.path
+                            getVersionFiles(project).each {
+                                add it.path
+                            }
                             commit "chore (version) : Update to new version $releaseVersion and versionId $newVersionId"
                             push
                             step 'mergeDevelop', "Merge release branch to $workBranch"
@@ -237,10 +240,15 @@ class DeliveryPlugin implements Plugin<Project> {
         }
         Collections.reverse(parents)
         Properties versionProperties = new Properties()
+        Properties deliveryProperties = new Properties()
         parents.forEach {
-            Properties projectProp = PropertiesUtils.readPropertiesFile(it.file("version.properties"))
-            projectProp.each {
+            Properties versionProp = PropertiesUtils.readPropertiesFile(it.file("version.properties"))
+            versionProp.each {
                 if (it.key != null && it.value != null) versionProperties.put(it.key, it.value)
+            }
+            Properties deliveryProp = PropertiesUtils.readPropertiesFile(it.file("delivery.properties"))
+            deliveryProp.each {
+                if (it.key != null && it.value != null) deliveryProperties.put(it.key, it.value)
             }
         }
 
@@ -254,42 +262,55 @@ class DeliveryPlugin implements Plugin<Project> {
             project.ext.artifactKey = 'artifact'
         }
 
-        PropertiesUtils.overrideVersionProperties(versionProperties, project.file(DELIVERY_CONF_FILE))
+        PropertiesUtils.applyPropertiesOnProject(project, deliveryProperties)
         PropertiesUtils.applyPropertiesOnProject(project, versionProperties)
 
         if (PropertiesUtils.getSystemProperty(VERSION_ID_ARG)) {
-            PropertiesUtils.setProperty(versionProperties, project.versionIdKey as String, PropertiesUtils.getSystemProperty(VERSION_ID_ARG))
-        } else {
-            String versionId = versionProperties.getProperty(project.versionIdKey as String) ?: "2"
-            PropertiesUtils.setProperty(versionProperties, project.versionIdKey as String, versionId)
+            PropertiesUtils.setProperty(project, project.versionIdKey as String, PropertiesUtils.getSystemProperty(VERSION_ID_ARG))
         }
 
         if (PropertiesUtils.getSystemProperty(VERSION_ARG)) {
-            PropertiesUtils.setProperty(versionProperties, project.versionKey as String, PropertiesUtils.getSystemProperty(VERSION_ARG))
-        } else {
-            String version = versionProperties.getProperty(project.versionKey as String) ?: "1.0.0-SNAPSHOT"
-            PropertiesUtils.setProperty(versionProperties, project.versionKey as String, version)
+            PropertiesUtils.setProperty(project, project.versionKey as String, PropertiesUtils.getSystemProperty(VERSION_ARG))
         }
 
         if (PropertiesUtils.getSystemProperty(PROJECT_NAME_ARG)) {
-            PropertiesUtils.setProperty(versionProperties, project.artifactKey as String, PropertiesUtils.getSystemProperty(PROJECT_NAME_ARG))
-        } else {
-            String artifact = versionProperties.getProperty(project.artifactKey as String) ?: project.name
-            PropertiesUtils.setProperty(versionProperties, project.artifactKey as String, artifact)
+            PropertiesUtils.setProperty(project, project.artifactKey as String, PropertiesUtils.getSystemProperty(PROJECT_NAME_ARG))
         }
 
         if (PropertiesUtils.getSystemProperty(GROUP_ARG)) {
-            PropertiesUtils.setProperty(versionProperties, 'group', PropertiesUtils.getSystemProperty(GROUP_ARG))
+            PropertiesUtils.setProperty(project, 'group', PropertiesUtils.getSystemProperty(GROUP_ARG))
         }
 
-        //TODO check group + versionID dans versionProperties
-        project.ext.versionId = versionProperties.get(project.versionIdKey)
-        project.ext.version = versionProperties.get(project.versionKey)
+        //project.ext.versionId = versionProperties.get(project.versionIdKey)
+        //project.ext.version = versionProperties.get(project.versionKey)
         project.version = versionProperties.get(project.versionKey)
-        project.ext.artifact = versionProperties.get(project.artifactKey)
+        //project.ext.artifact = versionProperties.get(project.artifactKey)
         if (versionProperties.get("group") != null) {
             project.group = versionProperties.get("group")
         }
+        if (project.versionId == null) throwException("VersionId", project)
+        if (project.version == null) throwException("Version", project)
+        if (project.artifact == null) throwException("Artifact", project)
         deliveryExtension.configurator?.applyProperties()
+    }
+
+    static List<File> getVersionFiles(Project project) {
+        def parents = new ArrayList<Project>()
+        def versionFiles = new ArrayList<File>()
+        parents.add(project)
+        def actualParent = project.parent
+        while (actualParent != null) {
+            parents.add(actualParent)
+            actualParent = actualParent.parent
+        }
+        Collections.reverse(parents)
+        parents.forEach {
+            versionFiles.add(it.file("version.properties"))
+        }
+        return versionFiles
+    }
+
+    static void throwException(String missingElement, Project project) {
+        throw new GradleException("$missingElement is not set, please add it in a version.properties in ${project.name} or one of his parent")
     }
 }

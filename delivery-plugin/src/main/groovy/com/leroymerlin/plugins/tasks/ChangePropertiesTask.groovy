@@ -15,7 +15,7 @@ class ChangePropertiesTask extends DefaultTask {
 
     @TaskAction
     changeProperties() {
-        File versionFile = project.delivery.plugin.getVersionFile()
+        File versionFile = project.file("version.properties")
 
         if (version != null) {
             PropertiesUtils.setProperty(versionFile, project.ext.versionKey as String, version)

@@ -16,8 +16,14 @@ class PropertiesUtils extends Executor {
         return property
     }
 
-    static void setProperty(Properties properties, String key, String value) {
+    static void setProperty(Project project, String key, String value) {
+        project.ext.set(key, value)
+    }
+
+    static void setProperty(File file, String key, String value) {
+        Properties properties = readPropertiesFile(file)
         properties.setProperty(key, value)
+        writePropertiesFile(file, properties)
     }
 
     static void writePropertiesFile(File file, Properties properties) {
@@ -32,12 +38,6 @@ class PropertiesUtils extends Executor {
         String content = string.substring(string.indexOf(sep) + sep.length())
         out.write(content.getBytes("8859_1"))
         out.close()
-    }
-
-    static void overrideVersionProperties(Properties properties, File file) {
-        if (file.exists()) {
-            properties.putAll(readPropertiesFile(file))
-        }
     }
 
     static Properties readPropertiesFile(File file) {
