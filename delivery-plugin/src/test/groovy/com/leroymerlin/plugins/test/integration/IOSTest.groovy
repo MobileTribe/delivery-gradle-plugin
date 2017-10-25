@@ -55,8 +55,8 @@ if(file("${System.properties['user.home']}/.gradle/signing_ios.properties").exis
         })
 
         for (file in list) {
-            if (!file.path.contains("$archiveDirectory/com/leroymerlin/delivery/ios/1.0.0-SNAPSHOT/delivery-deliverybis-1.0.0-SNAPSHOT-delivery")
-                    && !file.path.contains("$archiveDirectory/com/leroymerlin/delivery/ios/1.0.0-SNAPSHOT/delivery-delivery-1.0.0-SNAPSHOT-delivery"))
+            if (!file.path.contains("$archiveDirectory/com/leroymerlin/delivery/ios/1.0.0-SNAPSHOT/ios-app-deliverybis-1.0.0-SNAPSHOT-delivery")
+                    && !file.path.contains("$archiveDirectory/com/leroymerlin/delivery/ios/1.0.0-SNAPSHOT/ios-app-delivery-1.0.0-SNAPSHOT-delivery"))
                 throw new AssertionError("${file.name} has not a correct name or a correct path")
         }
 

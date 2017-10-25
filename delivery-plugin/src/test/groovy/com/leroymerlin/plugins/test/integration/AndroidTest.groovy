@@ -45,14 +45,14 @@ android{
         })
 
         for (file in list) {
-            if (!file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/2.0.0-SNAPSHOT/android-app-dev-2.0.0-SNAPSHOT-debug")
-                    && !file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/2.0.0-SNAPSHOT/android-app-dev-2.0.0-SNAPSHOT-mapping-debug")
-                    && !file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/2.0.0-SNAPSHOT/android-app-dev-2.0.0-SNAPSHOT-sources-sources")
-                    && !file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/2.0.0-SNAPSHOT/android-app-dev-2.0.0-SNAPSHOT-test-debug")
-                    && !file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/2.0.0-SNAPSHOT/android-app-prod-2.0.0-SNAPSHOT-debug")
-                    && !file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/2.0.0-SNAPSHOT/android-app-prod-2.0.0-SNAPSHOT-mapping-debug")
-                    && !file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/2.0.0-SNAPSHOT/android-app-prod-2.0.0-SNAPSHOT-sources-sources")
-                    && !file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/2.0.0-SNAPSHOT/android-app-prod-2.0.0-SNAPSHOT-test-debug"))
+            if (!file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/1.0.0-SNAPSHOT/android-app-dev-1.0.0-SNAPSHOT-debug")
+                    && !file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/1.0.0-SNAPSHOT/android-app-dev-1.0.0-SNAPSHOT-mapping-debug")
+                    && !file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/1.0.0-SNAPSHOT/android-app-dev-1.0.0-SNAPSHOT-sources-sources")
+                    && !file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/1.0.0-SNAPSHOT/android-app-dev-1.0.0-SNAPSHOT-test-debug")
+                    && !file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/1.0.0-SNAPSHOT/android-app-prod-1.0.0-SNAPSHOT-debug")
+                    && !file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/1.0.0-SNAPSHOT/android-app-prod-1.0.0-SNAPSHOT-mapping-debug")
+                    && !file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/1.0.0-SNAPSHOT/android-app-prod-1.0.0-SNAPSHOT-sources-sources")
+                    && !file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/1.0.0-SNAPSHOT/android-app-prod-1.0.0-SNAPSHOT-test-debug"))
                 throw new AssertionError("${file.name} has not a correct name or a correct path")
         }
 
@@ -89,12 +89,12 @@ delivery{
         })
 
         for (file in list) {
-            if (!file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/2.0.0-SNAPSHOT/android-app-2.0.0-SNAPSHOT-debug")
-                    && !file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/2.0.0-SNAPSHOT/android-app-2.0.0-SNAPSHOT-mapping-debug")
-                    && !file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/2.0.0-SNAPSHOT/android-app-2.0.0-SNAPSHOT-mapping-release")
-                    && !file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/2.0.0-SNAPSHOT/android-app-2.0.0-SNAPSHOT-release")
-                    && !file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/2.0.0-SNAPSHOT/android-app-2.0.0-SNAPSHOT-sources-sources")
-                    && !file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/2.0.0-SNAPSHOT/android-app-2.0.0-SNAPSHOT-test-debug"))
+            if (!file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/1.0.0-SNAPSHOT/android-app-1.0.0-SNAPSHOT-debug")
+                    && !file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/1.0.0-SNAPSHOT/android-app-1.0.0-SNAPSHOT-mapping-debug")
+                    && !file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/1.0.0-SNAPSHOT/android-app-1.0.0-SNAPSHOT-mapping-release")
+                    && !file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/1.0.0-SNAPSHOT/android-app-1.0.0-SNAPSHOT-release")
+                    && !file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/1.0.0-SNAPSHOT/android-app-1.0.0-SNAPSHOT-sources-sources")
+                    && !file.path.contains("$archiveDirectory/com/leroymerlin/pandroid/plugin/testapp/android/1.0.0-SNAPSHOT/android-app-1.0.0-SNAPSHOT-test-debug"))
                 throw new AssertionError("${file.name} has not a correct name or a correct path")
         }
 

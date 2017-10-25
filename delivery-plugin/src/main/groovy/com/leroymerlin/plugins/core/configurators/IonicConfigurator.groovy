@@ -94,6 +94,7 @@ class IonicConfigurator extends ProjectConfigurator {
 
             def newBuildGradleFile = project.file("platforms/${signingName}/${signingName == 'android' ? "delivery-" : ""}build.gradle")
             def settingsGradle = project.file("platforms/${signingName}/${signingName == 'android' ? "delivery-" : ""}settings.gradle")
+            def versionFile = project.file("platforms/${signingName}/version.properties")
 
             project.task(preparePlatformTask, group: DeliveryPlugin.TASK_GROUP).doLast {
                 Executor.exec(["ionic", "cordova", "build", signingName, "--release"], [directory: project.projectDir], true)
@@ -106,6 +107,10 @@ class IonicConfigurator extends ProjectConfigurator {
                     settingsGradle << "\nrootProject.buildFileName = 'delivery-build.gradle'"
                 }
                 newBuildGradleFile << project.file('build.gradle').text
+                versionFile.write("version=${project.version}\n" +
+                        "versionId=${project.versionId}\n" +
+                        "group=${project.group}")
+
             }.dependsOn('prepareNpm')
 
             def newStartParameter = project.getGradle().startParameter.newInstance()
