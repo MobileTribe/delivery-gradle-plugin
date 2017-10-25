@@ -106,6 +106,7 @@ class IonicConfigurator extends ProjectConfigurator {
                     settingsGradle << "\nrootProject.buildFileName = 'delivery-build.gradle'"
                 }
                 newBuildGradleFile << project.file('build.gradle').text
+                newBuildGradleFile.text = newBuildGradleFile.text.replace("com.android.tools.build:gradle:2.2.3","com.android.tools.build:gradle:2.3.0")
 
             }.dependsOn('prepareNpm')
 
