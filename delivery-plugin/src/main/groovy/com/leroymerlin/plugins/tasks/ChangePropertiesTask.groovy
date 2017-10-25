@@ -18,13 +18,13 @@ class ChangePropertiesTask extends DefaultTask {
         File versionFile = project.file("version.properties")
 
         if (version != null) {
-            PropertiesUtils.setProperty(versionFile, project.ext.versionKey as String, version)
+            PropertiesUtils.setProperty(versionFile, project.versionKey as String, version)
         }
         if (versionId != null) {
-            PropertiesUtils.setProperty(versionFile, project.ext.versionIdKey as String, versionId)
+            PropertiesUtils.setProperty(versionFile, project.versionIdKey as String, versionId)
         }
         if (artifact != null) {
-            PropertiesUtils.setProperty(versionFile, project.ext.artifactKey as String, artifact)
+            PropertiesUtils.setProperty(versionFile, project.artifactKey as String, artifact)
         }
         project.delivery.plugin.applyDeliveryProperties(versionFile)
     }

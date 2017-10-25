@@ -46,7 +46,7 @@ class DeliveryPlugin implements Plugin<Project> {
     static final String VERSION_ARG = 'VERSION'
     static final String VERSION_ID_ARG = 'VERSION_ID'
     static final String GROUP_ARG = 'GROUP'
-    static final String PROJECT_NAME_ARG = 'PROJECT_NAME'
+    static final String PROJECT_NAME_ARG = 'ARTIFACT'
     static final String TASK_GROUP = 'delivery'
     static final String DELIVERY_CONF_FILE = 'delivery.properties'
 
@@ -133,6 +133,14 @@ class DeliveryPlugin implements Plugin<Project> {
 
             buildTasks.each {
                 task ->
+
+
+                    if (project.versionId == null) throwException("VersionId", project)
+                    if (project.version == null) throwException("Version", project)
+                    if (project.artifact == null) throwException("Artifact", project)
+                    if (project.group == null) throwException("Group", project)
+
+
                     String configurationName = task.variantName + "Config"
                     if (!project.configurations.hasProperty(configurationName)) {
                         project.configurations.create(configurationName)
@@ -246,11 +254,14 @@ class DeliveryPlugin implements Plugin<Project> {
             versionProp.each {
                 if (it.key != null && it.value != null) versionProperties.put(it.key, it.value)
             }
-            Properties deliveryProp = PropertiesUtils.readPropertiesFile(it.file("delivery.properties"))
+            Properties deliveryProp = PropertiesUtils.readPropertiesFile(it.file(DELIVERY_CONF_FILE))
             deliveryProp.each {
                 if (it.key != null && it.value != null) deliveryProperties.put(it.key, it.value)
             }
         }
+
+        PropertiesUtils.applyPropertiesOnProject(project, deliveryProperties)
+        PropertiesUtils.applyPropertiesOnProject(project, versionProperties)
 
         if (!project.hasProperty('versionIdKey')) {
             project.ext.versionIdKey = 'versionId'
@@ -262,35 +273,38 @@ class DeliveryPlugin implements Plugin<Project> {
             project.ext.artifactKey = 'artifact'
         }
 
-        PropertiesUtils.applyPropertiesOnProject(project, deliveryProperties)
-        PropertiesUtils.applyPropertiesOnProject(project, versionProperties)
-
         if (PropertiesUtils.getSystemProperty(VERSION_ID_ARG)) {
-            PropertiesUtils.setProperty(project, project.versionIdKey as String, PropertiesUtils.getSystemProperty(VERSION_ID_ARG))
+            versionProperties.put(project.versionIdKey as String, PropertiesUtils.getSystemProperty(VERSION_ID_ARG))
         }
 
         if (PropertiesUtils.getSystemProperty(VERSION_ARG)) {
-            PropertiesUtils.setProperty(project, project.versionKey as String, PropertiesUtils.getSystemProperty(VERSION_ARG))
+            versionProperties.put(project.versionKey as String, PropertiesUtils.getSystemProperty(VERSION_ARG))
         }
 
         if (PropertiesUtils.getSystemProperty(PROJECT_NAME_ARG)) {
-            PropertiesUtils.setProperty(project, project.artifactKey as String, PropertiesUtils.getSystemProperty(PROJECT_NAME_ARG))
+            versionProperties.put(project.artifactKey as String, PropertiesUtils.getSystemProperty(PROJECT_NAME_ARG))
         }
 
         if (PropertiesUtils.getSystemProperty(GROUP_ARG)) {
-            PropertiesUtils.setProperty(project, 'group', PropertiesUtils.getSystemProperty(GROUP_ARG))
+            versionProperties.put('group', PropertiesUtils.getSystemProperty(GROUP_ARG))
         }
 
-        //project.ext.versionId = versionProperties.get(project.versionIdKey)
-        //project.ext.version = versionProperties.get(project.versionKey)
-        project.version = versionProperties.get(project.versionKey)
-        //project.ext.artifact = versionProperties.get(project.artifactKey)
-        if (versionProperties.get("group") != null) {
-            project.group = versionProperties.get("group")
+        PropertiesUtils.applyPropertiesOnProject(project, versionProperties)
+
+        project.ext.versionId = versionProperties.getProperty(project.versionIdKey as String)
+        project.ext.version = versionProperties.getProperty(project.versionKey as String)
+        project.version = versionProperties.getProperty(project.versionKey as String)
+
+        if (!versionProperties.getProperty(project.artifactKey as String)) {
+            project.ext.artifact = project.name
+        } else {
+            project.ext.artifact = versionProperties.getProperty(project.artifactKey as String)
         }
-        if (project.versionId == null) throwException("VersionId", project)
-        if (project.version == null) throwException("Version", project)
-        if (project.artifact == null) throwException("Artifact", project)
+
+        if (versionProperties.getProperty('group')) {
+            project.group = versionProperties.getProperty('group')
+        }
+
         deliveryExtension.configurator?.applyProperties()
     }
 
