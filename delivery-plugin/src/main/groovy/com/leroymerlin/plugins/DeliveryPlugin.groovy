@@ -78,8 +78,6 @@ class DeliveryPlugin implements Plugin<Project> {
         this.project = project
         project.plugins.apply('maven')
         this.deliveryExtension = project.extensions.create(TASK_GROUP, DeliveryPluginExtension, project, this)
-
-
         MavenFactory mavenFactory = project.getServices().get(MavenFactory.class)
         this.mavenPluginConvention = new MavenPluginConvention(project as ProjectInternal, mavenFactory)
         Convention convention = project.getConvention()

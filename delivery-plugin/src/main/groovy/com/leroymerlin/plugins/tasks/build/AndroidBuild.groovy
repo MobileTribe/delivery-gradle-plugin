@@ -43,5 +43,4 @@ class AndroidBuild extends DeliveryBuild {
             Logger.global.info("$classifier has no valid signing config and will not be archived")
         }
     }
-
 }
