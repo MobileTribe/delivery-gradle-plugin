@@ -5,7 +5,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.3.3'
-        classpath "com.leroymerlin.plugins:delivery-plugin:${System.getProperty("DELIVERY_VERSION")}"
+        classpath "com.leroymerlin.plugins:delivery-plugin:3.0.0-BETA14-SNAPSHOT"
     }
 }
 allprojects {
@@ -16,3 +16,7 @@ allprojects {
 }
 
 apply plugin: 'com.leroymerlin.delivery'
+
+delivery {
+    enableAllSubModules()
+}

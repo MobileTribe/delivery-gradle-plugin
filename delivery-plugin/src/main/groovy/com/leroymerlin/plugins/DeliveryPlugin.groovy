@@ -132,12 +132,10 @@ class DeliveryPlugin implements Plugin<Project> {
             buildTasks.each {
                 task ->
 
-
                     if (project.versionId == null) throwException("VersionId", project)
                     if (project.version == null) throwException("Version", project)
                     if (project.artifact == null) throwException("Artifact", project)
                     if (project.group == null) throwException("Group", project)
-
 
                     String configurationName = task.variantName + "Config"
                     if (!project.configurations.hasProperty(configurationName)) {
@@ -174,7 +172,7 @@ class DeliveryPlugin implements Plugin<Project> {
 
             //create default release git flow
 
-            if (deliveryExtension.useDefaultFlow) {
+            if (deliveryExtension.enableReleaseGitFlow) {
                 deliveryExtension.flowsContainer.create(
 //tag::gitReleaseFlow[]
                         'releaseGit',
