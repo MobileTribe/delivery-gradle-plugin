@@ -11,11 +11,17 @@ class AndroidLibBuild extends DeliveryBuild {
     @Input
     void addVariant(variant) {
         def classifier = variant.buildType.name
-        String fileName = "$variantName-${classifier}.aar"
-        variant.outputs.all {
-            outputFileName = fileName
+        //After Android plugin 3.0.0
+        try {
+            String fileName = "$variantName-${classifier}.aar"
+            variant.outputs.all {
+                outputFileName = fileName
+            }
+            outputFiles.put("", project.file("build/outputs/aar/$fileName"))
+            // Before Android plugin 3.0.0
+        } catch (MissingMethodException ignored) {
+            outputFiles.put("", variant.outputs.get(0).outputFile as File)
         }
-        outputFiles.put(classifier as String, project.file("build/outputs/aar/$fileName"))
         dependsOn.add(variant.assemble)
         if (variant.mappingFile) {
             if (!variant.mappingFile.exists()) {

@@ -14,19 +14,31 @@ class AndroidBuild extends DeliveryBuild {
     void addVariant(variant) {
         def classifier = variant.buildType.name
         if (variant.signingReady) {
-            String fileName = "$variantName-${variant.versionName}-${classifier}.apk"
-            variant.outputs.all {
-                outputFileName = fileName
-            }
-            outputFiles.put(classifier as String, project
-                    .file("build/outputs/apk/" +
-                    "${variantName.replace("${project.artifact}", "").replaceFirst("-","")}/$classifier/$fileName"))
-            dependsOn.add(variant.assemble)
-            if (variant.testVariant) {
-                outputFiles.put("test-$classifier" as String, project
+            //After Android plugin 3.0.0
+            try {
+                String fileName = "$variantName-${variant.versionName}-${classifier}.apk"
+                variant.outputs.all {
+                    outputFileName = fileName
+                }
+                outputFiles.put(classifier as String, project
                         .file("build/outputs/apk/" +
-                        "${variantName.replace("${project.artifact}", "").replaceFirst("-","")}/$classifier/$fileName"))
-                dependsOn.add(variant.testVariant.assemble)
+                        "${variantName.replace("${project.artifact}", "").replaceFirst("-", "")}/$classifier/$fileName"))
+                dependsOn.add(variant.assemble)
+                if (variant.testVariant) {
+                    outputFiles.put("test-$classifier" as String, project
+                            .file("build/outputs/apk/" +
+                            "${variantName.replace("${project.artifact}", "").replaceFirst("-", "")}/$classifier/$fileName"))
+                    dependsOn.add(variant.testVariant.assemble)
+                }
+            }
+            // Before Android plugin 3.0.0
+            catch (MissingMethodException ignored) {
+                outputFiles.put(classifier as String, variant.outputs.get(0).outputFile as File)
+                dependsOn.add(variant.assemble)
+                if (variant.testVariant) {
+                    outputFiles.put("test-$classifier" as String, variant.testVariant.outputs.get(0).outputFile as File)
+                    dependsOn.add(variant.testVariant.assemble)
+                }
             }
             if (variant.mappingFile) {
                 doLast {
