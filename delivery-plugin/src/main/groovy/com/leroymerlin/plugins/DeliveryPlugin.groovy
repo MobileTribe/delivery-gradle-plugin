@@ -174,7 +174,7 @@ class DeliveryPlugin implements Plugin<Project> {
 
             //create default release git flow
 
-            if (!deliveryExtension.flowsContainer.hasProperty("releaseGit")) {
+            if (deliveryExtension.useDefaultFlow) {
                 deliveryExtension.flowsContainer.create(
 //tag::gitReleaseFlow[]
                         'releaseGit',

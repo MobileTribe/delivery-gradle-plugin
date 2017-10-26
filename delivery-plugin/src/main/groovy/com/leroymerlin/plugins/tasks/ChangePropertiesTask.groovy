@@ -26,6 +26,6 @@ class ChangePropertiesTask extends DefaultTask {
         if (artifact != null) {
             PropertiesUtils.setProperty(versionFile, project.artifactKey as String, artifact)
         }
-        project.delivery.plugin.applyDeliveryProperties(versionFile)
+        project.delivery.plugin.applyPropertiesOnProject(project, project.delivery.plugin.readPropertiesFile(versionFile))
     }
 }

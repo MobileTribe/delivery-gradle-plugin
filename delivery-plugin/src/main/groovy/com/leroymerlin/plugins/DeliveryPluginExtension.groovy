@@ -13,11 +13,9 @@ class DeliveryPluginExtension {
 
     private ProjectConfigurator mConfigurator
     private BaseScmAdapter mScmAdapter
-
     NamedDomainObjectContainer<SigningProperty> signingProperties
     NamedDomainObjectContainer<Flow> flowsContainer
     Project project
-
     DeliveryPlugin plugin
 
     DeliveryPluginExtension(Project project, DeliveryPlugin deliveryPlugin) {
@@ -31,6 +29,8 @@ class DeliveryPluginExtension {
 
     def archiveRepositories = project.ext.properties.containsKey('archiveRepositories') ? project.ext.archiveRepositories : {
     }
+
+    boolean useDefaultFlow = project.ext.properties.containsKey('useDefaultFlow') ? project.ext.useDefaultFlow : false
 
     void signingProperties(Action<? super NamedDomainObjectContainer<SigningProperty>> action) {
         action.execute(signingProperties)
