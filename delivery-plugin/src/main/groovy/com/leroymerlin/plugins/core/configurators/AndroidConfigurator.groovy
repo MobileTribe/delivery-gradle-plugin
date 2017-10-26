@@ -8,6 +8,7 @@ import com.leroymerlin.plugins.tasks.build.AndroidLibBuild
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.artifacts.maven.Conf2ScopeMappingContainer
+import org.gradle.api.tasks.Delete
 
 import java.util.logging.Logger
 
@@ -32,17 +33,23 @@ class AndroidConfigurator extends ProjectConfigurator {
         project.android {
             defaultConfig {
                 versionName project.version
-                versionCode Integer.parseInt(project.versionId)
+                versionCode Integer.parseInt(project.versionId as String)
             }
             buildTypes.all {
                 buildType ->
-                    extension.signingProperties.maybeCreate(buildType.name)
+                    extension.signingProperties.maybeCreate(buildType.name as String)
             }
         }
     }
 
     @Override
     void configure() {
+
+        project.tasks.findByPath("assemble")
+                .dependsOn(project.task("clearGeneratedFiles", type: Delete, group: DeliveryPlugin.TASK_GROUP).doFirst {
+            delete project.rootProject.file("/build/generated")
+        })
+
         //configure project with maven convention
         this.extension.plugin.mapToMavenConfiguration(DeliveryPlugin.COMPILE_PRIORITY, "compile", Conf2ScopeMappingContainer.COMPILE)
 
@@ -52,7 +59,7 @@ class AndroidConfigurator extends ProjectConfigurator {
             if (!(project.android.defaultConfig.versionName == version)) {
                 throw new GradleException("app versionName is ${project.android.defaultConfig.versionName} but should be $version. Please set: android.defaultConfig.versionName version")
             }
-            if (!(project.android.defaultConfig.versionCode == Integer.parseInt(project.versionId))) {
+            if (!(project.android.defaultConfig.versionCode == Integer.parseInt(project.versionId as String))) {
                 throw new GradleException("app versionCode is ${project.android.defaultConfig.versionCode} but should be ${project.versionId}. Please set: android.defaultConfig.versionCode Integer.parseInt(versionId)")
             }
 

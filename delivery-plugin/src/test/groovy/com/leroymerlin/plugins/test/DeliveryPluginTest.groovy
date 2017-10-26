@@ -19,6 +19,9 @@ class DeliveryPluginTest {
     @Before
     void setUp() {
         project = ProjectBuilder.builder().build()
+        project.file("version.properties").write("version=1.0.0-SNAPSHOT\n" +
+                "artifact=test-app\n" +
+                "versionId=2")
         def manager = project.pluginManager
         manager.apply(DeliveryPlugin.class)
     }

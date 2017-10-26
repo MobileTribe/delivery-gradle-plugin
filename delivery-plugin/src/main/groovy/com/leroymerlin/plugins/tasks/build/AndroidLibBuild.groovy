@@ -11,21 +11,34 @@ class AndroidLibBuild extends DeliveryBuild {
     @Input
     void addVariant(variant) {
         def classifier = variant.buildType.name
-        outputFiles.put("", variant.outputs.get(0).outputFile)
+        //After Android plugin 3.0.0
+        try {
+            String fileName = "$variantName-${classifier}.aar"
+            variant.outputs.all {
+                outputFileName = fileName
+            }
+            outputFiles.put("", project.file("build/outputs/aar/$fileName"))
+            // Before Android plugin 3.0.0
+        } catch (MissingMethodException ignored) {
+            outputFiles.put("", variant.outputs.get(0).outputFile as File)
+        }
         dependsOn.add(variant.assemble)
         if (variant.mappingFile) {
             if (!variant.mappingFile.exists()) {
                 variant.mappingFile.parentFile.mkdirs()
                 variant.mappingFile.createNewFile()
             }
-            outputFiles.put("mapping", variant.mappingFile)
+            outputFiles.put("mapping", variant.mappingFile as File)
         }
-
-        def sourcesJar = project.task("sources${variant.name.capitalize()}Jar", type: Jar, group: DeliveryPlugin.TASK_GROUP) {
-            classifier = 'sources'
-            from variant.javaCompile.destinationDir
+        variant.sourceSets.each { sourceSet ->
+            if (sourceSet.name == "main") {
+                def sourcesJar = project.task("sources${variant.name.capitalize()}Jar", type: Jar, group: DeliveryPlugin.TASK_GROUP) {
+                    classifier = 'sources'
+                    from sourceSet.java.srcDirs
+                }
+                outputFiles.put("sources-" + classifier, sourcesJar.outputs.getFiles().getSingleFile())
+                dependsOn.add(sourcesJar)
+            }
         }
-        outputFiles.put("sources", sourcesJar.outputs.getFiles().getSingleFile())
-        dependsOn.add(sourcesJar)
     }
 }

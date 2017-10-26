@@ -14,11 +14,31 @@ class AndroidBuild extends DeliveryBuild {
     void addVariant(variant) {
         def classifier = variant.buildType.name
         if (variant.signingReady) {
-            outputFiles.put(classifier, variant.outputs.get(0).outputFile)
-            dependsOn.add(variant.assemble)
-            if (variant.testVariant) {
-                outputFiles.put("test-$classifier" as String, variant.testVariant.outputs.get(0).outputFile)
-                dependsOn.add(variant.testVariant.assemble)
+            //After Android plugin 3.0.0
+            try {
+                String fileName = "$variantName-${variant.versionName}-${classifier}.apk"
+                variant.outputs.all {
+                    outputFileName = fileName
+                }
+                outputFiles.put(classifier as String, project
+                        .file("build/outputs/apk/" +
+                        "${variantName.replace("${project.artifact}", "").replaceFirst("-", "")}/$classifier/$fileName"))
+                dependsOn.add(variant.assemble)
+                if (variant.testVariant) {
+                    outputFiles.put("test-$classifier" as String, project
+                            .file("build/outputs/apk/" +
+                            "${variantName.replace("${project.artifact}", "").replaceFirst("-", "")}/$classifier/$fileName"))
+                    dependsOn.add(variant.testVariant.assemble)
+                }
+            }
+            // Before Android plugin 3.0.0
+            catch (MissingMethodException ignored) {
+                outputFiles.put(classifier as String, variant.outputs.get(0).outputFile as File)
+                dependsOn.add(variant.assemble)
+                if (variant.testVariant) {
+                    outputFiles.put("test-$classifier" as String, variant.testVariant.outputs.get(0).outputFile as File)
+                    dependsOn.add(variant.testVariant.assemble)
+                }
             }
             if (variant.mappingFile) {
                 doLast {
@@ -27,22 +47,20 @@ class AndroidBuild extends DeliveryBuild {
                         variant.mappingFile.createNewFile()
                     }
                 }
-
-
-                outputFiles.put("mapping-$classifier" as String, variant.mappingFile)
+                outputFiles.put("mapping-$classifier" as String, variant.mappingFile as File)
             }
-
-            def sourcesJar = project.task("sources${variant.name.capitalize()}Jar", type: Jar, group: DeliveryPlugin.TASK_GROUP) {
-                classifier = 'sources'
-                from variant.javaCompile.destinationDir
+            variant.sourceSets.each { sourceSet ->
+                if (sourceSet.name == "main") {
+                    def sourcesJar = project.task("sources${variant.name.capitalize()}Jar", type: Jar, group: DeliveryPlugin.TASK_GROUP) {
+                        classifier = 'sources'
+                        from sourceSet.java.srcDirs
+                    }
+                    outputFiles.put("sources-" + classifier, sourcesJar.outputs.getFiles().getSingleFile())
+                    dependsOn.add(sourcesJar)
+                }
             }
-            outputFiles.put("sources-" + classifier, sourcesJar.outputs.getFiles().getSingleFile())
-            dependsOn.add(sourcesJar)
         } else {
             Logger.global.info("$classifier has no valid signing config and will not be archived")
         }
     }
-
-
-
 }

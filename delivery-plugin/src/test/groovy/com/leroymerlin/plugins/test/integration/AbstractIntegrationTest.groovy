@@ -39,16 +39,15 @@ abstract class AbstractIntegrationTest {
     void setUp() {
         projectTemplate = new File(TestUtils.getPluginBaseDir(), "src/test/resources/${getProjectName()}")
         workingDirectory = new File(TestUtils.getPluginBaseDir(), "build/tests/integration/${getProjectName()}")
-        FileUtils.deleteDirectory(workingDirectory)
+        workingDirectory.deleteDir()
         FileUtils.copyDirectory(projectTemplate, workingDirectory)
         project = ProjectBuilder.builder().withProjectDir(workingDirectory).build()
     }
 
     @After
     void tearDown() {
-        Thread.sleep(1000)
         project = null
-        FileUtils.deleteDirectory(workingDirectory)
+        workingDirectory.deleteDir()
     }
 
     protected void applyExtraGradle(String string) {

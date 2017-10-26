@@ -30,7 +30,7 @@ class ReactConfigurator extends ProjectConfigurator {
         }
         nestedConfigurator?.setup(project, extension)
 
-        project.task("prepareNpm", group: DeliveryPlugin.TASK_GROUP).doFirst {
+        project.task("prepareNpm", group: DeliveryPlugin.TASK_GROUP).doLast {
             Executor.exec(["npm", "install"], [directory: project.projectDir], true)
         }
     }
@@ -40,7 +40,7 @@ class ReactConfigurator extends ProjectConfigurator {
         if (nestedConfigurator) {
             if (System.getProperty(REACT_BUILD) == 'android') {
                 project.android.defaultConfig.versionName = project.version
-                project.android.defaultConfig.versionCode = Integer.parseInt(project.versionId)
+                project.android.defaultConfig.versionCode = Integer.parseInt(project.versionId as String)
             }
             nestedConfigurator.configure()
         } else {
@@ -80,7 +80,7 @@ class ReactConfigurator extends ProjectConfigurator {
             if (!newBuildGradleFile.exists())
                 newBuildGradleFile.createNewFile()
 
-            project.task(preparePlatformTask, group: DeliveryPlugin.TASK_GROUP).doFirst {
+            project.task(preparePlatformTask, group: DeliveryPlugin.TASK_GROUP).doLast {
                 String deliveryConfig = project.file('build.gradle').text
 
                 if (signingName == 'ios')
@@ -95,11 +95,11 @@ class ReactConfigurator extends ProjectConfigurator {
 
             def newStartParameter = project.getGradle().startParameter.newInstance()
             newStartParameter.systemPropertiesArgs.put(REACT_BUILD, signingName)
-            newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.VERSION_ARG, project.version)
-            newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.VERSION_ID_ARG, project.versionId)
-            newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.PROJECT_NAME_ARG, project.artifact)
+            newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.VERSION_ARG, project.version as String)
+            newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.VERSION_ID_ARG, project.versionId as String)
+            newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.PROJECT_NAME_ARG, project.artifact as String)
             if (project.group)
-                newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.GROUP_ARG, project.group)
+                newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.GROUP_ARG, project.group as String)
 
             if (signingName == 'android') {
                 newStartParameter.settingsFile = project.file("${signingName}/settings.gradle")
@@ -116,7 +116,7 @@ class ReactConfigurator extends ProjectConfigurator {
         }
     }
 
-    String getTypeOfProject(File folder) {
+    static String getTypeOfProject(File folder) {
         for (File file in folder.listFiles()) {
             if (file.name.contains("xcodeproj"))
                 return 'ios'

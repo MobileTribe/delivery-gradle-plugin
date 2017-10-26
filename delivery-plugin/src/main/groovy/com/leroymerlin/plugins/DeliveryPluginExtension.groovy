@@ -6,6 +6,7 @@ import com.leroymerlin.plugins.core.configurators.ProjectConfigurator
 import com.leroymerlin.plugins.entities.Flow
 import com.leroymerlin.plugins.entities.SigningProperty
 import org.gradle.api.Action
+import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 
@@ -13,11 +14,9 @@ class DeliveryPluginExtension {
 
     private ProjectConfigurator mConfigurator
     private BaseScmAdapter mScmAdapter
-
     NamedDomainObjectContainer<SigningProperty> signingProperties
     NamedDomainObjectContainer<Flow> flowsContainer
     Project project
-
     DeliveryPlugin plugin
 
     DeliveryPluginExtension(Project project, DeliveryPlugin deliveryPlugin) {
@@ -30,6 +29,27 @@ class DeliveryPluginExtension {
     }
 
     def archiveRepositories = project.ext.properties.containsKey('archiveRepositories') ? project.ext.archiveRepositories : {
+    }
+
+    boolean enableReleaseGitFlow = false
+
+    void enableAllSubModules(String[] projectNameIgnored) {
+        project.childProjects.each {
+            if (!projectNameIgnored.contains(it.key)) subModules(it.key)
+        }
+    }
+
+    void subModules(String[] projectName) {
+        projectName.each {
+            def childProject = project.childProjects.get(it)
+            childProject.afterEvaluate {
+                if (!childProject.plugins.hasPlugin("com.leroymerlin.delivery")) {
+                    throw new GradleException("To use submodules, Delivery needs to be applied on $childProject")
+                }
+                project.tasks.getByName(DeliveryPlugin.TASK_INSTALL).dependsOn += childProject.tasks.getByName(DeliveryPlugin.TASK_INSTALL)
+                project.tasks.getByName(DeliveryPlugin.TASK_UPLOAD).dependsOn += childProject.tasks.getByName(DeliveryPlugin.TASK_UPLOAD)
+            }
+        }
     }
 
     void signingProperties(Action<? super NamedDomainObjectContainer<SigningProperty>> action) {

@@ -11,13 +11,13 @@ class JavaBuild extends DeliveryBuild {
     void setVariantName(String variantName) {
         super.setVariantName(variantName)
 
-        outputFiles.put("", project.jar.outputs.getFiles()[0])
+        outputFiles.put("", project.jar.outputs.getFiles()[0] as File)
         dependsOn.add(project.build)
         dependsOn.add(project.jar)
 
         def sourcesJar = project.task("sources${variantName}Jar", type: Jar, group: DeliveryPlugin.TASK_GROUP) {
             classifier = 'sources'
-            from project.compileJava.destinationDir
+            from project.sourceSets.main.allSource.srcDirs
         }
         outputFiles.put("sources", sourcesJar.outputs.getFiles().getSingleFile())
         dependsOn.add(sourcesJar)

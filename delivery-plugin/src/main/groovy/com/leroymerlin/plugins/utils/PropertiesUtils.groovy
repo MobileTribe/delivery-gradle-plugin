@@ -16,12 +16,8 @@ class PropertiesUtils extends Executor {
         return property
     }
 
-    static void setDefaultProperty(File file, String key, String value) {
-        Properties properties = readPropertiesFile(file)
-        if (properties.getProperty(key) == null) {
-            properties.setProperty(key, value)
-            writePropertiesFile(file, properties)
-        }
+    static void setProperty(Project project, String key, String value) {
+        project.ext.set(key, value)
     }
 
     static void setProperty(File file, String key, String value) {
@@ -42,12 +38,6 @@ class PropertiesUtils extends Executor {
         String content = string.substring(string.indexOf(sep) + sep.length())
         out.write(content.getBytes("8859_1"))
         out.close()
-    }
-
-    static Properties readAndApplyPropertiesFile(Project project, File file) {
-        Properties properties = readPropertiesFile(file)
-        applyPropertiesOnProject(project, properties)
-        return properties
     }
 
     static Properties readPropertiesFile(File file) {

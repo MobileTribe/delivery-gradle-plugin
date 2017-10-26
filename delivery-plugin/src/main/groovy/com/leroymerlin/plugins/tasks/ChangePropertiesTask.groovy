@@ -15,17 +15,17 @@ class ChangePropertiesTask extends DefaultTask {
 
     @TaskAction
     changeProperties() {
-        File versionFile = project.delivery.plugin.getVersionFile()
+        File versionFile = project.file("version.properties")
 
         if (version != null) {
-            PropertiesUtils.setProperty(versionFile, project.ext.versionKey, version)
+            PropertiesUtils.setProperty(versionFile, project.versionKey as String, version)
         }
         if (versionId != null) {
-            PropertiesUtils.setProperty(versionFile, project.ext.versionIdKey, versionId)
+            PropertiesUtils.setProperty(versionFile, project.versionIdKey as String, versionId)
         }
         if (artifact != null) {
-            PropertiesUtils.setProperty(versionFile, project.ext.artifactKey, artifact)
+            PropertiesUtils.setProperty(versionFile, project.artifactKey as String, artifact)
         }
-        project.delivery.plugin.applyDeliveryProperties(versionFile)
+        project.delivery.plugin.applyPropertiesOnProject(project, project.delivery.plugin.readPropertiesFile(versionFile))
     }
 }

@@ -2,7 +2,16 @@ apply plugin: 'groovy'
 apply plugin: 'com.leroymerlin.delivery'
 
 delivery {
-    archiveRepositories = project.ext.properties.containsKey('bintrayRepositories') ? project.ext.bintrayRepositories : {}
+    archiveRepositories = project.ext.properties.containsKey('bintrayRepositories') ? project.ext.bintrayRepositories : {
+    }
+
+    flows {
+        documentation {
+            step 'documentation', 'Generate documentation'
+            task 'createDoc', true
+            add 'delivery-doc/html/.'
+        }
+    }
 }
 
 repositories {
@@ -10,9 +19,6 @@ repositories {
     maven { url('http://repository.openbakery.org/') }
     mavenCentral()
 }
-
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
 
 configurations {
     // configuration that holds jars to include in the jar
@@ -41,9 +47,13 @@ dependencies {
         exclude group: 'com.google.guava', module: 'guava'
     }
     testCompile 'junit:junit:4.12'
-    testCompile 'com.android.tools.build:gradle:2.3.1'
+    testCompile 'com.android.tools.build:gradle:2.3.3'
 }
 
-test {
-    workingDir project.projectDir.getParentFile()
-}
+task('createDoc', dependsOn: project(':delivery-doc').getTasksByName('asciidoctor', false))
+
+project.afterEvaluate({
+    def docFlow = tasks.findByPath('documentationFlow')
+    tasks.findByPath('releaseGitStepCommitVersionFiles').dependsOn += docFlow
+    docFlow.mustRunAfter tasks.findByPath('releaseGitStepGenerateVersionFiles')
+})

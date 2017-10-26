@@ -8,14 +8,15 @@ import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.artifacts.PublishArtifact
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.artifacts.maven.MavenPom
 import org.gradle.api.internal.artifacts.dsl.DefaultRepositoryHandler
-import org.gradle.api.internal.artifacts.ivyservice.projectmodule.ProjectPublicationRegistry
 import org.gradle.api.internal.artifacts.mvnsettings.LocalMavenRepositoryLocator
 import org.gradle.api.internal.artifacts.mvnsettings.MavenSettingsProvider
 import org.gradle.api.internal.file.FileResolver
 import org.gradle.api.internal.plugins.DslObject
+import org.gradle.api.internal.project.ProjectInternal
 import org.gradle.api.plugins.Convention
 import org.gradle.api.plugins.MavenPluginConvention
 import org.gradle.api.plugins.MavenRepositoryHandlerConvention
@@ -31,14 +32,10 @@ import java.util.logging.Logger
 
 class DeliveryPlugin implements Plugin<Project> {
 
-    public static final int COMPILE_PRIORITY = 300;
-    public static final int RUNTIME_PRIORITY = 200;
-    public static final int TEST_COMPILE_PRIORITY = 150;
-    public static final int TEST_RUNTIME_PRIORITY = 100;
-
-    public static final int PROVIDED_COMPILE_PRIORITY = COMPILE_PRIORITY + 100;
-    public static final int PROVIDED_RUNTIME_PRIORITY = COMPILE_PRIORITY + 150;
-
+    public static final int COMPILE_PRIORITY = 300
+    public static final int RUNTIME_PRIORITY = 200
+    public static final int TEST_COMPILE_PRIORITY = 150
+    public static final int TEST_RUNTIME_PRIORITY = 100
 
     public static final String UPLOAD_TASK_PREFIX = 'upload'
     public static final String INSTALL_TASK_PREFIX = 'install'
@@ -49,7 +46,7 @@ class DeliveryPlugin implements Plugin<Project> {
     static final String VERSION_ARG = 'VERSION'
     static final String VERSION_ID_ARG = 'VERSION_ID'
     static final String GROUP_ARG = 'GROUP'
-    static final String PROJECT_NAME_ARG = 'PROJECT_NAME'
+    static final String PROJECT_NAME_ARG = 'ARTIFACT'
     static final String TASK_GROUP = 'delivery'
     static final String DELIVERY_CONF_FILE = 'delivery.properties'
 
@@ -58,26 +55,22 @@ class DeliveryPlugin implements Plugin<Project> {
     Project project
     DeliveryPluginExtension deliveryExtension
 
-    private final Factory<LoggingManagerInternal> loggingManagerFactory;
-    private final FileResolver fileResolver;
-    //private final ProjectConfigurationActionContainer configurationActionContainer;
-    private final MavenSettingsProvider mavenSettingsProvider;
-    private final LocalMavenRepositoryLocator mavenRepositoryLocator;
-    //private final ImmutableModuleIdentifierFactory moduleIdentifierFactory;
+    private final Factory<LoggingManagerInternal> loggingManagerFactory
+    private final FileResolver fileResolver
+    private final MavenSettingsProvider mavenSettingsProvider
+    private final LocalMavenRepositoryLocator mavenRepositoryLocator
 
-    MavenPluginConvention mavenPluginConvention;
+    MavenPluginConvention mavenPluginConvention
 
     @Inject
-    public DeliveryPlugin(Factory<LoggingManagerInternal> loggingManagerFactory,
-                          FileResolver fileResolver,
-                          ProjectPublicationRegistry publicationRegistry,
-                          MavenSettingsProvider mavenSettingsProvider,
-                          LocalMavenRepositoryLocator mavenRepositoryLocator) {
-        this.loggingManagerFactory = loggingManagerFactory;
-        this.fileResolver = fileResolver;
-        this.mavenSettingsProvider = mavenSettingsProvider;
-        this.mavenRepositoryLocator = mavenRepositoryLocator;
-        //this.moduleIdentifierFactory = moduleIdentifierFactory;
+    DeliveryPlugin(Factory<LoggingManagerInternal> loggingManagerFactory,
+                   FileResolver fileResolver,
+                   MavenSettingsProvider mavenSettingsProvider,
+                   LocalMavenRepositoryLocator mavenRepositoryLocator) {
+        this.loggingManagerFactory = loggingManagerFactory
+        this.fileResolver = fileResolver
+        this.mavenSettingsProvider = mavenSettingsProvider
+        this.mavenRepositoryLocator = mavenRepositoryLocator
     }
 
 
@@ -85,12 +78,10 @@ class DeliveryPlugin implements Plugin<Project> {
         this.project = project
         project.plugins.apply('maven')
         this.deliveryExtension = project.extensions.create(TASK_GROUP, DeliveryPluginExtension, project, this)
-
-
-        MavenFactory mavenFactory = project.getServices().get(MavenFactory.class);
-        this.mavenPluginConvention = new MavenPluginConvention(project, mavenFactory);
-        Convention convention = project.getConvention();
-        convention.getPlugins().put("maven", mavenPluginConvention);
+        MavenFactory mavenFactory = project.getServices().get(MavenFactory.class)
+        this.mavenPluginConvention = new MavenPluginConvention(project as ProjectInternal, mavenFactory)
+        Convention convention = project.getConvention()
+        convention.getPlugins().put("maven", mavenPluginConvention)
         DefaultDeployerFactory deployerFactory = new DefaultDeployerFactory(
                 mavenFactory,
                 loggingManagerFactory,
@@ -99,16 +90,16 @@ class DeliveryPlugin implements Plugin<Project> {
                 project.getConfigurations(),
                 mavenPluginConvention.getConf2ScopeMappings(),
                 mavenSettingsProvider,
-                mavenRepositoryLocator);
+                mavenRepositoryLocator)
 
         project.getTasks().withType(Upload.class, new Action<Upload>() {
-            public void execute(Upload upload) {
-                RepositoryHandler repositories = upload.getRepositories();
-                DefaultRepositoryHandler handler = (DefaultRepositoryHandler) repositories;
-                DefaultMavenRepositoryHandlerConvention repositoryConvention = new DefaultMavenRepositoryHandlerConvention(handler, deployerFactory);
-                new DslObject(repositories).getConvention().getPlugins().put("maven", repositoryConvention);
+            void execute(Upload upload) {
+                RepositoryHandler repositories = upload.getRepositories()
+                DefaultRepositoryHandler handler = (DefaultRepositoryHandler) repositories
+                DefaultMavenRepositoryHandlerConvention repositoryConvention = new DefaultMavenRepositoryHandlerConvention(handler, deployerFactory)
+                new DslObject(repositories).getConvention().getPlugins().put("maven", repositoryConvention)
             }
-        });
+        })
 
         project.ext.DeliveryBuild = DeliveryBuild
 
@@ -129,6 +120,7 @@ class DeliveryPlugin implements Plugin<Project> {
         project.task(TASK_INSTALL, group: TASK_GROUP)
 
         project.afterEvaluate {
+
             if (deliveryExtension.configurator == null) {
                 throw new GradleException("Configurator is null. Can't configure your project. Please set the configurator or apply the plugin after your project plugin")
             }
@@ -139,7 +131,13 @@ class DeliveryPlugin implements Plugin<Project> {
 
             buildTasks.each {
                 task ->
-                    def configurationName = task.variantName + "Config"
+
+                    if (project.versionId == null) throwException("VersionId", project)
+                    if (project.version == null) throwException("Version", project)
+                    if (project.artifact == null) throwException("Artifact", project)
+                    if (project.group == null) throwException("Group", project)
+
+                    String configurationName = task.variantName + "Config"
                     if (!project.configurations.hasProperty(configurationName)) {
                         project.configurations.create(configurationName)
                         project.dependencies.add(configurationName, 'org.apache.maven.wagon:wagon-http:2.2')
@@ -153,15 +151,12 @@ class DeliveryPlugin implements Plugin<Project> {
                             configuration = project.configurations."${configurationName}"
                         }
 
-
-
                         MavenRepositoryHandlerConvention repositories = new DslObject(installTask.getRepositories()).getConvention().getPlugin(MavenRepositoryHandlerConvention.class)
                         def mavenInstaller = repositories.mavenInstaller()
                         MavenPom pom = mavenInstaller.getPom()
-                        pom.setArtifactId(task.variantName)
-
+                        pom.setArtifactId(task.variantName as String)
                     }
-                    ((Configuration) project.configurations."${configurationName}").artifacts.addAll(task.getArtifacts())
+                    ((Configuration) project.configurations."${configurationName}").artifacts.addAll(task.getArtifacts() as PublishArtifact[])
             }
 
             def uploadArtifacts = project.tasks.findByName(TASK_UPLOAD)
@@ -177,52 +172,55 @@ class DeliveryPlugin implements Plugin<Project> {
 
             //create default release git flow
 
-            if (!deliveryExtension.flowsContainer.hasProperty("releaseGit")) {
+            if (deliveryExtension.enableReleaseGitFlow) {
                 deliveryExtension.flowsContainer.create(
 //tag::gitReleaseFlow[]
-'releaseGit',
-{
-    def releaseVersion = PropertiesUtils.getSystemProperty("VERSION", project.version - '-SNAPSHOT')
-    def releaseBranch = "release/${project.versionId}-$releaseVersion"
-    def matcher = releaseVersion =~ /(\d+)([^\d]*$)/
-    def newVersion = PropertiesUtils.getSystemProperty("NEW_VERSION", matcher.replaceAll("${(matcher[0][1] as int) + 1}${matcher[0][2]}")) - "-SNAPSHOT" + "-SNAPSHOT"
-    //Use 'false' value to skip merge to base branch
-    def baseBranch = PropertiesUtils.getSystemProperty("BASE_BRANCH", 'master')
-    def workBranch = PropertiesUtils.getSystemProperty("BRANCH", 'develop')
-    def newVersionId = Integer.parseInt(project.versionId) + 1
-    def propertyFile = getVersionFile()
+                        'releaseGit',
+                        {
+                            def releaseVersion = PropertiesUtils.getSystemProperty("VERSION", (project.version as String) - '-SNAPSHOT')
+                            def releaseBranch = "release/${project.versionId}-$releaseVersion"
+                            def matcher = releaseVersion =~ /(\d+)([^\d]*$)/
+                            def newVersion = PropertiesUtils.getSystemProperty("NEW_VERSION", matcher.replaceAll("${(matcher[0][1] as int) + 1}${matcher[0][2]}")) - "-SNAPSHOT" + "-SNAPSHOT"
+                            //Use 'false' value to skip merge to base branch
+                            def baseBranch = PropertiesUtils.getSystemProperty("BASE_BRANCH", 'master')
+                            def workBranch = PropertiesUtils.getSystemProperty("BRANCH", 'develop')
+                            def newVersionId = Integer.parseInt(project.versionId as String) + 1
 
-    branch workBranch
-    step 'prepareReleaseBranch', "prepare branch $releaseBranch"
-    branch releaseBranch, true
-    step 'prepareVersion', "prepare version"
-    changeProperties releaseVersion
-    add propertyFile.path
-    step 'generateVersionFiles', "generate version files"
-    step 'commitVersionFiles', "commit version files"
-    commit "chore (version) : Update version to $releaseVersion"
-    step 'build', 'build and archive'
-    build
-    if (baseBranch != 'false') {
-        step 'stepMergeToBaseBranch', 'merge to base branch'
-        branch baseBranch
-        merge releaseBranch
-        push
-    }
-    step 'tagVersion', 'tag the commit'
-    tag "$project.artifact-$project.versionId-$releaseVersion"
-    pushTag
-    step 'updateVersion', "Update version to $newVersionId - $newVersion"
-    branch releaseBranch
-    changeProperties newVersion, newVersionId
-    add propertyFile.path
-    commit "chore (version) : Update to new version $releaseVersion and versionId $newVersionId"
-    push
-    step 'mergeDevelop', "Merge release branch to $workBranch"
-    branch workBranch
-    merge releaseBranch
-    push
-}
+                            branch workBranch
+                            step 'prepareReleaseBranch', "prepare branch $releaseBranch"
+                            branch releaseBranch, true
+                            step 'prepareVersion', "prepare version"
+                            changeProperties releaseVersion
+                            getVersionFiles(project).each {
+                                add it.path
+                            }
+                            step 'generateVersionFiles', "generate version files"
+                            step 'commitVersionFiles', "commit version files"
+                            commit "chore (version) : Update version to $releaseVersion"
+                            step 'build', 'build and archive'
+                            build
+                            if (baseBranch != 'false') {
+                                step 'stepMergeToBaseBranch', 'merge to base branch'
+                                branch baseBranch
+                                merge releaseBranch
+                                push
+                            }
+                            step 'tagVersion', 'tag the commit'
+                            tag "$project.artifact-$project.versionId-$releaseVersion"
+                            pushTag
+                            step 'updateVersion', "Update version to $newVersionId - $newVersion"
+                            branch releaseBranch
+                            changeProperties newVersion, newVersionId
+                            getVersionFiles(project).each {
+                                add it.path
+                            }
+                            commit "chore (version) : Update to new version $releaseVersion and versionId $newVersionId"
+                            push
+                            step 'mergeDevelop', "Merge release branch to $workBranch"
+                            branch workBranch
+                            merge releaseBranch
+                            push
+                        }
 //end::gitReleaseFlow[]
                 )
             }
@@ -236,59 +234,93 @@ class DeliveryPlugin implements Plugin<Project> {
     }
 
     void setupProperties() {
-        //Read and apply Delivery.properties file to override default version.properties path and version, versionId, artifact keys
-        PropertiesUtils.readAndApplyPropertiesFile(project, project.file(DELIVERY_CONF_FILE))
 
-        //Apply default value if needed
-        File versionFile = getVersionFile()
+        def parents = new ArrayList<Project>()
+        parents.add(project)
+        def actualParent = project.parent
+        while (actualParent != null) {
+            parents.add(actualParent)
+            actualParent = actualParent.parent
+        }
+        Collections.reverse(parents)
+        Properties versionProperties = new Properties()
+        Properties deliveryProperties = new Properties()
+        parents.forEach {
+            Properties versionProp = PropertiesUtils.readPropertiesFile(it.file("version.properties"))
+            versionProp.each {
+                if (it.key != null && it.value != null) versionProperties.put(it.key, it.value)
+            }
+            Properties deliveryProp = PropertiesUtils.readPropertiesFile(it.file(DELIVERY_CONF_FILE))
+            deliveryProp.each {
+                if (it.key != null && it.value != null) deliveryProperties.put(it.key, it.value)
+            }
+        }
+
+        PropertiesUtils.applyPropertiesOnProject(project, deliveryProperties)
+        PropertiesUtils.applyPropertiesOnProject(project, versionProperties)
+
         if (!project.hasProperty('versionIdKey')) {
             project.ext.versionIdKey = 'versionId'
         }
-        PropertiesUtils.setDefaultProperty(versionFile, project.ext.versionIdKey, "2")
-
         if (!project.hasProperty('versionKey')) {
             project.ext.versionKey = 'version'
         }
-        PropertiesUtils.setDefaultProperty(versionFile, project.ext.versionKey, "1.0.0-SNAPSHOT")
-
         if (!project.hasProperty('artifactKey')) {
             project.ext.artifactKey = 'artifact'
         }
 
-        PropertiesUtils.setDefaultProperty(versionFile, project.ext.artifactKey, PropertiesUtils.readPropertiesFile(versionFile).getProperty("projectName" , project.name))
-
         if (PropertiesUtils.getSystemProperty(VERSION_ID_ARG)) {
-            PropertiesUtils.setProperty(versionFile, project.ext.versionIdKey, PropertiesUtils.getSystemProperty(VERSION_ID_ARG))
+            versionProperties.put(project.versionIdKey as String, PropertiesUtils.getSystemProperty(VERSION_ID_ARG))
         }
+
         if (PropertiesUtils.getSystemProperty(VERSION_ARG)) {
-            PropertiesUtils.setProperty(versionFile, project.ext.versionKey, PropertiesUtils.getSystemProperty(VERSION_ARG))
+            versionProperties.put(project.versionKey as String, PropertiesUtils.getSystemProperty(VERSION_ARG))
         }
-        if (PropertiesUtils.getSystemProperty(GROUP_ARG)) {
-            PropertiesUtils.setProperty(versionFile, 'group', PropertiesUtils.getSystemProperty(GROUP_ARG))
-        }
+
         if (PropertiesUtils.getSystemProperty(PROJECT_NAME_ARG)) {
-            PropertiesUtils.setProperty(versionFile, project.ext.artifactKey, PropertiesUtils.getSystemProperty(PROJECT_NAME_ARG))
+            versionProperties.put(project.artifactKey as String, PropertiesUtils.getSystemProperty(PROJECT_NAME_ARG))
         }
-        applyDeliveryProperties(versionFile)
-    }
 
-    File getVersionFile() {
-        if (project.hasProperty('versionFilePath')) {
-            return project.file(project.property('versionFilePath'))
+        if (PropertiesUtils.getSystemProperty(GROUP_ARG)) {
+            versionProperties.put('group', PropertiesUtils.getSystemProperty(GROUP_ARG))
+        }
+
+        PropertiesUtils.applyPropertiesOnProject(project, versionProperties)
+
+        project.ext.versionId = versionProperties.getProperty(project.versionIdKey as String)
+        project.ext.version = versionProperties.getProperty(project.versionKey as String)
+        project.version = versionProperties.getProperty(project.versionKey as String)
+
+        if (!versionProperties.getProperty(project.artifactKey as String)) {
+            project.ext.artifact = project.name
         } else {
-            return project.file('version.properties')
+            project.ext.artifact = versionProperties.getProperty(project.artifactKey as String)
         }
+
+        if (versionProperties.getProperty('group')) {
+            project.group = versionProperties.getProperty('group')
+        }
+
+        deliveryExtension.configurator?.applyProperties()
     }
 
-    void applyDeliveryProperties(File versionFile) {
-        PropertiesUtils.readAndApplyPropertiesFile(project, versionFile)
-        project.ext.versionId = project.ext."${project.ext.versionIdKey}"
-        project.ext.version = project.ext."${project.ext.versionKey}"
-        project.version = project.ext."${project.ext.versionKey}"
-        if (project.extensions.getExtraProperties().has("group")) {
-            project.group = project.ext.group
+    static List<File> getVersionFiles(Project project) {
+        def parents = new ArrayList<Project>()
+        def versionFiles = new ArrayList<File>()
+        parents.add(project)
+        def actualParent = project.parent
+        while (actualParent != null) {
+            parents.add(actualParent)
+            actualParent = actualParent.parent
         }
-        project.ext.artifact = project.ext."${project.ext.artifactKey}"
-        deliveryExtension.configurator?.applyProperties()
+        Collections.reverse(parents)
+        parents.forEach {
+            versionFiles.add(it.file("version.properties"))
+        }
+        return versionFiles
+    }
+
+    static void throwException(String missingElement, Project project) {
+        throw new GradleException("$missingElement is not set, please add it in a version.properties in ${project.name} or one of his parent")
     }
 }
