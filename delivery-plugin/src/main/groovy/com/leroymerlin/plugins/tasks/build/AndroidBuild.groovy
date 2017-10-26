@@ -14,10 +14,18 @@ class AndroidBuild extends DeliveryBuild {
     void addVariant(variant) {
         def classifier = variant.buildType.name
         if (variant.signingReady) {
-            outputFiles.put(classifier as String, variant.outputs.get(0).outputFile as File)
+            String fileName = "$variantName-${variant.versionName}-${classifier}.apk"
+            variant.outputs.all {
+                outputFileName = fileName
+            }
+            outputFiles.put(classifier as String, project
+                    .file("build/outputs/apk/" +
+                    "${variantName.replace("${project.artifact}", "").replaceFirst("-","")}/$classifier/$fileName"))
             dependsOn.add(variant.assemble)
             if (variant.testVariant) {
-                outputFiles.put("test-$classifier" as String, variant.testVariant.outputs.get(0).outputFile as File)
+                outputFiles.put("test-$classifier" as String, project
+                        .file("build/outputs/apk/" +
+                        "${variantName.replace("${project.artifact}", "").replaceFirst("-","")}/$classifier/$fileName"))
                 dependsOn.add(variant.testVariant.assemble)
             }
             if (variant.mappingFile) {

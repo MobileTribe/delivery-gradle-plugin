@@ -31,11 +31,11 @@ delivery{
     } 
 }
 android{
-    flavorDimensions "dev", "prod"
+    flavorDimensions "dim"
 
     productFlavors {
-        dev {dimension "dev"}
-        prod {dimension "prod"}
+        dev {dimension "dim"}
+        prod {dimension "dim"}
     }
 }
 ''')
