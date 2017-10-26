@@ -20,7 +20,7 @@ buildscript {
 
 apply plugin: 'com.leroymerlin.delivery'
 ```
-Create a *version.properties* file in your module. This file will contain your module *version*, *versionId* and *projectName* the plugin needs.
+Create a *version.properties* file in your module. This file will contain your module *version*, *versionId* and *artifact* the plugin needs.
 
 Configure the delivery gradle extension in your build.gradle to fit your need.
 
@@ -62,11 +62,20 @@ include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[t
 ----
 
 NOTE: To simplify your life, Delivery provides an implementation of git release flow. +
-You just have to call *releaseGitFlow* to use it.
+To use it you have to set *enableReleaseGitFlow = true* in Delivery's extension and call *releaseGitFlow*.
+
+[source]
+----
+include::{groovyDir}com/leroymerlin/plugins/DeliveryPlugin.groovy[tags=gitReleaseFlow]
+----
+
+== Version.properties
+
+Delivery use version.properties file define in project's root path
 
 [source,groovy]
 ----
-include::{groovyDir}com/leroymerlin/plugins/DeliveryPlugin.groovy[tags=gitReleaseFlow]
+include::{testProjectDir}multiModules/version.properties[]
 ----
 
 == Signing config
@@ -84,6 +93,8 @@ include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[t
 IMPORTANT: You should consider not to put keystore and credentials inside your repository.
 
 === Android
+
+NOTE: Delivery now support Android projects using Android plugin 2 and 3
 
 [source,groovy]
 ----
@@ -114,6 +125,19 @@ include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[t
 ----
 include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[tags=signingReactExample]
 ----
+
+== Multi Modules
+
+You can link *Install* task and *Upload* task from childs modules with parent module by using *enableAllSubModules(String[] projectNameIgnored)* or *subModules(String[] projectName)*
+
+[source,groovy]
+----
+include::{testProjectDir}multiModules/build.gradle[tags=multiModulesExample]
+----
+
+NOTE: Look at the https://github.com/MobileTribe/delivery-gradle-plugin/tree/master/delivery-plugin/src/test/resources/multiModules[sample] for more informations
+
+IMPORTANT: You need to apply Delivery on all modules you want to use with Delivery
 
 == Custom projects
 

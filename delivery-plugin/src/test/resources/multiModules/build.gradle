@@ -1,3 +1,6 @@
+//tag::multiModulesExample[]
+//...
+//Here is a sample of a parent module's build.gradle
 buildscript {
     repositories {
         mavenLocal()
@@ -5,7 +8,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.3.3'
-        classpath "com.leroymerlin.plugins:delivery-plugin:3.0.0-BETA14-SNAPSHOT"
+        classpath "com.leroymerlin.plugins:delivery-plugin:${System.getProperty("DELIVERY_VERSION")}"
     }
 }
 allprojects {
@@ -20,3 +23,5 @@ apply plugin: 'com.leroymerlin.delivery'
 delivery {
     enableAllSubModules()
 }
+//...
+//end::multiModulesExample[]

@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.4">
-<meta name="author" content="Delivery v3.0.0-BETA14-SNAPSHOT, Thu Oct 19 17:46:00 CEST 2017">
+<meta name="author" content="Delivery v3.0.0-BETA14-SNAPSHOT, Thu Oct 26 16:51:36 CEST 2017">
 <title>Tutorial</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -513,22 +513,24 @@ table.CodeRay td.code>pre{padding:0}
 <div id="header">
 <h1>Tutorial</h1>
 <div class="details">
-<span id="author" class="author">Delivery v3.0.0-BETA14-SNAPSHOT, Thu Oct 19 17:46:00 CEST 2017</span><br>
+<span id="author" class="author">Delivery v3.0.0-BETA14-SNAPSHOT, Thu Oct 26 16:51:36 CEST 2017</span><br>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
 <li><a href="#configuration">1. Configuration</a></li>
 <li><a href="#flows">2. Flows</a></li>
-<li><a href="#signing-config">3. Signing config</a>
+<li><a href="#version-properties">3. Version.properties</a></li>
+<li><a href="#signing-config">4. Signing config</a>
 <ul class="sectlevel2">
-<li><a href="#android">3.1. Android</a></li>
-<li><a href="#ios">3.2. iOS</a></li>
-<li><a href="#ionic">3.3. Ionic</a></li>
-<li><a href="#react-native">3.4. React Native</a></li>
+<li><a href="#android">4.1. Android</a></li>
+<li><a href="#ios">4.2. iOS</a></li>
+<li><a href="#ionic">4.3. Ionic</a></li>
+<li><a href="#react-native">4.4. React Native</a></li>
 </ul>
 </li>
-<li><a href="#custom-projects">4. Custom projects</a></li>
+<li><a href="#multi-modules">5. Multi Modules</a></li>
+<li><a href="#custom-projects">6. Custom projects</a></li>
 </ul>
 </div>
 </div>
@@ -555,7 +557,7 @@ apply <span class="key">plugin</span>: <span class="string"><span class="delimit
 </div>
 </div>
 <div class="paragraph">
-<p>Create a <strong>version.properties</strong> file in your module. This file will contain your module <strong>version</strong>, <strong>versionId</strong> and <strong>projectName</strong> the plugin needs.</p>
+<p>Create a <strong>version.properties</strong> file in your module. This file will contain your module <strong>version</strong>, <strong>versionId</strong> and <strong>artifact</strong> the plugin needs.</p>
 </div>
 <div class="paragraph">
 <p>Configure the delivery gradle extension in your build.gradle to fit your need.</p>
@@ -724,52 +726,55 @@ Once a flow is configured, you can run it by calling the gradle task named "your
 </td>
 <td class="content">
 To simplify your life, Delivery provides an implementation of git release flow.<br>
-You just have to call <strong>releaseGitFlow</strong> to use it.
+To use it you have to set <strong>enableReleaseGitFlow = true</strong> in Delivery&#8217;s extension and call <strong>releaseGitFlow</strong>.
 </td>
 </tr>
 </table>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">                        <span class="string"><span class="delimiter">'</span><span class="content">releaseGit</span><span class="delimiter">'</span></span>,
+<pre class="CodeRay highlight"><code>                        'releaseGit',
                         {
-                            <span class="keyword">def</span> releaseVersion = PropertiesUtils.getSystemProperty(<span class="string"><span class="delimiter">&quot;</span><span class="content">VERSION</span><span class="delimiter">&quot;</span></span>, (project.version <span class="keyword">as</span> <span class="predefined-type">String</span>) - <span class="string"><span class="delimiter">'</span><span class="content">-SNAPSHOT</span><span class="delimiter">'</span></span>)
-                            <span class="keyword">def</span> releaseBranch = <span class="string"><span class="delimiter">&quot;</span><span class="content">release/</span><span class="inline"><span class="inline-delimiter">${</span>project.versionId<span class="inline-delimiter">}</span></span><span class="content">-</span><span class="inline"><span class="inline-delimiter">$</span>releaseVersion</span><span class="delimiter">&quot;</span></span>
-                            <span class="keyword">def</span> matcher = releaseVersion =~ <span class="regexp"><span class="delimiter">/</span><span class="content">(</span><span class="char">\d</span><span class="content">+)([^</span><span class="char">\d</span><span class="content">]*</span><span class="content">$</span><span class="content">)</span><span class="delimiter">/</span></span>
-                            <span class="keyword">def</span> newVersion = PropertiesUtils.getSystemProperty(<span class="string"><span class="delimiter">&quot;</span><span class="content">NEW_VERSION</span><span class="delimiter">&quot;</span></span>, matcher.replaceAll(<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>(matcher[<span class="integer">0</span>][<span class="integer">1</span>] <span class="keyword">as</span> <span class="type">int</span>) + <span class="integer">1</span><span class="inline-delimiter">}</span></span><span class="inline"><span class="inline-delimiter">${</span>matcher[<span class="integer">0</span>][<span class="integer">2</span>]<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>)) - <span class="string"><span class="delimiter">&quot;</span><span class="content">-SNAPSHOT</span><span class="delimiter">&quot;</span></span> + <span class="string"><span class="delimiter">&quot;</span><span class="content">-SNAPSHOT</span><span class="delimiter">&quot;</span></span>
-                            <span class="comment">//Use 'false' value to skip merge to base branch</span>
-                            <span class="keyword">def</span> baseBranch = PropertiesUtils.getSystemProperty(<span class="string"><span class="delimiter">&quot;</span><span class="content">BASE_BRANCH</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">master</span><span class="delimiter">'</span></span>)
-                            <span class="keyword">def</span> workBranch = PropertiesUtils.getSystemProperty(<span class="string"><span class="delimiter">&quot;</span><span class="content">BRANCH</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">develop</span><span class="delimiter">'</span></span>)
-                            <span class="keyword">def</span> newVersionId = <span class="predefined-type">Integer</span>.parseInt(project.versionId <span class="keyword">as</span> <span class="predefined-type">String</span>) + <span class="integer">1</span>
-                            <span class="keyword">def</span> propertyFile = getVersionFile()
+                            def releaseVersion = PropertiesUtils.getSystemProperty("VERSION", (project.version as String) - '-SNAPSHOT')
+                            def releaseBranch = "release/${project.versionId}-$releaseVersion"
+                            def matcher = releaseVersion =~ /(\d+)([^\d]*$)/
+                            def newVersion = PropertiesUtils.getSystemProperty("NEW_VERSION", matcher.replaceAll("${(matcher[0][1] as int) + 1}${matcher[0][2]}")) - "-SNAPSHOT" + "-SNAPSHOT"
+                            //Use 'false' value to skip merge to base branch
+                            def baseBranch = PropertiesUtils.getSystemProperty("BASE_BRANCH", 'master')
+                            def workBranch = PropertiesUtils.getSystemProperty("BRANCH", 'develop')
+                            def newVersionId = Integer.parseInt(project.versionId as String) + 1
 
                             branch workBranch
-                            step <span class="string"><span class="delimiter">'</span><span class="content">prepareReleaseBranch</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">prepare branch </span><span class="inline"><span class="inline-delimiter">$</span>releaseBranch</span><span class="delimiter">&quot;</span></span>
-                            branch releaseBranch, <span class="predefined-constant">true</span>
-                            step <span class="string"><span class="delimiter">'</span><span class="content">prepareVersion</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">prepare version</span><span class="delimiter">&quot;</span></span>
+                            step 'prepareReleaseBranch', "prepare branch $releaseBranch"
+                            branch releaseBranch, true
+                            step 'prepareVersion', "prepare version"
                             changeProperties releaseVersion
-                            add propertyFile.path
-                            step <span class="string"><span class="delimiter">'</span><span class="content">generateVersionFiles</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">generate version files</span><span class="delimiter">&quot;</span></span>
-                            step <span class="string"><span class="delimiter">'</span><span class="content">commitVersionFiles</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">commit version files</span><span class="delimiter">&quot;</span></span>
-                            commit <span class="string"><span class="delimiter">&quot;</span><span class="content">chore (version) : Update version to </span><span class="inline"><span class="inline-delimiter">$</span>releaseVersion</span><span class="delimiter">&quot;</span></span>
-                            step <span class="string"><span class="delimiter">'</span><span class="content">build</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">build and archive</span><span class="delimiter">'</span></span>
+                            getVersionFiles(project).each {
+                                add it.path
+                            }
+                            step 'generateVersionFiles', "generate version files"
+                            step 'commitVersionFiles', "commit version files"
+                            commit "chore (version) : Update version to $releaseVersion"
+                            step 'build', 'build and archive'
                             build
-                            <span class="keyword">if</span> (baseBranch != <span class="string"><span class="delimiter">'</span><span class="content">false</span><span class="delimiter">'</span></span>) {
-                                step <span class="string"><span class="delimiter">'</span><span class="content">stepMergeToBaseBranch</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">merge to base branch</span><span class="delimiter">'</span></span>
+                            if (baseBranch != 'false') {
+                                step 'stepMergeToBaseBranch', 'merge to base branch'
                                 branch baseBranch
                                 merge releaseBranch
                                 push
                             }
-                            step <span class="string"><span class="delimiter">'</span><span class="content">tagVersion</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">tag the commit</span><span class="delimiter">'</span></span>
-                            tag <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">$</span>project</span><span class="content">.artifact-</span><span class="inline"><span class="inline-delimiter">$</span>project</span><span class="content">.versionId-</span><span class="inline"><span class="inline-delimiter">$</span>releaseVersion</span><span class="delimiter">&quot;</span></span>
+                            step 'tagVersion', 'tag the commit'
+                            tag "$project.artifact-$project.versionId-$releaseVersion"
                             pushTag
-                            step <span class="string"><span class="delimiter">'</span><span class="content">updateVersion</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Update version to </span><span class="inline"><span class="inline-delimiter">$</span>newVersionId</span><span class="content"> - </span><span class="inline"><span class="inline-delimiter">$</span>newVersion</span><span class="delimiter">&quot;</span></span>
+                            step 'updateVersion', "Update version to $newVersionId - $newVersion"
                             branch releaseBranch
                             changeProperties newVersion, newVersionId
-                            add propertyFile.path
-                            commit <span class="string"><span class="delimiter">&quot;</span><span class="content">chore (version) : Update to new version </span><span class="inline"><span class="inline-delimiter">$</span>releaseVersion</span><span class="content"> and versionId </span><span class="inline"><span class="inline-delimiter">$</span>newVersionId</span><span class="delimiter">&quot;</span></span>
+                            getVersionFiles(project).each {
+                                add it.path
+                            }
+                            commit "chore (version) : Update to new version $releaseVersion and versionId $newVersionId"
                             push
-                            step <span class="string"><span class="delimiter">'</span><span class="content">mergeDevelop</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Merge release branch to </span><span class="inline"><span class="inline-delimiter">$</span>workBranch</span><span class="delimiter">&quot;</span></span>
+                            step 'mergeDevelop', "Merge release branch to $workBranch"
                             branch workBranch
                             merge releaseBranch
                             push
@@ -779,7 +784,23 @@ You just have to call <strong>releaseGitFlow</strong> to use it.
 </div>
 </div>
 <div class="sect1">
-<h2 id="signing-config">3. Signing config</h2>
+<h2 id="version-properties">3. Version.properties</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Delivery use version.properties file define in project&#8217;s root path</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="error">#</span>Version.properties sample
+version=<span class="float">1.0</span><span class="float">.0</span>
+artifact=android-app
+versionId=<span class="integer">2</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="signing-config">4. Signing config</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>SigningConfiguration allows you to configure artifacts signatures.<br>
@@ -816,7 +837,19 @@ You should consider not to put keystore and credentials inside your repository.
 </table>
 </div>
 <div class="sect2">
-<h3 id="android">3.1. Android</h3>
+<h3 id="android">4.1. Android</h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+Delivery now support Android projects using Android plugin 2 and 3
+</td>
+</tr>
+</table>
+</div>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">            <span class="comment">//...</span>
@@ -834,7 +867,7 @@ You should consider not to put keystore and credentials inside your repository.
 </div>
 </div>
 <div class="sect2">
-<h3 id="ios">3.2. iOS</h3>
+<h3 id="ios">4.2. iOS</h3>
 <div class="admonitionblock note">
 <table>
 <tr>
@@ -867,7 +900,7 @@ iOS support is based on the open source project <a href="https://github.com/open
 </div>
 </div>
 <div class="sect2">
-<h3 id="ionic">3.3. Ionic</h3>
+<h3 id="ionic">4.3. Ionic</h3>
 <div class="admonitionblock note">
 <table>
 <tr>
@@ -898,7 +931,7 @@ Ionic support is only available with the last Ionic version
 </div>
 </div>
 <div class="sect2">
-<h3 id="react-native">3.4. React Native</h3>
+<h3 id="react-native">4.4. React Native</h3>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">            <span class="comment">//...</span>
@@ -919,7 +952,68 @@ Ionic support is only available with the last Ionic version
 </div>
 </div>
 <div class="sect1">
-<h2 id="custom-projects">4. Custom projects</h2>
+<h2 id="multi-modules">5. Multi Modules</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You can link <strong>Install</strong> task and <strong>Upload</strong> task from childs modules with parent module by using <strong>enableAllSubModules(String[] projectNameIgnored)</strong> or <strong>subModules(String[] projectName)</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="comment">//...</span>
+<span class="comment">//Here is a sample of a parent module's build.gradle</span>
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+    }
+    dependencies {
+        classpath <span class="string"><span class="delimiter">'</span><span class="content">com.android.tools.build:gradle:2.3.3</span><span class="delimiter">'</span></span>
+        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">com.leroymerlin.plugins:delivery-plugin:</span><span class="inline"><span class="inline-delimiter">${</span><span class="predefined-type">System</span>.getProperty(<span class="string"><span class="delimiter">&quot;</span><span class="content">DELIVERY_VERSION</span><span class="delimiter">&quot;</span></span>)<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+    }
+}
+allprojects {
+    repositories {
+        mavenCentral()
+        mavenLM()
+    }
+}
+
+apply <span class="key">plugin</span>: <span class="string"><span class="delimiter">'</span><span class="content">com.leroymerlin.delivery</span><span class="delimiter">'</span></span>
+
+delivery {
+    enableAllSubModules()
+}
+<span class="comment">//...</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+Look at the <a href="https://github.com/MobileTribe/delivery-gradle-plugin/tree/master/delivery-plugin/src/test/resources/multiModules">sample</a> for more informations
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Important</div>
+</td>
+<td class="content">
+You need to apply Delivery on all modules you want to use with Delivery
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="custom-projects">6. Custom projects</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>If your project doesn&#8217;t answer the Delivery&#8217;s supported configurations (iOS, Android, Ionic, Java, Groovy), you can define your own configurator.</p>
@@ -967,7 +1061,7 @@ Ionic support is only available with the last Ionic version
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-10-19 14:24:20 +02:00
+Last updated 2017-10-26 16:50:13 +02:00
 </div>
 </div>
 </body>

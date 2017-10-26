@@ -33,9 +33,9 @@ class DeliveryPluginExtension {
 
     boolean enableReleaseGitFlow = false
 
-    void enableAllSubModules() {
+    void enableAllSubModules(String[] projectNameIgnored) {
         project.childProjects.each {
-            subModules(it.key)
+            if (!projectNameIgnored.contains(it.key)) subModules(it.key)
         }
     }
 
