@@ -21,7 +21,8 @@ allprojects {
 apply plugin: 'com.leroymerlin.delivery'
 
 delivery {
-    enableAllSubModules()
+    //autoLinkSubModules = true
+    //linkedSubModules = ':lib'
 }
 //...
 //end::multiModulesExample[]

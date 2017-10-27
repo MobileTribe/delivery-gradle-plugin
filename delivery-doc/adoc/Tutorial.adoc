@@ -26,6 +26,15 @@ Configure the delivery gradle extension in your build.gradle to fit your need.
 
 ```Groovy
 delivery {
+    // Enable the default git flow
+    enableReleaseGitFlow = false
+
+    // Link submodules's Install and Upload tasks with parent's tasks
+    autoLinkSubModules = false
+
+    // Define modules that their Install and Upload tasks will be linked with their parents
+    linkedSubModules = []
+
     // RepositoryHandler to archive your build artifact
     archiveRepositories = project.ext.archiveRepositories //default value
 
@@ -94,7 +103,7 @@ IMPORTANT: You should consider not to put keystore and credentials inside your r
 
 === Android
 
-NOTE: Delivery now support Android projects using Android plugin 2 and 3
+NOTE: Delivery now support Android projects using Android plugin 2.x.x and 3.x.x
 
 [source,groovy]
 ----
@@ -128,7 +137,7 @@ include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[t
 
 == Multi Modules
 
-You can link *Install* task and *Upload* task from childs modules with parent module by using *enableAllSubModules(String[] projectNameIgnored)* or *subModules(String[] projectName)*
+You can link *Install* task and *Upload* task from childs modules with parent module by using *autoLinkSubModules = true* or *linkedSubModules = 'subModule1', ...*
 
 [source,groovy]
 ----
