@@ -10,6 +10,8 @@ import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 
+import java.util.logging.Logger
+
 class DeliveryPluginExtension {
 
     private ProjectConfigurator mConfigurator
@@ -33,24 +35,9 @@ class DeliveryPluginExtension {
 
     boolean enableReleaseGitFlow = false
 
-    void enableAllSubModules(String[] projectNameIgnored) {
-        project.childProjects.each {
-            if (!projectNameIgnored.contains(it.key)) subModules(it.key)
-        }
-    }
+    boolean autoLinkSubModules = false
 
-    void subModules(String[] projectName) {
-        projectName.each {
-            def childProject = project.childProjects.get(it)
-            childProject.afterEvaluate {
-                if (!childProject.plugins.hasPlugin("com.leroymerlin.delivery")) {
-                    throw new GradleException("To use submodules, Delivery needs to be applied on $childProject")
-                }
-                project.tasks.getByName(DeliveryPlugin.TASK_INSTALL).dependsOn += childProject.tasks.getByName(DeliveryPlugin.TASK_INSTALL)
-                project.tasks.getByName(DeliveryPlugin.TASK_UPLOAD).dependsOn += childProject.tasks.getByName(DeliveryPlugin.TASK_UPLOAD)
-            }
-        }
-    }
+    String[] linkedSubModules = []
 
     void signingProperties(Action<? super NamedDomainObjectContainer<SigningProperty>> action) {
         action.execute(signingProperties)

@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.4">
-<meta name="author" content="Delivery v3.0.0-BETA14-SNAPSHOT, Thu Oct 26 17:03:38 CEST 2017">
+<meta name="author" content="Delivery v3.0.0-BETA14-SNAPSHOT, Fri Oct 27 14:54:11 CEST 2017">
 <title>Tutorial</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -513,7 +513,7 @@ table.CodeRay td.code>pre{padding:0}
 <div id="header">
 <h1>Tutorial</h1>
 <div class="details">
-<span id="author" class="author">Delivery v3.0.0-BETA14-SNAPSHOT, Thu Oct 26 17:03:38 CEST 2017</span><br>
+<span id="author" class="author">Delivery v3.0.0-BETA14-SNAPSHOT, Fri Oct 27 14:54:11 CEST 2017</span><br>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -565,6 +565,15 @@ apply <span class="key">plugin</span>: <span class="string"><span class="delimit
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="Groovy">delivery {
+    <span class="comment">// Enable the default git flow</span>
+    enableReleaseGitFlow = <span class="predefined-constant">false</span>
+
+    <span class="comment">// Link submodules's Install and Upload tasks with parent's tasks</span>
+    autoLinkSubModules = <span class="predefined-constant">false</span>
+
+    <span class="comment">// Define modules that their Install and Upload tasks will be linked with their parents</span>
+    linkedSubModules = <span class="type">[]</span>
+
     <span class="comment">// RepositoryHandler to archive your build artifact</span>
     archiveRepositories = project.ext.archiveRepositories <span class="comment">//default value</span>
 
@@ -845,7 +854,7 @@ You should consider not to put keystore and credentials inside your repository.
 <div class="title">Note</div>
 </td>
 <td class="content">
-Delivery now support Android projects using Android plugin 2 and 3
+Delivery now support Android projects using Android plugin 2.x.x and 3.x.x
 </td>
 </tr>
 </table>
@@ -955,7 +964,7 @@ Ionic support is only available with the last Ionic version
 <h2 id="multi-modules">5. Multi Modules</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>You can link <strong>Install</strong> task and <strong>Upload</strong> task from childs modules with parent module by using <strong>enableAllSubModules(String[] projectNameIgnored)</strong> or <strong>subModules(String[] projectName)</strong></p>
+<p>You can link <strong>Install</strong> task and <strong>Upload</strong> task from childs modules with parent module by using <strong>autoLinkSubModules = true</strong> or <strong>linkedSubModules = 'subModule1', &#8230;&#8203;</strong></p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -981,7 +990,8 @@ allprojects {
 apply <span class="key">plugin</span>: <span class="string"><span class="delimiter">'</span><span class="content">com.leroymerlin.delivery</span><span class="delimiter">'</span></span>
 
 delivery {
-    enableAllSubModules()
+    <span class="comment">//autoLinkSubModules = true</span>
+    <span class="comment">//linkedSubModules = ':lib'</span>
 }
 <span class="comment">//...</span></code></pre>
 </div>
@@ -1061,7 +1071,7 @@ You need to apply Delivery on all modules you want to use with Delivery
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-10-26 17:03:33 +02:00
+Last updated 2017-10-27 14:54:05 +02:00
 </div>
 </div>
 </body>
