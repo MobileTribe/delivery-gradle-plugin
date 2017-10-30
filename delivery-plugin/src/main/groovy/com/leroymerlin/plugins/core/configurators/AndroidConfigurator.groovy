@@ -29,11 +29,15 @@ class AndroidConfigurator extends ProjectConfigurator {
         if (!isAndroidApp && !isAndroidLibrary) {
             throw new GradleException("Your project must apply com.android.application or com.android.library to use " + getClass().simpleName)
         }
-
         project.android {
             defaultConfig {
-                versionName project.version
-                versionCode Integer.parseInt(project.versionId as String)
+                try {
+                    versionName project.version
+                    versionCode Integer.parseInt(project.versionId as String)
+                } catch (Exception e) {
+                    throw new GradleException("${project.versionKey} or ${project.versionIdKey} is null, please set it in version.properties file. " +
+                            "For more informations : $e")
+                }
             }
             buildTypes.all {
                 buildType ->
