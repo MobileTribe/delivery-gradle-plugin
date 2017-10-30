@@ -39,8 +39,13 @@ class ReactConfigurator extends ProjectConfigurator {
     void configure() {
         if (nestedConfigurator) {
             if (System.getProperty(REACT_BUILD) == 'android') {
-                project.android.defaultConfig.versionName = project.version
-                project.android.defaultConfig.versionCode = Integer.parseInt(project.versionId as String)
+                try {
+                    project.android.defaultConfig.versionName = project.version
+                    project.android.defaultConfig.versionCode = Integer.parseInt(project.versionId as String)
+                } catch (Exception e) {
+                    throw new GradleException("${project.versionKey} or ${project.versionIdKey} is null, please set it in version.properties file. " +
+                            "For more informations : $e")
+                }
             }
             nestedConfigurator.configure()
         } else {
