@@ -178,61 +178,64 @@ class DeliveryPlugin implements Plugin<Project> {
             if (project.tasks.findByPath("install") == null) {
                 project.task("install", dependsOn: [TASK_INSTALL])
             }
+        }
+    }
 
-            //create default release git flow
-
-            if (deliveryExtension.enableReleaseGitFlow) {
-                deliveryExtension.flowsContainer.create(
+    //create default release git flow
+    void enableReleaseGitFlow(boolean enable) {
+        if (enable && !project.tasks.findByPath("gitReleaseFlow")) {
+            deliveryExtension.flowsContainer.create(
 //tag::gitReleaseFlow[]
-                        'releaseGit',
-                        {
-                            def releaseVersion = PropertiesUtils.getSystemProperty("VERSION", (project.version as String) - '-SNAPSHOT')
-                            def releaseBranch = "release/${project.versionId}-$releaseVersion"
-                            def matcher = releaseVersion =~ /(\d+)([^\d]*$)/
-                            def newVersion = PropertiesUtils.getSystemProperty("NEW_VERSION", matcher.replaceAll("${(matcher[0][1] as int) + 1}${matcher[0][2]}")) - "-SNAPSHOT" + "-SNAPSHOT"
-                            //Use 'false' value to skip merge to base branch
-                            def baseBranch = PropertiesUtils.getSystemProperty("BASE_BRANCH", 'master')
-                            def workBranch = PropertiesUtils.getSystemProperty("BRANCH", 'develop')
-                            def newVersionId = Integer.parseInt(project.versionId as String) + 1
+                    'releaseGit',
+                    {
+                        def releaseVersion = PropertiesUtils.getSystemProperty("VERSION", (project.version as String) - '-SNAPSHOT')
+                        def releaseBranch = "release/${project.versionId}-$releaseVersion"
+                        def matcher = releaseVersion =~ /(\d+)([^\d]*$)/
+                        def newVersion = PropertiesUtils.getSystemProperty("NEW_VERSION", matcher.replaceAll("${(matcher[0][1] as int) + 1}${matcher[0][2]}")) - "-SNAPSHOT" + "-SNAPSHOT"
+                        //Use 'false' value to skip merge to base branch
+                        def baseBranch = PropertiesUtils.getSystemProperty("BASE_BRANCH", 'master')
+                        def workBranch = PropertiesUtils.getSystemProperty("BRANCH", 'develop')
+                        def newVersionId = Integer.parseInt(project.versionId as String) + 1
 
-                            branch workBranch
-                            step 'prepareReleaseBranch', "prepare branch $releaseBranch"
-                            branch releaseBranch, true
-                            step 'prepareVersion', "prepare version"
-                            changeProperties releaseVersion
-                            getVersionFiles(project).each {
-                                add it.path
-                            }
-                            step 'generateVersionFiles', "generate version files"
-                            step 'commitVersionFiles', "commit version files"
-                            commit "chore (version) : Update version to $releaseVersion"
-                            step 'build', 'build and archive'
-                            build
-                            if (baseBranch != 'false') {
-                                step 'stepMergeToBaseBranch', 'merge to base branch'
-                                branch baseBranch
-                                merge releaseBranch
-                                push
-                            }
-                            step 'tagVersion', 'tag the commit'
-                            tag "$project.artifact-$project.versionId-$releaseVersion"
-                            pushTag
-                            step 'updateVersion', "Update version to $newVersionId - $newVersion"
-                            branch releaseBranch
-                            changeProperties newVersion, newVersionId
-                            getVersionFiles(project).each {
-                                add it.path
-                            }
-                            commit "chore (version) : Update to new version $releaseVersion and versionId $newVersionId"
-                            push
-                            step 'mergeDevelop', "Merge release branch to $workBranch"
-                            branch workBranch
+                        branch workBranch
+                        step 'prepareReleaseBranch', "prepare branch $releaseBranch"
+                        branch releaseBranch, true
+                        step 'prepareVersion', "prepare version"
+                        changeProperties releaseVersion
+                        getVersionFiles(project).each {
+                            add it.path
+                        }
+                        step 'generateVersionFiles', "generate version files"
+                        step 'commitVersionFiles', "commit version files"
+                        commit "chore (version) : Update version to $releaseVersion"
+                        step 'build', 'build and archive'
+                        build
+                        if (baseBranch != 'false') {
+                            step 'stepMergeToBaseBranch', 'merge to base branch'
+                            branch baseBranch
                             merge releaseBranch
                             push
                         }
+                        step 'tagVersion', 'tag the commit'
+                        tag "$project.artifact-$project.versionId-$releaseVersion"
+                        pushTag
+                        step 'updateVersion', "Update version to $newVersionId - $newVersion"
+                        branch releaseBranch
+                        changeProperties newVersion, newVersionId
+                        getVersionFiles(project).each {
+                            add it.path
+                        }
+                        commit "chore (version) : Update to new version $releaseVersion and versionId $newVersionId"
+                        push
+                        step 'mergeDevelop', "Merge release branch to $workBranch"
+                        branch workBranch
+                        merge releaseBranch
+                        push
+                    }
 //end::gitReleaseFlow[]
-                )
-            }
+            )
+        } else {
+            Logger.global.warning("Task already exist")
         }
     }
 

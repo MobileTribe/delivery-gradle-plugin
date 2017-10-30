@@ -6,11 +6,8 @@ import com.leroymerlin.plugins.core.configurators.ProjectConfigurator
 import com.leroymerlin.plugins.entities.Flow
 import com.leroymerlin.plugins.entities.SigningProperty
 import org.gradle.api.Action
-import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
-
-import java.util.logging.Logger
 
 class DeliveryPluginExtension {
 
@@ -33,7 +30,9 @@ class DeliveryPluginExtension {
     def archiveRepositories = project.ext.properties.containsKey('archiveRepositories') ? project.ext.archiveRepositories : {
     }
 
-    boolean enableReleaseGitFlow = false
+    void setEnableReleaseGitFlow(boolean enable) {
+        this.plugin.enableReleaseGitFlow(enable)
+    }
 
     boolean autoLinkSubModules = false
 
