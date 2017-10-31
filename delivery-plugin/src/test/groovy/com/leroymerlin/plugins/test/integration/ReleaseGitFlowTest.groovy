@@ -10,7 +10,7 @@ class ReleaseGitFlowTest extends AbstractIntegrationTest {
 
     @Override
     String getProjectName() {
-        return "releaseGitFlowProject"
+        return "flowProject"
     }
 
     @Test
