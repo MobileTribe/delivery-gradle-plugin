@@ -6,6 +6,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.tasks.TaskAction
 
+import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Logger
 
 /**
@@ -20,7 +21,7 @@ class ChangePropertiesTask extends DefaultTask {
     changeProperties() {
         File[] versionFiles = DeliveryPlugin.getVersionFiles(project).reverse()
 
-        Map<String, String> values = new HashMap<>()
+        Map<String, String> values = new ConcurrentHashMap<>()
         if (version != null) {
             values.put(project.versionKey as String, version)
         }
@@ -33,12 +34,11 @@ class ChangePropertiesTask extends DefaultTask {
 
         versionFiles.each {
             Properties prop = PropertiesUtils.readPropertiesFile(it)
-            values.keySet().each {
-                key ->
-                    if (prop.hasProperty(key)) {
-                        prop.setProperty(key, values.remove(key))
-                        PropertiesUtils.writePropertiesFile(it, prop)
-                    }
+            values.entrySet().each { map ->
+                if (prop.getProperty(map.key) != null) {
+                    prop.setProperty(map.key, values.remove(map.key))
+                    PropertiesUtils.writePropertiesFile(it, prop)
+                }
             }
         }
 
