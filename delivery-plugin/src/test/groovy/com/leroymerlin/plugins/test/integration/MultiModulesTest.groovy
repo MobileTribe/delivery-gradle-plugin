@@ -30,6 +30,67 @@ delivery{
     } 
 }
 ''')
+        applySecondExtraGradle('''
+    apply plugin: \'com.leroymerlin.delivery\'
+
+delivery{
+    archiveRepositories = {
+        maven {
+            url uri("''' + archiveDirectory.absolutePath + '''")
+        }
+    }
+    flows{
+        build{
+            build
+        }
+    } 
+}
+''')
+        testTask('buildFlow')
+        def list = []
+        archiveDirectory.eachFileRecurse(FileType.FILES, {
+            f ->
+                list << f
+        })
+        Assert.assertEquals("archive folder should contain 16 files", 16, list.size())
+    }
+
+    @Test
+    void changePropertiesTest(){
+        def archiveDirectory = new File(workingDirectory, "build/archive")
+        applyExtraGradle('''
+    apply plugin: \'com.leroymerlin.delivery\'
+
+delivery{
+    archiveRepositories = {
+        maven {
+            url uri("''' + archiveDirectory.absolutePath + '''")
+        }
+    }
+    flows{
+        build{
+            build
+        }
+    } 
+}
+''')
+        applySecondExtraGradle('''
+    apply plugin: \'com.leroymerlin.delivery\'
+
+delivery{
+    archiveRepositories = {
+        maven {
+            url uri("''' + archiveDirectory.absolutePath + '''")
+        }
+    }
+    flows{
+        build{
+            changeProperties '1.1.1', 111
+            build
+        }
+    } 
+}
+''')
         testTask('buildFlow')
         def list = []
         archiveDirectory.eachFileRecurse(FileType.FILES, {

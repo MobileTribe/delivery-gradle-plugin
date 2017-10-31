@@ -235,7 +235,7 @@ class DeliveryPlugin implements Plugin<Project> {
 //end::gitReleaseFlow[]
             )
         } else {
-            Logger.global.warning("Task already exist")
+            Logger.global.warning("gitReleaseFlow was not created or already exists")
         }
     }
 
