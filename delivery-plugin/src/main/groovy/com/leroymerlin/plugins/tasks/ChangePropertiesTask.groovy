@@ -1,9 +1,12 @@
 package com.leroymerlin.plugins.tasks
 
+import com.leroymerlin.plugins.DeliveryPlugin
 import com.leroymerlin.plugins.utils.PropertiesUtils
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.tasks.TaskAction
+
+import java.util.logging.Logger
 
 /**
  * Created by alexandre on 15/02/2017.
@@ -15,17 +18,34 @@ class ChangePropertiesTask extends DefaultTask {
 
     @TaskAction
     changeProperties() {
-        File versionFile = project.file("version.properties")
+        File[] versionFiles = DeliveryPlugin.getVersionFiles(project).reverse()
 
+        Map<String, String> values = new HashMap<>()
         if (version != null) {
-            PropertiesUtils.setProperty(versionFile, project.versionKey as String, version)
+            values.put(project.versionKey as String, version)
         }
         if (versionId != null) {
-            PropertiesUtils.setProperty(versionFile, project.versionIdKey as String, versionId)
+            values.put(project.versionIdKey as String, versionId)
         }
         if (artifact != null) {
-            PropertiesUtils.setProperty(versionFile, project.artifactKey as String, artifact)
+            values.put(project.artifactKey as String, artifact)
         }
-        project.delivery.plugin.applyPropertiesOnProject(project, project.delivery.plugin.readPropertiesFile(versionFile))
+
+        versionFiles.each {
+            Properties prop = PropertiesUtils.readPropertiesFile(it)
+            values.keySet().each {
+                key ->
+                    if (prop.hasProperty(key)) {
+                        prop.setProperty(key, values.remove(key))
+                        PropertiesUtils.writePropertiesFile(it, prop)
+                    }
+            }
+        }
+
+        values.each {
+            Logger.global.warning("Could not set ${it.key}. Not found in version.properties files")
+        }
+
+        project.delivery.plugin.setupProperties()
     }
 }
