@@ -15,7 +15,7 @@ class JavaBuild extends DeliveryBuild {
         dependsOn.add(project.build)
         dependsOn.add(project.jar)
 
-        def sourcesJar = project.task("sources${variantName}Jar", type: Jar, group: DeliveryPlugin.TASK_GROUP) {
+        def sourcesJar = project.task("sources${variantName.capitalize()}Jar", type: Jar, group: DeliveryPlugin.TASK_GROUP) {
             classifier = 'sources'
             from project.sourceSets.main.allSource.srcDirs
         }
