@@ -45,7 +45,7 @@ class JavaConfigurator extends ProjectConfigurator {
         Logger.global.info("group used : ${project.group}")
 
         Logger.global.info("Generate Java Build tasks")
-        project.task("build${project.artifact}Artifacts", type: JavaBuild, group: DeliveryPlugin.TASK_GROUP) {
+        project.task("build${project.artifact.capitalize()}Artifacts", type: JavaBuild, group: DeliveryPlugin.TASK_GROUP) {
             variantName project.artifact
         }
     }
