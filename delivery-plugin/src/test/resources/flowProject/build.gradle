@@ -4,11 +4,17 @@ buildscript {
         jcenter()
     }
     dependencies {
+        classpath 'com.android.tools.build:gradle:2.3.3'
         classpath "com.leroymerlin.plugins:delivery-plugin:${System.getProperty("DELIVERY_VERSION")}"
     }
 }
+allprojects {
+    repositories {
+        mavenCentral()
+        mavenLM()
+    }
+}
 
-apply plugin: 'java'
 apply plugin: 'com.leroymerlin.delivery'
 
 if (file('extra.gradle').exists()) {

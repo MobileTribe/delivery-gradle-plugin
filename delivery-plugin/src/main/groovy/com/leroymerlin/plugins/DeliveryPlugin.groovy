@@ -183,7 +183,7 @@ class DeliveryPlugin implements Plugin<Project> {
 
     //create default release git flow
     void enableReleaseGitFlow(boolean enable) {
-        if (enable && !project.tasks.findByPath("gitReleaseFlow")) {
+        if (enable && !project.tasks.findByPath("releaseGitFlow")) {
             deliveryExtension.flowsContainer.create(
 //tag::gitReleaseFlow[]
                     'releaseGit',
@@ -235,7 +235,7 @@ class DeliveryPlugin implements Plugin<Project> {
 //end::gitReleaseFlow[]
             )
         } else {
-            Logger.global.warning("gitReleaseFlow was not created or already exists")
+            Logger.global.warning("releaseGitFlow was not created or already exists")
         }
     }
 
@@ -327,7 +327,7 @@ class DeliveryPlugin implements Plugin<Project> {
         }
         Collections.reverse(parents)
         parents.forEach {
-            versionFiles.add(it.file("version.properties"))
+            if (it.file("version.properties").exists()) versionFiles.add(it.file("version.properties"))
         }
         return versionFiles
     }
