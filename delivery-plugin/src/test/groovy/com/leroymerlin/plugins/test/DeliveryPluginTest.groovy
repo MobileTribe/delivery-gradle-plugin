@@ -113,7 +113,7 @@ class DeliveryPluginTest {
                      * change the properties of the version.properties
                      * @param @optional version (default: null)
                      * @param @optional versionId (default: null)
-                     * @param @optional projectName (default: null)
+                     * @param @optional artifact (default: null)
                      */
                     changeProperties '1.0.0', '3'
                     /**
