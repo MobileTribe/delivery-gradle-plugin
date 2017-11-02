@@ -122,7 +122,7 @@ class DeliveryPlugin implements Plugin<Project> {
         project.afterEvaluate {
             project.subprojects.each {
                 if (deliveryExtension.autoLinkSubModules || deliveryExtension.linkedSubModules.contains(it.name)) {
-                    if (!it.plugins.hasPlugin("com.leroymerlin.delivery")) {
+                    if (it.plugins.getPlugin("com.leroymerlin.delivery") == null) {
                         Logger.global.warning("Can't link ${project.name} with ${it.name} because Delivery is not applied on ${it.name}")
                     } else {
                         project.tasks.getByName(TASK_INSTALL).dependsOn += it.tasks.getByName(TASK_INSTALL)
