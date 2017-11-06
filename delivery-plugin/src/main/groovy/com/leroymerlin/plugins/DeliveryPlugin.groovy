@@ -118,17 +118,19 @@ class DeliveryPlugin implements Plugin<Project> {
 
         project.task(TASK_UPLOAD, group: TASK_GROUP)
         project.task(TASK_INSTALL, group: TASK_GROUP)
-
-        project.afterEvaluate {
-            project.subprojects.each {
-                subprojects ->
-                    subprojects.afterEvaluate {
-                        subprojects.plugins.withType(DeliveryPlugin.class){
+        project.subprojects {
+            subprojects ->
+                subprojects.afterEvaluate {
+                    if (deliveryExtension.autoLinkSubModules || deliveryExtension.linkedSubModules.contains(it.name)) {
+                        subprojects.plugins.withType(DeliveryPlugin.class) {
                             project.tasks.getByName(TASK_INSTALL).dependsOn += subprojects.tasks.getByName(TASK_INSTALL)
                             project.tasks.getByName(TASK_UPLOAD).dependsOn += subprojects.tasks.getByName(TASK_UPLOAD)
                         }
                     }
-            }
+                }
+        }
+        project.afterEvaluate {
+
             if (deliveryExtension.configurator == null) {
                 throw new GradleException("Configurator is null. Can't configure your project. Please set the configurator or apply the plugin after your project plugin")
             }
