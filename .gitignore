@@ -55,3 +55,4 @@ nb-configuration.xml
 velocity.log
 crashlytics-build.properties
 container_plugins
+.gitconfig

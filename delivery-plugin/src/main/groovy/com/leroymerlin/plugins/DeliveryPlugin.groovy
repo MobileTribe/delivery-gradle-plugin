@@ -121,14 +121,13 @@ class DeliveryPlugin implements Plugin<Project> {
 
         project.afterEvaluate {
             project.subprojects.each {
-                if (deliveryExtension.autoLinkSubModules || deliveryExtension.linkedSubModules.contains(it.name)) {
-                    if (it.plugins.getPlugin("com.leroymerlin.delivery") == null) {
-                        Logger.global.warning("Can't link ${project.name} with ${it.name} because Delivery is not applied on ${it.name}")
-                    } else {
-                        project.tasks.getByName(TASK_INSTALL).dependsOn += it.tasks.getByName(TASK_INSTALL)
-                        project.tasks.getByName(TASK_UPLOAD).dependsOn += it.tasks.getByName(TASK_UPLOAD)
+                subprojects ->
+                    subprojects.afterEvaluate {
+                        subprojects.plugins.withType(DeliveryPlugin.class){
+                            project.tasks.getByName(TASK_INSTALL).dependsOn += subprojects.tasks.getByName(TASK_INSTALL)
+                            project.tasks.getByName(TASK_UPLOAD).dependsOn += subprojects.tasks.getByName(TASK_UPLOAD)
+                        }
                     }
-                }
             }
             if (deliveryExtension.configurator == null) {
                 throw new GradleException("Configurator is null. Can't configure your project. Please set the configurator or apply the plugin after your project plugin")
