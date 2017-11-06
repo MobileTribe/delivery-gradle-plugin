@@ -22,12 +22,12 @@ class AndroidBuild extends DeliveryBuild {
                 }
                 outputFiles.put(classifier as String, project
                         .file("build/outputs/apk/" +
-                        "${variantName.replace("${project.artifact}", "").replaceFirst("-", "")}/$classifier/$fileName"))
+                        "${variantName.replace("${project.artifact.toLowerCase()}", "").replaceFirst("-", "")}/$classifier/$fileName"))
                 dependsOn.add(variant.assemble)
                 if (variant.testVariant) {
                     outputFiles.put("test-$classifier" as String, project
                             .file("build/outputs/apk/" +
-                            "${variantName.replace("${project.artifact}", "").replaceFirst("-", "")}/$classifier/$fileName"))
+                            "${variantName.replace("${project.artifact.toLowerCase()}", "").replaceFirst("-", "")}/$classifier/$fileName"))
                     dependsOn.add(variant.testVariant.assemble)
                 }
             }

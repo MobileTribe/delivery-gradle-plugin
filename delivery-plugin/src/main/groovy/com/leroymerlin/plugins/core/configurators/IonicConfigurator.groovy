@@ -37,6 +37,7 @@ class IonicConfigurator extends ProjectConfigurator {
         project.task("prepareNpm", group: DeliveryPlugin.TASK_GROUP).doLast {
             Logger.global.warning("Delivery support Ionic > 3.0 & Cordova > 7.0")
             Executor.exec(["npm", "install"], [directory: project.projectDir], true)
+            Executor.exec(["ionic", "-v"], [directory: project.projectDir], true)
         }.dependsOn("prepareProject")
     }
 
