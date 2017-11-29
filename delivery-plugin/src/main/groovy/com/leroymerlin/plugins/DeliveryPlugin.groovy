@@ -191,8 +191,14 @@ class DeliveryPlugin implements Plugin<Project> {
                     {
                         def releaseVersion = PropertiesUtils.getSystemProperty("VERSION", (project.version as String) - '-SNAPSHOT')
                         def releaseBranch = "release/${project.versionId}-$releaseVersion"
-                        def matcher = releaseVersion =~ /(\d+)([^\d]*$)/
-                        def newVersion = PropertiesUtils.getSystemProperty("NEW_VERSION", matcher.replaceAll("${(matcher[0][1] as int) + 1}${matcher[0][2]}")) - "-SNAPSHOT" + "-SNAPSHOT"
+                        def matcher
+                        def newVersion
+                        try {
+                            matcher = releaseVersion =~ /(\d+)([^\d]*$)/
+                            newVersion = PropertiesUtils.getSystemProperty("NEW_VERSION", matcher.replaceAll("${(matcher[0][1] as int) + 1}${matcher[0][2]}")) - "-SNAPSHOT" + "-SNAPSHOT"
+                        } catch (Exception ignored) {
+                            throw new GradleException("ReleaseGitFLow only support semantic version (Ex: 1.0.0)")
+                        }
                         //Use 'false' value to skip merge to base branch
                         def baseBranch = PropertiesUtils.getSystemProperty("BASE_BRANCH", 'master')
                         def workBranch = PropertiesUtils.getSystemProperty("BRANCH", 'develop')
