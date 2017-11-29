@@ -17,11 +17,11 @@ import java.util.logging.Logger
 class IOSConfigurator extends ProjectConfigurator {
 
     public boolean hybridBuild = false
+    static def pluginId = "org.openbakery.xcode-plugin"
 
     @Override
     void setup(Project project, DeliveryPluginExtension extension) {
         super.setup(project, extension)
-        project.plugins.apply("org.openbakery.xcode-plugin")
     }
 
     @Override
@@ -29,16 +29,26 @@ class IOSConfigurator extends ProjectConfigurator {
         if (!project.group) {
             throw new GradleException("Project group is not defined. Please use a gradle properties group")
         }
-        Logger.global.info("group used : ${project.group}")
+        if (!project.plugins.hasPlugin(pluginId)) {
+            project.plugins.apply(pluginId)
+            applyProperties()
+            Logger.global.info("group used : ${project.group}")
+        }
     }
 
     @Override
     void applyProperties() {
-        this.project.infoplist.version = project.version
+        if (project.plugins.hasPlugin(pluginId)) {
+            this.project.infoplist.version = project.version
+        }
     }
 
     @Override
     void applySigningProperty(SigningProperty property) {
+        if (!project.plugins.hasPlugin(pluginId)) {
+            configure()
+        }
+
         String target = property.target
         String scheme = property.scheme
         if (target == null || scheme == null) {
