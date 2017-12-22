@@ -22,7 +22,23 @@ class SigningProperty {
                 stream -> fileProp.load(stream)
             }
             fileProp.each {
-                key, value ->
+                key, String value ->
+                    //resolve relative path
+                    if ("mobileProvisionURI".equals(key)) {
+                        value = value.split(",").collect {
+                            path ->
+                                def file = new File(propertiesFile.parentFile, path)
+                                if (file.exists()) {
+                                    return file.path
+                                }
+                                return path
+                        }.join(",")
+                    } else if ("certificateURI".equals(key) || "storeFile".equals(key)) {
+                        def file = new File(propertiesFile.parentFile, value)
+                        if (file.exists()) {
+                            value = file.path
+                        }
+                    }
                     properties.put(key, value)
             }
         }

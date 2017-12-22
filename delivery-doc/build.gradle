@@ -7,7 +7,7 @@ asciidoctorj {
 }
 
 def prop = ant {
-    property(file: '../version.properties')
+    property(file: '../delivery-plugin/version.properties')
 }
 
 asciidoctor {
