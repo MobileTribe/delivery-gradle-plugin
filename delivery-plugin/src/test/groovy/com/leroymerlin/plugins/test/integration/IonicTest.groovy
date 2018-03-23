@@ -22,21 +22,24 @@ class IonicTest extends AbstractIntegrationTest {
 
     @Test
     void testBuildTaskGeneration() {
-        def archiveDirectory = new File(workingDirectory, "build/archive_ionic")
         testTask('ionicFlow')
         def list = []
-        archiveDirectory.eachFileRecurse(FileType.FILES, {
+        new File(workingDirectory, "platforms/android/build/archive_ionic").eachFileRecurse(FileType.FILES, {
+            f ->
+                list << f
+        })
+        new File(workingDirectory, "platforms/ios/build/archive_ionic").eachFileRecurse(FileType.FILES, {
             f ->
                 list << f
         })
 
         for (file in list) {
-            if (!file.path.contains("$archiveDirectory/com/leroymerlin/delivery/ionic/android/1.0.0-SNAPSHOT/myapp-1.0.0-SNAPSHOT-debug")
-                    && !file.path.contains("$archiveDirectory/com/leroymerlin/delivery/ionic/android/1.0.0-SNAPSHOT/myapp-1.0.0-SNAPSHOT-release")
-                    && !file.path.contains("$archiveDirectory/com/leroymerlin/delivery/ionic/android/1.0.0-SNAPSHOT/myapp-1.0.0-SNAPSHOT-sources-sources")
-                    && !file.path.contains("$archiveDirectory/com/leroymerlin/delivery/ionic/android/1.0.0-SNAPSHOT/myapp-1.0.0-SNAPSHOT-test-debug")
-                    && !file.path.contains("$archiveDirectory/com/leroymerlin/delivery/ionic/ios/1.0.0-SNAPSHOT/myapp-1.0.0-SNAPSHOT-myapp"))
-                throw new AssertionError("${file.name} has not a correct name or a correct path")
+            if (!file.name.contains("myapp-1.0.0-SNAPSHOT-debug")
+                    && !file.name.contains("myapp-1.0.0-SNAPSHOT-release")
+                    && !file.name.contains("myapp-1.0.0-SNAPSHOT-sources-sources")
+                    && !file.name.contains("myapp-1.0.0-SNAPSHOT-test-debug")
+                    && !file.name.contains("myapp-1.0.0-SNAPSHOT-myapp"))
+                throw new AssertionError("${file.name} has not a correct name")
         }
 
         Assert.assertEquals("archive folder should contain 10 files", 10, list.size())

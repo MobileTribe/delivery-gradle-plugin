@@ -40,7 +40,7 @@ dependencies {
     implementation("commons-configuration:commons-configuration:1.10")
     implementation("com.google.guava:guava:18.0")
 
-    extraLibs("org.openbakery:xcode-plugin:0.15.0.develop.+") {
+    extraLibs("org.openbakery:xcode-plugin:0.15.3.develop.+") {
         exclude group: 'commons-io', module: 'commons-io'
         exclude group: 'commons-collections', module: 'commons-collections'
         exclude group: 'commons-configuration', module: 'commons-configuration'
