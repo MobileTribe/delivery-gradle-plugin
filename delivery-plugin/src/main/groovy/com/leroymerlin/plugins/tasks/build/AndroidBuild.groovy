@@ -20,15 +20,28 @@ class AndroidBuild extends DeliveryBuild {
                 variant.outputs.all {
                     outputFileName = fileName
                 }
-                outputFiles.put(classifier as String, project
-                        .file("build/outputs/apk/" +
-                        "${variantName.replace("${project.artifact.toLowerCase()}", "").replaceFirst("-", "")}/$classifier/$fileName"))
-                dependsOn.add(variant.assemble)
-                if (variant.testVariant) {
-                    outputFiles.put("test-$classifier" as String, project
+                if (flutterProject) {
+                    outputFiles.put(classifier as String, new File(project.rootProject
+                            .file("build/app/outputs/apk/" +
+                            "${variantName.replace("${project.artifact.toLowerCase()}", "").replaceFirst("-", "")}/$classifier/$fileName").path.replace("android/", "")))
+                    dependsOn.add(variant.assemble)
+                    if (variant.testVariant) {
+                        outputFiles.put("test-$classifier" as String, new File(project.rootProject
+                                .file("build/app/outputs/apk/" +
+                                "${variantName.replace("${project.artifact.toLowerCase()}", "").replaceFirst("-", "")}/$classifier/$fileName").path.replace("android/", "")))
+                        dependsOn.add(variant.testVariant.assemble)
+                    }
+                } else {
+                    outputFiles.put(classifier as String, project
                             .file("build/outputs/apk/" +
                             "${variantName.replace("${project.artifact.toLowerCase()}", "").replaceFirst("-", "")}/$classifier/$fileName"))
-                    dependsOn.add(variant.testVariant.assemble)
+                    dependsOn.add(variant.assemble)
+                    if (variant.testVariant) {
+                        outputFiles.put("test-$classifier" as String, project
+                                .file("build/outputs/apk/" +
+                                "${variantName.replace("${project.artifact.toLowerCase()}", "").replaceFirst("-", "")}/$classifier/$fileName"))
+                        dependsOn.add(variant.testVariant.assemble)
+                    }
                 }
             }
             // Before Android plugin 3.0.0

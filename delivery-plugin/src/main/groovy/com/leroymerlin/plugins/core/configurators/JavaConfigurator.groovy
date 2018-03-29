@@ -35,7 +35,7 @@ class JavaConfigurator extends ProjectConfigurator {
         this.extension.plugin.mapToMavenConfiguration(DeliveryPlugin.TEST_COMPILE_PRIORITY, "testCompile", Conf2ScopeMappingContainer.TEST)
         this.extension.plugin.mapToMavenConfiguration(DeliveryPlugin.TEST_RUNTIME_PRIORITY, "testRuntime", Conf2ScopeMappingContainer.TEST)
         this.extension.plugin.mapToMavenConfiguration(DeliveryPlugin.TEST_RUNTIME_PRIORITY, "testImplementation", Conf2ScopeMappingContainer.TEST)
-        if (project.plugins.hasPlugin("java-library")) {
+        if (project.plugins.hasPlugin("java-library") || project.plugins.hasPlugin(AndroidConfigurator.ANDROID_LIBRARY_PLUGIN_ID)) {
             this.extension.plugin.mapToMavenConfiguration(DeliveryPlugin.COMPILE_PRIORITY, "api", Conf2ScopeMappingContainer.COMPILE)
         }
 

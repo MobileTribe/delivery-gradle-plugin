@@ -18,8 +18,8 @@ import java.util.logging.Logger
 class AndroidConfigurator extends ProjectConfigurator {
 
     private final String ANDROID_PLUGIN_ID = "com.android.application"
-    private final String ANDROID_LIBRARY_PLUGIN_ID = "com.android.library"
-    boolean isAndroidApp, isAndroidLibrary
+    public static final String ANDROID_LIBRARY_PLUGIN_ID = "com.android.library"
+    boolean isAndroidApp, isAndroidLibrary, isFlutterProject
 
     @Override
     void setup(Project project, DeliveryPluginExtension extension) {
@@ -92,6 +92,7 @@ class AndroidConfigurator extends ProjectConfigurator {
                 if (project.tasks.findByPath(buildTaskName) == null) {
                     project.task(buildTaskName, type: AndroidBuild, group: DeliveryPlugin.TASK_GROUP) {
                         variantName flavorNameNexus
+                        flutterProject isFlutterProject
                     }
                 }
                 project.tasks.findByPath(buildTaskName).addVariant(currentVariant)

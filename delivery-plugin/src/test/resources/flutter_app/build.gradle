@@ -1,0 +1,35 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+    }
+    dependencies {
+        classpath "com.leroymerlin.plugins:delivery-plugin:${System.getProperty("DELIVERY_VERSION")}"
+    }
+}
+
+apply plugin: 'com.leroymerlin.delivery'
+
+delivery {
+    archiveRepositories = {
+        maven {
+            url uri("../build/archive_flutter")
+        }
+    }
+    flows {
+        flutter {
+            build
+        }
+    }
+
+    if (file("${System.properties['user.home']}/.gradle/signing_ios.properties").exists() && file("${System.properties['user.home']}/.gradle/signing.properties")) {
+        signingProperties {
+            android {
+                propertiesFile = file("${System.properties['user.home']}/.gradle/signing.properties")
+            }
+            ios {
+                propertiesFile = file("${System.properties['user.home']}/.gradle/signing_ios.properties")
+            }
+        }
+    }
+}
