@@ -88,7 +88,10 @@ class FlutterConfigurator extends ProjectConfigurator {
             project.task(preparePlatformTask, group: DeliveryPlugin.TASK_GROUP).doLast {
                 String deliveryConfig = project.file('build.gradle').text
 
-                if (signingName == 'ios') deliveryConfig = project.file('build.gradle').text
+                if (signingName == 'ios')
+                    deliveryConfig = project.file('build.gradle')
+                            .text
+                            .replace("url uri(\"../../build/archive_flutter\")", "url uri(\"../build/archive_flutter\")")
 
                 if (!newBuildGradleFile.text.contains(deliveryConfig)) {
                     newBuildGradleFile << deliveryConfig
@@ -135,8 +138,15 @@ class FlutterConfigurator extends ProjectConfigurator {
         if (nestedConfigurator && signingName == System.getProperty(FLUTTER_BUILD)) {
             SigningProperty signingPropertyCopy = new SigningProperty('release')
             signingPropertyCopy.setProperties(signingProperty.properties)
-            signingPropertyCopy.target = project.artifact
-            signingPropertyCopy.scheme = project.artifact
+            if (signingName == "ios") {
+                if (signingProperty.target != null && signingProperty.scheme != null) {
+                    signingPropertyCopy.target = signingProperty.target
+                    signingPropertyCopy.scheme = signingProperty.scheme
+                } else {
+                    signingPropertyCopy.target = "Runner"
+                    signingPropertyCopy.scheme = "Runner"
+                }
+            }
             nestedConfigurator.applySigningProperty(signingPropertyCopy)
         }
     }
@@ -144,7 +154,7 @@ class FlutterConfigurator extends ProjectConfigurator {
     @Override
     boolean handleProject(Project project) {
         boolean flutterProject = false
-        if (project.file("lib/main.dart").exists()) {
+        if (project.file("pubspec.yaml").exists() && project.file("pubspec.yaml").text.contains("flutter:")) {
             flutterProject = true
         }
         return (System.getProperty(FLUTTER_BUILD) != null || flutterProject)

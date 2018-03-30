@@ -53,11 +53,6 @@ class IOSConfigurator extends ProjectConfigurator {
         String target = property.target
         String scheme = property.scheme
 
-        if (isFlutterProject) {
-            target = "Runner"
-            scheme = "Runner"
-        }
-
         if (target == null || scheme == null) {
             throw new GradleException("signing config needs target and scheme properties")
         }
