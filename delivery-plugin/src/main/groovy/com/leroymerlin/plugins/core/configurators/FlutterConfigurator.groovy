@@ -21,12 +21,10 @@ class FlutterConfigurator extends ProjectConfigurator {
     void setup(Project project, DeliveryPluginExtension extension) {
         super.setup(project, extension)
         def signingBuild = System.getProperty(FLUTTER_BUILD)
-        if (project.file("android/local.properties").exists()) {
-            project.file("android/local.properties").delete()
-            project.file("android/local.properties").createNewFile()
-            project.file("android/local.properties").append("flutter.sdk=" + System.getenv("FLUTTER_SDK") + "\n")
-            project.file("android/local.properties").append("sdk.dir=" + System.getenv("ANDROID_HOME") + "\n")
-        }
+        project.mkdir("android")
+        project.file("android/local.properties").createNewFile()
+        project.file("android/local.properties").append("flutter.sdk=" + System.getenv("FLUTTER_SDK") + "\n")
+        project.file("android/local.properties").append("sdk.dir=" + System.getenv("ANDROID_HOME") + "\n")
         if (signingBuild == 'ios') {
             project.file("Flutter/Generated.xcconfig").delete()
             Executor.exec(["flutter", "build", "ios"], [directory: project.projectDir.toString().replace("/ios", "")])
