@@ -27,7 +27,7 @@ class FlutterConfigurator extends ProjectConfigurator {
         project.file("android/local.properties").append("sdk.dir=" + System.getenv("ANDROID_HOME") + "\n")
         if (signingBuild == 'ios') {
             project.file("Flutter/Generated.xcconfig").delete()
-            Executor.exec(["flutter", "build", "ios"], [directory: project.projectDir.toString().replace("/ios", "")])
+            Executor.exec(["flutter", "build", "ios", "--no-codesign"], [directory: project.projectDir.toString().replace("/ios", "")])
             nestedConfigurator = new IOSConfigurator()
             nestedConfigurator.isFlutterProject = true
         } else if (signingBuild == 'android') {
