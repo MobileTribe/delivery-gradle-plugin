@@ -56,6 +56,12 @@ class AndroidConfigurator extends ProjectConfigurator {
 
         //configure project with maven convention
         this.extension.plugin.mapToMavenConfiguration(DeliveryPlugin.COMPILE_PRIORITY, "compile", Conf2ScopeMappingContainer.COMPILE)
+        this.extension.plugin.mapToMavenConfiguration(DeliveryPlugin.COMPILE_PRIORITY, "api", Conf2ScopeMappingContainer.COMPILE)
+        this.extension.plugin.mapToMavenConfiguration(DeliveryPlugin.COMPILE_PRIORITY, "implementation", Conf2ScopeMappingContainer.COMPILE)
+        this.extension.plugin.mapToMavenConfiguration(DeliveryPlugin.RUNTIME_PRIORITY, "runtime", Conf2ScopeMappingContainer.RUNTIME)
+        this.extension.plugin.mapToMavenConfiguration(DeliveryPlugin.TEST_COMPILE_PRIORITY, "testCompile", Conf2ScopeMappingContainer.TEST)
+        this.extension.plugin.mapToMavenConfiguration(DeliveryPlugin.TEST_RUNTIME_PRIORITY, "testRuntime", Conf2ScopeMappingContainer.TEST)
+        this.extension.plugin.mapToMavenConfiguration(DeliveryPlugin.TEST_RUNTIME_PRIORITY, "testImplementation", Conf2ScopeMappingContainer.TEST)
 
         //Check that properties are applied on android extension
         String version = project.version
