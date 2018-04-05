@@ -18,6 +18,7 @@ class IOSConfigurator extends ProjectConfigurator {
 
     public boolean hybridBuild = false
     static def pluginId = "org.openbakery.xcode-plugin"
+    boolean isFlutterProject
 
     @Override
     void setup(Project project, DeliveryPluginExtension extension) {
@@ -51,6 +52,7 @@ class IOSConfigurator extends ProjectConfigurator {
 
         String target = property.target
         String scheme = property.scheme
+
         if (target == null || scheme == null) {
             throw new GradleException("signing config needs target and scheme properties")
         }

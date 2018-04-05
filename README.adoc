@@ -1,4 +1,4 @@
-# Gradle delivery plugin
+= Gradle delivery plugin
 :hardbreaks:
 
 :htmlPath:
@@ -10,13 +10,13 @@ image:https://api.bintray.com/packages/mobiletribe/maven/com.leroymerlin.plugins
 image:./delivery-doc/assets/logo.png[Delivery,300,align="center"]
 _Delivery yourself from painful build process_
 
-## Note
+== Note
 
 Delivery is the gradle plugin you need, to simplify your project industrialization.
 
 It's *easy to use*. Don't waste your time installing many tools. *Adjust it* to your needs. Handle *any type* of project.
 
-This plugin supports natively java, groovy, android, android library, iOS, Ionic and React Native projects, but you can easily extend the support to any project type.
+This plugin supports natively Java, Groovy, Kotlin, Android, Android library, iOS, Ionic and React Native projects, but you can easily extend the support to any project type.
 
 Delivery handles the following parts of your continuous delivery process :
 
@@ -31,23 +31,23 @@ This plugin is based on 2 other plugins :
 
 *Delivery use Maven naming convention to archive*
 
-## Changelog
+== Changelog
 
-### *3.0.0* - (2017-09-21)
+=== *3.0.0* - (2018-02-16)
 link:{htmlPath}delivery-doc/html/Tutorial.html[Features]
 
-## Get Started
+== Get Started
 
 To learn how to use the plugin, please read link:{htmlPath}delivery-doc/html/Tutorial.html[tutorial part] of this wiki.
 
 Please remember that Delivery is an *open source* project.
 Do not hesitate to participate by sharing your questions, bug fixes or improvements.
 
-## Partner
+== Partner
 
 image:./delivery-doc/assets/partner/lm.jpg[Leroy Merlin,120,120]
 
-## License
+== License
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

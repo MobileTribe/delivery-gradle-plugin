@@ -13,6 +13,7 @@ import org.gradle.api.tasks.Input
 class DeliveryBuild extends DefaultTask {
 
     String variantName
+    boolean flutterProject
 
     @Input
     String setVariant(String variantName) {

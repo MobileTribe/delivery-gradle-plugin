@@ -98,18 +98,14 @@ class IonicConfigurator extends ProjectConfigurator {
                 repositories {}
             }.dependsOn([preparePlatformTask, "${buildTaskName}Process"])
 
-            def newBuildGradleFile = project.file("platforms/${signingName}/${signingName == 'android' ? "delivery-" : ""}build.gradle")
+            def newBuildGradleFile = project.file("platforms/${signingName}/${signingName == 'android' ? "app/" : ""}build.gradle")
             def settingsGradle = project.file("platforms/${signingName}/${signingName == 'android' ? "delivery-" : ""}settings.gradle")
 
             project.task(preparePlatformTask, group: DeliveryPlugin.TASK_GROUP).doLast {
                 Executor.exec(["ionic", "cordova", "build", signingName, "--release"], [directory: project.projectDir], true)
 
-                newBuildGradleFile.delete()
                 if (signingName == 'android') {
-                    newBuildGradleFile << project.file("platforms/${signingName}/build.gradle").text
                     settingsGradle << project.file("platforms/${signingName}/settings.gradle").text
-
-                    settingsGradle << "\nrootProject.buildFileName = 'delivery-build.gradle'"
                 }
                 newBuildGradleFile << project.file('build.gradle').text
                 newBuildGradleFile.text = newBuildGradleFile.text.replace("com.android.tools.build:gradle:2.2.3", "com.android.tools.build:gradle:2.3.0")
