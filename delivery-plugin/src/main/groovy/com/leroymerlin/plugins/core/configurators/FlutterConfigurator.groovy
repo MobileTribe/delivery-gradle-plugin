@@ -2,7 +2,6 @@ package com.leroymerlin.plugins.core.configurators
 
 import com.leroymerlin.plugins.DeliveryPlugin
 import com.leroymerlin.plugins.DeliveryPluginExtension
-import com.leroymerlin.plugins.cli.Executor
 import com.leroymerlin.plugins.entities.SigningProperty
 import org.gradle.api.GradleException
 import org.gradle.api.Project
@@ -21,16 +20,15 @@ class FlutterConfigurator extends ProjectConfigurator {
     void setup(Project project, DeliveryPluginExtension extension) {
         super.setup(project, extension)
         def signingBuild = System.getProperty(FLUTTER_BUILD)
-        project.mkdir("android")
-        if (project.file("android/local.properties").exists()) {
-            project.file("android/local.properties").delete()
+
+        if (System.getenv("FLUTTER_SDK") == null) {
+            throw new Exception("I don't see FLUTTER_SDK on your computer, please add it in your environment variable")
         }
-        project.file("android/local.properties").createNewFile()
-        project.file("android/local.properties").append("flutter.sdk=" + System.getenv("FLUTTER_SDK") + "\n")
-        project.file("android/local.properties").append("sdk.dir=" + System.getenv("ANDROID_HOME") + "\n")
+        if (System.getenv("ANDROID_HOME") == null) {
+            throw new Exception("I don't see ANDROID_HOME on your computer, please add it in your environment variable")
+        }
+
         if (signingBuild == 'ios') {
-            project.file("Flutter/Generated.xcconfig").delete()
-            Executor.exec(["flutter", "build", "ios", "--no-codesign"], [directory: project.projectDir.toString().replace("/ios", "")])
             nestedConfigurator = new IOSConfigurator()
             nestedConfigurator.isFlutterProject = true
         } else if (signingBuild == 'android') {
@@ -42,6 +40,13 @@ class FlutterConfigurator extends ProjectConfigurator {
 
     @Override
     void configure() {
+        def propertiesFile = "android/local.properties"
+        if (project.file(propertiesFile).exists()) {
+            project.file(propertiesFile).delete()
+            project.file(propertiesFile).createNewFile()
+            project.file(propertiesFile).append("flutter.sdk=" + System.getenv("FLUTTER_SDK") + "\n")
+            project.file(propertiesFile).append("sdk.dir=" + System.getenv("ANDROID_HOME") + "\n")
+        }
         if (nestedConfigurator) {
             if (System.getProperty(FLUTTER_BUILD) == 'android') {
                 try {
