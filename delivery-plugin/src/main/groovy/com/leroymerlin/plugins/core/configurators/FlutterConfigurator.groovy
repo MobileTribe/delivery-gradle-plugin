@@ -2,6 +2,7 @@ package com.leroymerlin.plugins.core.configurators
 
 import com.leroymerlin.plugins.DeliveryPlugin
 import com.leroymerlin.plugins.DeliveryPluginExtension
+import com.leroymerlin.plugins.cli.Executor
 import com.leroymerlin.plugins.entities.SigningProperty
 import org.gradle.api.GradleException
 import org.gradle.api.Project
@@ -21,13 +22,6 @@ class FlutterConfigurator extends ProjectConfigurator {
         super.setup(project, extension)
         def signingBuild = System.getProperty(FLUTTER_BUILD)
 
-        if (System.getenv("FLUTTER_SDK") == null) {
-            throw new Exception("I don't see FLUTTER_SDK on your computer, please add it in your environment variable")
-        }
-        if (System.getenv("ANDROID_HOME") == null) {
-            throw new Exception("I don't see ANDROID_HOME on your computer, please add it in your environment variable")
-        }
-
         if (signingBuild == 'ios') {
             nestedConfigurator = new IOSConfigurator()
             nestedConfigurator.isFlutterProject = true
@@ -40,13 +34,6 @@ class FlutterConfigurator extends ProjectConfigurator {
 
     @Override
     void configure() {
-        def propertiesFile = "android/local.properties"
-        if (project.file(propertiesFile).exists()) {
-            project.file(propertiesFile).delete()
-            project.file(propertiesFile).createNewFile()
-            project.file(propertiesFile).append("flutter.sdk=" + System.getenv("FLUTTER_SDK") + "\n")
-            project.file(propertiesFile).append("sdk.dir=" + System.getenv("ANDROID_HOME") + "\n")
-        }
         if (nestedConfigurator) {
             if (System.getProperty(FLUTTER_BUILD) == 'android') {
                 try {
@@ -59,6 +46,8 @@ class FlutterConfigurator extends ProjectConfigurator {
             }
             nestedConfigurator.configure()
         } else {
+            Executor.exec(["flutter", "build", "apk", "--debug"], [directory: project.projectDir.toString()])
+
             extension.signingProperties.each { signingProperty ->
                 project.file("pubspec.yaml").eachLine {
                     if (it.contains("name:")) project.artifact = it.replace("name:", "").trim()
