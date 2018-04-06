@@ -22,6 +22,9 @@ class FlutterConfigurator extends ProjectConfigurator {
         super.setup(project, extension)
         def signingBuild = System.getProperty(FLUTTER_BUILD)
         project.mkdir("android")
+        if (project.file("android/local.properties").exists()) {
+            project.file("android/local.properties").delete()
+        }
         project.file("android/local.properties").createNewFile()
         project.file("android/local.properties").append("flutter.sdk=" + System.getenv("FLUTTER_SDK") + "\n")
         project.file("android/local.properties").append("sdk.dir=" + System.getenv("ANDROID_HOME") + "\n")
