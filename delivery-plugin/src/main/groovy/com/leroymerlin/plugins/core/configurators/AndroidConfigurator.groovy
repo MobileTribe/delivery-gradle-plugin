@@ -29,6 +29,7 @@ class AndroidConfigurator extends ProjectConfigurator {
         if (!isAndroidApp && !isAndroidLibrary) {
             throw new GradleException("Your project must apply com.android.application or com.android.library to use " + getClass().simpleName)
         }
+
         project.android {
             defaultConfig {
                 try {
@@ -73,8 +74,7 @@ class AndroidConfigurator extends ProjectConfigurator {
                 throw new GradleException("app versionCode is ${project.android.defaultConfig.versionCode} but should be ${project.versionId}. Please set: android.defaultConfig.versionCode Integer.parseInt(versionId)")
             }
 
-            if (project.android.defaultConfig.applicationId)
-                project.group = project.android.defaultConfig.applicationId
+            if (project.android.defaultConfig.applicationId) project.group = project.android.defaultConfig.applicationId
         } else if (isAndroidLibrary) {
             def manifestFile = project.file("src/main/AndroidManifest.xml")
             if (manifestFile.exists()) {

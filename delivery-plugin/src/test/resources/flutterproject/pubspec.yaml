@@ -1,5 +1,5 @@
-name: flutter_app
-description: Flutter project for delivery
+name: flutterproject
+description: A new Flutter project.
 
 dependencies:
   flutter:
