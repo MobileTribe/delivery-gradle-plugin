@@ -30,13 +30,13 @@ class JavaConfigurator extends ProjectConfigurator {
     void configure() {
         //configure project with maven convention
         this.extension.plugin.mapToMavenConfiguration(DeliveryPlugin.COMPILE_PRIORITY, "compile", Conf2ScopeMappingContainer.COMPILE)
+        this.extension.plugin.mapToMavenConfiguration(DeliveryPlugin.COMPILE_PRIORITY + 1, "implementation", Conf2ScopeMappingContainer.RUNTIME)
         this.extension.plugin.mapToMavenConfiguration(DeliveryPlugin.RUNTIME_PRIORITY, "runtime", Conf2ScopeMappingContainer.RUNTIME)
-        this.extension.plugin.mapToMavenConfiguration(DeliveryPlugin.RUNTIME_PRIORITY, "implementation", Conf2ScopeMappingContainer.RUNTIME)
         this.extension.plugin.mapToMavenConfiguration(DeliveryPlugin.TEST_COMPILE_PRIORITY, "testCompile", Conf2ScopeMappingContainer.TEST)
+        this.extension.plugin.mapToMavenConfiguration(DeliveryPlugin.TEST_COMPILE_PRIORITY + 1, "testImplementation", Conf2ScopeMappingContainer.TEST)
         this.extension.plugin.mapToMavenConfiguration(DeliveryPlugin.TEST_RUNTIME_PRIORITY, "testRuntime", Conf2ScopeMappingContainer.TEST)
-        this.extension.plugin.mapToMavenConfiguration(DeliveryPlugin.TEST_RUNTIME_PRIORITY, "testImplementation", Conf2ScopeMappingContainer.TEST)
         if (project.plugins.hasPlugin("java-library")) {
-            this.extension.plugin.mapToMavenConfiguration(DeliveryPlugin.COMPILE_PRIORITY, "api", Conf2ScopeMappingContainer.COMPILE)
+            this.extension.plugin.mapToMavenConfiguration(DeliveryPlugin.COMPILE_PRIORITY + 2, "api", Conf2ScopeMappingContainer.COMPILE)
         }
 
         if (!project.group) {

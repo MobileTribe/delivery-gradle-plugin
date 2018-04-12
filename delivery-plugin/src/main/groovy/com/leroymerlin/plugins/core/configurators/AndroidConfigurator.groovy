@@ -29,6 +29,7 @@ class AndroidConfigurator extends ProjectConfigurator {
         if (!isAndroidApp && !isAndroidLibrary) {
             throw new GradleException("Your project must apply com.android.application or com.android.library to use " + getClass().simpleName)
         }
+
         project.android {
             defaultConfig {
                 try {
@@ -56,12 +57,12 @@ class AndroidConfigurator extends ProjectConfigurator {
 
         //configure project with maven convention
         this.extension.plugin.mapToMavenConfiguration(DeliveryPlugin.COMPILE_PRIORITY, "compile", Conf2ScopeMappingContainer.COMPILE)
-        this.extension.plugin.mapToMavenConfiguration(DeliveryPlugin.COMPILE_PRIORITY, "api", Conf2ScopeMappingContainer.COMPILE)
-        this.extension.plugin.mapToMavenConfiguration(DeliveryPlugin.COMPILE_PRIORITY, "implementation", Conf2ScopeMappingContainer.COMPILE)
+        this.extension.plugin.mapToMavenConfiguration(DeliveryPlugin.COMPILE_PRIORITY + 1, "implementation", Conf2ScopeMappingContainer.COMPILE)
+        this.extension.plugin.mapToMavenConfiguration(DeliveryPlugin.COMPILE_PRIORITY + 2, "api", Conf2ScopeMappingContainer.COMPILE)
         this.extension.plugin.mapToMavenConfiguration(DeliveryPlugin.RUNTIME_PRIORITY, "runtime", Conf2ScopeMappingContainer.RUNTIME)
         this.extension.plugin.mapToMavenConfiguration(DeliveryPlugin.TEST_COMPILE_PRIORITY, "testCompile", Conf2ScopeMappingContainer.TEST)
+        this.extension.plugin.mapToMavenConfiguration(DeliveryPlugin.TEST_COMPILE_PRIORITY + 1, "testImplementation", Conf2ScopeMappingContainer.TEST)
         this.extension.plugin.mapToMavenConfiguration(DeliveryPlugin.TEST_RUNTIME_PRIORITY, "testRuntime", Conf2ScopeMappingContainer.TEST)
-        this.extension.plugin.mapToMavenConfiguration(DeliveryPlugin.TEST_RUNTIME_PRIORITY, "testImplementation", Conf2ScopeMappingContainer.TEST)
 
         //Check that properties are applied on android extension
         String version = project.version
@@ -73,8 +74,7 @@ class AndroidConfigurator extends ProjectConfigurator {
                 throw new GradleException("app versionCode is ${project.android.defaultConfig.versionCode} but should be ${project.versionId}. Please set: android.defaultConfig.versionCode Integer.parseInt(versionId)")
             }
 
-            if (project.android.defaultConfig.applicationId)
-                project.group = project.android.defaultConfig.applicationId
+            if (project.android.defaultConfig.applicationId) project.group = project.android.defaultConfig.applicationId
         } else if (isAndroidLibrary) {
             def manifestFile = project.file("src/main/AndroidManifest.xml")
             if (manifestFile.exists()) {

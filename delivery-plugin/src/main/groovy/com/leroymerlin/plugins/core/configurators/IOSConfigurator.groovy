@@ -2,6 +2,7 @@ package com.leroymerlin.plugins.core.configurators
 
 import com.leroymerlin.plugins.DeliveryPlugin
 import com.leroymerlin.plugins.DeliveryPluginExtension
+import com.leroymerlin.plugins.cli.Executor
 import com.leroymerlin.plugins.entities.SigningProperty
 import com.leroymerlin.plugins.tasks.build.DeliveryBuild
 import org.gradle.api.GradleException
@@ -23,6 +24,12 @@ class IOSConfigurator extends ProjectConfigurator {
     @Override
     void setup(Project project, DeliveryPluginExtension extension) {
         super.setup(project, extension)
+        if (isFlutterProject) {
+            project.task("prepareIOSProject", group: DeliveryPlugin.TASK_GROUP).doLast {
+                project.file("Flutter/Generated.xcconfig").delete()
+                Executor.exec(["flutter", "build", "ios", "--no-codesign"], [directory: project.projectDir.toString().replace("/ios", "")])
+            }
+        }
     }
 
     @Override
@@ -70,6 +77,10 @@ class IOSConfigurator extends ProjectConfigurator {
             project.task(taskName + "Process", type: GradleBuild, group: DeliveryPlugin.TASK_GROUP) {
                 startParameter = parameter
                 tasks = ['archive', 'package']
+            }
+
+            if (isFlutterProject) {
+                project.getTasksByName(taskName + "Process", false)[0].dependsOn("prepareIOSProject")
             }
         }
         if (System.getProperty("xcodebuild") == property.name) {

@@ -21,13 +21,8 @@ class FlutterConfigurator extends ProjectConfigurator {
     void setup(Project project, DeliveryPluginExtension extension) {
         super.setup(project, extension)
         def signingBuild = System.getProperty(FLUTTER_BUILD)
-        project.mkdir("android")
-        project.file("android/local.properties").createNewFile()
-        project.file("android/local.properties").append("flutter.sdk=" + System.getenv("FLUTTER_SDK") + "\n")
-        project.file("android/local.properties").append("sdk.dir=" + System.getenv("ANDROID_HOME") + "\n")
+
         if (signingBuild == 'ios') {
-            project.file("Flutter/Generated.xcconfig").delete()
-            Executor.exec(["flutter", "build", "ios", "--no-codesign"], [directory: project.projectDir.toString().replace("/ios", "")])
             nestedConfigurator = new IOSConfigurator()
             nestedConfigurator.isFlutterProject = true
         } else if (signingBuild == 'android') {
@@ -51,6 +46,8 @@ class FlutterConfigurator extends ProjectConfigurator {
             }
             nestedConfigurator.configure()
         } else {
+            Executor.exec(["flutter", "build", "apk", "--debug"], [directory: project.projectDir.toString()])
+
             extension.signingProperties.each { signingProperty ->
                 project.file("pubspec.yaml").eachLine {
                     if (it.contains("name:")) project.artifact = it.replace("name:", "").trim()
