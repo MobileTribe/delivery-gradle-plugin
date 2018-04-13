@@ -5,6 +5,7 @@ import com.leroymerlin.plugins.DeliveryPluginExtension
 import com.leroymerlin.plugins.cli.Executor
 import com.leroymerlin.plugins.entities.SigningProperty
 import com.leroymerlin.plugins.tasks.build.DeliveryBuild
+import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -23,6 +24,10 @@ class IOSConfigurator extends ProjectConfigurator {
 
     @Override
     void setup(Project project, DeliveryPluginExtension extension) {
+        if (!Os.isFamily(Os.FAMILY_MAC)) {
+            throw new Exception("Please use macOS tu use this feature")
+        }
+
         super.setup(project, extension)
         if (isFlutterProject) {
             project.task("prepareIOSProject", group: DeliveryPlugin.TASK_GROUP).doLast {
