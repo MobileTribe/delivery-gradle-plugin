@@ -25,7 +25,7 @@ class IOSConfigurator extends ProjectConfigurator {
     @Override
     void setup(Project project, DeliveryPluginExtension extension) {
         if (!Os.isFamily(Os.FAMILY_MAC)) {
-            throw new Exception("Please use macOS tu use this feature")
+            throw new Exception("Please use macOS to use this feature")
         }
 
         super.setup(project, extension)
