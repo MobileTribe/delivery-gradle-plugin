@@ -1,9 +1,8 @@
 package com.leroymerlin.plugins.tasks
 
+import com.leroymerlin.plugins.cli.DeliveryLogger
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
-
-import java.util.logging.Logger
 
 /**
  * Created by alexandre on 13/04/2017.
@@ -12,7 +11,9 @@ class StepTask extends DefaultTask {
 
     String title
     StringBuilder space = new StringBuilder()
-    final static String equals = "=========================================================================================="
+    final
+    static String equals = "=========================================================================================="
+    private final DeliveryLogger deliveryLogger = new DeliveryLogger()
 
     @TaskAction
     step() {
@@ -23,6 +24,6 @@ class StepTask extends DefaultTask {
         }
         space.append("${title.toUpperCase()}\n")
         space.append("${equals}\n")
-        Logger.global.warning(space.toString())
+        deliveryLogger.logInfo(space.toString())
     }
 }

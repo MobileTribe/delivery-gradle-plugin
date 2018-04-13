@@ -10,8 +10,6 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.maven.Conf2ScopeMappingContainer
 import org.gradle.api.tasks.Delete
 
-import java.util.logging.Logger
-
 /**
  * Created by florian on 30/01/2017.
  */
@@ -86,8 +84,8 @@ class AndroidConfigurator extends ProjectConfigurator {
         if (!project.group) {
             throw new GradleException("Project group is not defined. Please use a gradle properties or configure your defaultConfig.applicationId")
         }
-        Logger.global.info("group used : ${project.group}")
-        Logger.global.info("Generate Android Build tasks")
+        deliveryLogger.logInfo("group used : ${project.group}")
+        deliveryLogger.logInfo("Generate Android Build tasks")
         if (isAndroidApp) {
             project.android.applicationVariants.all { currentVariant ->
                 String flavorName = project.artifact.toString().split(' ').collect({ m -> return m.toLowerCase().capitalize() }).join("") + (currentVariant.flavorName.capitalize() ? "-${currentVariant.flavorName.capitalize()}" : "")

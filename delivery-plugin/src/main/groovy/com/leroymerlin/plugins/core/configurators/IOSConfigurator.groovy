@@ -11,8 +11,6 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.tasks.GradleBuild
 
-import java.util.logging.Logger
-
 /**
  * Created by florian on 30/01/2017.
  */
@@ -45,7 +43,7 @@ class IOSConfigurator extends ProjectConfigurator {
         if (!project.plugins.hasPlugin(pluginId)) {
             project.plugins.apply(pluginId)
             applyProperties()
-            Logger.global.info("group used : ${project.group}")
+            deliveryLogger.logInfo("group used : ${project.group}")
         }
     }
 

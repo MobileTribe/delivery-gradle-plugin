@@ -1,5 +1,6 @@
 package com.leroymerlin.plugins
 
+import com.leroymerlin.plugins.cli.DeliveryLogger
 import com.leroymerlin.plugins.core.configurators.*
 import com.leroymerlin.plugins.tasks.build.DeliveryBuild
 import com.leroymerlin.plugins.utils.PropertiesUtils
@@ -28,7 +29,6 @@ import org.gradle.internal.Factory
 import org.gradle.internal.logging.LoggingManagerInternal
 
 import javax.inject.Inject
-import java.util.logging.Logger
 
 class DeliveryPlugin implements Plugin<Project> {
 
@@ -49,6 +49,8 @@ class DeliveryPlugin implements Plugin<Project> {
     static final String PROJECT_NAME_ARG = 'ARTIFACT'
     static final String TASK_GROUP = 'delivery'
     static final String DELIVERY_CONF_FILE = 'delivery.properties'
+
+    private final DeliveryLogger deliveryLogger = new DeliveryLogger()
 
     def configurators = [ReactConfigurator, IonicConfigurator, FlutterConfigurator, AndroidConfigurator, JavaConfigurator, IOSConfigurator]
 
@@ -112,7 +114,7 @@ class DeliveryPlugin implements Plugin<Project> {
         if (detectedConfigurator == null) {
             detectedConfigurator = [] as ProjectConfigurator
         } else {
-            Logger.global.warning("${project.name} configured as ${detectedConfigurator.class.simpleName - "Configurator"} project")
+            deliveryLogger.logInfo("${project.name} configured as ${detectedConfigurator.class.simpleName - "Configurator"} project")
         }
         this.deliveryExtension.configurator = detectedConfigurator
 
@@ -242,7 +244,7 @@ class DeliveryPlugin implements Plugin<Project> {
 //end::gitReleaseFlow[]
             )
         } else {
-            Logger.global.warning("releaseGitFlow was not created or already exists")
+            deliveryLogger.logWarning("releaseGitFlow was not created or already exists")
         }
     }
 

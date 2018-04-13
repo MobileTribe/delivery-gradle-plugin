@@ -18,8 +18,8 @@ class GitFlowTest extends AbstractIntegrationTest {
     @Before
     void initGit() {
         testTask()
-        println(Executor.exec(["git", "init"], [directory: workingDirectory]))
-        println(Executor.exec(["git", "commit", '-am', '"init commit"'], [directory: workingDirectory]))
+        Executor.exec(["git", "init"], [directory: workingDirectory])
+        Executor.exec(["git", "commit", '-am', '"init commit"'], [directory: workingDirectory])
     }
 
     @Test

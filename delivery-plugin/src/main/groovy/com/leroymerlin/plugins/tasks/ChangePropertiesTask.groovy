@@ -1,13 +1,13 @@
 package com.leroymerlin.plugins.tasks
 
 import com.leroymerlin.plugins.DeliveryPlugin
+import com.leroymerlin.plugins.cli.DeliveryLogger
 import com.leroymerlin.plugins.utils.PropertiesUtils
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.tasks.TaskAction
 
 import java.util.concurrent.ConcurrentHashMap
-import java.util.logging.Logger
 
 /**
  * Created by alexandre on 15/02/2017.
@@ -16,6 +16,7 @@ class ChangePropertiesTask extends DefaultTask {
 
     String version, versionId, artifact
     Project project
+    private final DeliveryLogger deliveryLogger = new DeliveryLogger()
 
     @TaskAction
     changeProperties() {
@@ -43,7 +44,7 @@ class ChangePropertiesTask extends DefaultTask {
         }
 
         values.each {
-            Logger.global.warning("Could not set ${it.key}. Not found in version.properties files")
+            deliveryLogger.logWarning("Could not set ${it.key}. Not found in version.properties files")
         }
 
         project.delivery.plugin.setupProperties()

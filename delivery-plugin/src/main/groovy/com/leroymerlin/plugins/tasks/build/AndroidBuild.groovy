@@ -1,15 +1,17 @@
 package com.leroymerlin.plugins.tasks.build
 
 import com.leroymerlin.plugins.DeliveryPlugin
+import com.leroymerlin.plugins.cli.DeliveryLogger
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.bundling.Jar
-
-import java.util.logging.Logger
 
 /**
  * Created by alexandre on 15/02/2017.
  */
 class AndroidBuild extends DeliveryBuild {
+
+    private DeliveryLogger deliveryLogger = new DeliveryLogger()
+
     @Input
     void addVariant(variant) {
         def classifier = variant.buildType.name
@@ -73,7 +75,7 @@ class AndroidBuild extends DeliveryBuild {
                 }
             }
         } else {
-            Logger.global.info("$classifier has no valid signing config and will not be archived")
+            deliveryLogger.logWarning("$classifier has no valid signing config and will not be archived")
         }
     }
 }

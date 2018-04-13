@@ -1,6 +1,7 @@
 package com.leroymerlin.plugins.core.configurators
 
 import com.leroymerlin.plugins.DeliveryPluginExtension
+import com.leroymerlin.plugins.cli.DeliveryLogger
 import com.leroymerlin.plugins.entities.SigningProperty
 import org.gradle.api.Project
 
@@ -11,6 +12,7 @@ class ProjectConfigurator {
 
     protected Project project
     protected DeliveryPluginExtension extension
+    public final DeliveryLogger deliveryLogger = new DeliveryLogger()
 
     void setup(Project project, DeliveryPluginExtension extension) {
         this.project = project
