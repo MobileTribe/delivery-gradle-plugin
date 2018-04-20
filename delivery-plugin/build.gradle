@@ -50,6 +50,12 @@ dependencies {
     testImplementation 'com.android.tools.build:gradle:2.3.3'
 }
 
+test {
+    testLogging {
+        events "standardOut", "standardError"
+    }
+}
+
 task('createDoc', dependsOn: project(':delivery-doc').getTasksByName('asciidoctor', false))
 
 project.afterEvaluate({
