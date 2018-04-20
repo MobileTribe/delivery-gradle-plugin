@@ -12,18 +12,22 @@ class DeliveryLogger {
     }
 
     void logError(String message) {
-        logMessage(message, new Ansi(Ansi.HIGH_INTENSITY, Ansi.RED), Level.WARNING)
+        logMessage(message, (System.getProperty("ugly") != null || System.getenv("ugly") != null)
+                ? null : new Ansi(Ansi.HIGH_INTENSITY, Ansi.RED), Level.WARNING)
     }
 
     void logWarning(String message) {
-        logMessage(message, new Ansi(Ansi.HIGH_INTENSITY, Ansi.YELLOW), Level.WARNING)
+        logMessage(message, (System.getProperty("ugly") != null || System.getenv("ugly") != null)
+                ? null : new Ansi(Ansi.HIGH_INTENSITY, Ansi.YELLOW), Level.WARNING)
     }
 
     void logOutput(String message) {
-        logMessage(message, Ansi.Green)
+        logMessage(message, (System.getProperty("ugly") != null || System.getenv("ugly") != null)
+                ? null : Ansi.Green)
     }
 
     void logInfo(String message) {
-        logMessage(message, Ansi.Blue)
+        logMessage(message, (System.getProperty("ugly") != null || System.getenv("ugly") != null)
+                ? null : Ansi.Blue)
     }
 }
