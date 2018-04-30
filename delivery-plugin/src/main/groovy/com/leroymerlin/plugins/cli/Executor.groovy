@@ -25,10 +25,17 @@ class Executor {
             "$it.key=$it.value"
         } : null
 
-        deliveryLogger.logInfo("Running $commands in [$directory]")
-        Process process = commands.execute(processEnv, directory)
-        waitForProcessOutput(process, out)
-
+        deliveryLogger.logInfo("Running $commands in [${directory != null ? directory : System.getProperty("os.name")}]")
+        try {
+            Process process = commands.execute(processEnv, directory)
+            waitForProcessOutput(process, out)
+        } catch (Exception e) {
+            if (optionsMap['failOnStderr'] as boolean && optionsMap['failOnStderrMessage'] != null) {
+                throw new Exception(optionsMap['failOnStderrMessage'] as String)
+            } else {
+                e.printStackTrace()
+            }
+        }
         return out.toString()
     }
 
@@ -97,7 +104,10 @@ class Executor {
                     }
                     if (catchError) {
                         if (optionsMap['failOnStderr'] as boolean) {
-                            throw new GradleException("Running '${commandsList.join(' ')}' produced an error: ${next}")
+                            if (optionsMap['failOnStderrMessage'] != null) {
+                                throw new Exception(optionsMap['failOnStderrMessage'] as String)
+                            }
+                            throw new Exception("Running '${commandsList.join(' ')}' produced an error: ${next}")
                         } else {
                             if (warning)
                                 deliveryLogger.logError(next)

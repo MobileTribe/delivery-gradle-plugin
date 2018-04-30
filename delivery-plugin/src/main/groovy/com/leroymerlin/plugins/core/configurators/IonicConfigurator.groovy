@@ -21,6 +21,10 @@ class IonicConfigurator extends ProjectConfigurator {
     void setup(Project project, DeliveryPluginExtension extension) {
         super.setup(project, extension)
         String signingBuild = System.getProperty(IONIC_BUILD)
+
+        Executor.exec(["npm"], ["failOnStderr": true, "failOnStderrMessage": "I don't find npm :(, please look at https://www.npmjs.com/get-npm for more information"])
+        Executor.exec(["ionic"], ["failOnStderr": true, "failOnStderrMessage": "I don't find ionic :(, please look at https://ionicframework.com/ for more information"])
+
         if (signingBuild == 'ios') {
             nestedConfigurator = new IOSConfigurator()
             nestedConfigurator.hybridBuild = true
