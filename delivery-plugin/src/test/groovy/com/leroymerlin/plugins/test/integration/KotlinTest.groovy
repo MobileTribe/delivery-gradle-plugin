@@ -21,7 +21,7 @@ class KotlinTest extends AbstractIntegrationTest {
 delivery{
     archiveRepositories = {
         maven {
-            url uri("''' + archiveDirectory.absolutePath + '''")
+            url uri("''' + archiveDirectory.absolutePath.replace('\\',"/") + '''")
         }
     }
     flows{
