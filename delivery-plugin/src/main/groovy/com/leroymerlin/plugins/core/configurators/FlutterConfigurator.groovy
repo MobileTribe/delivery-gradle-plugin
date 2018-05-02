@@ -26,11 +26,11 @@ class FlutterConfigurator extends ProjectConfigurator {
 
         if (signingBuild == 'ios') {
             nestedConfigurator = new IOSConfigurator()
-            nestedConfigurator.isFlutterProject = true
         } else if (signingBuild == 'android') {
             nestedConfigurator = new AndroidConfigurator()
-            nestedConfigurator.isFlutterProject = true
         }
+
+        nestedConfigurator.isFlutterProject = true
         nestedConfigurator?.setup(project, extension)
     }
 
