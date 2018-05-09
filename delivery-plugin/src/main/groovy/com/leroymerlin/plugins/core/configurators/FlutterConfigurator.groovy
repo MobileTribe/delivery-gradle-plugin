@@ -30,7 +30,7 @@ class FlutterConfigurator extends ProjectConfigurator {
             nestedConfigurator = new AndroidConfigurator()
         }
 
-        nestedConfigurator.isFlutterProject = true
+        nestedConfigurator?.isFlutterProject = true
         nestedConfigurator?.setup(project, extension)
     }
 
