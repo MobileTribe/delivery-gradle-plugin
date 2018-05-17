@@ -14,7 +14,7 @@ class AndroidBuild extends DeliveryBuild {
 
     @Input
     void addVariant(variant) {
-        def classifier = variant.buildType.name
+        String classifier = variant.buildType.name
         if (variant.signingReady) {
             //After Android plugin 3.0.0
             try {
@@ -70,7 +70,7 @@ class AndroidBuild extends DeliveryBuild {
                         classifier = 'sources'
                         from sourceSet.java.srcDirs
                     }
-                    outputFiles.put("sources-" + classifier, sourcesJar.outputs.getFiles().getSingleFile())
+                    outputFiles.put("sources-$classifier" as String, sourcesJar.outputs.getFiles().getSingleFile())
                     dependsOn.add(sourcesJar)
                 }
             }

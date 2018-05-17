@@ -110,7 +110,7 @@ class DeliveryPlugin implements Plugin<Project> {
         ProjectConfigurator detectedConfigurator = configurators.find {
             configurator ->
                 configurator.newInstance().handleProject(project)
-        }?.newInstance()
+        }?.newInstance() as ProjectConfigurator
         if (detectedConfigurator == null) {
             detectedConfigurator = [] as ProjectConfigurator
         } else {

@@ -97,7 +97,7 @@ class IOSConfigurator extends ProjectConfigurator {
                 signing {
                     certificateURI = project.file(property.certificateURI).toURI()
                     certificatePassword = property.certificatePassword
-                    mobileProvisionURI = property.mobileProvisionURI.split(",").collect { path -> return project.file(path).toURI() }
+                    mobileProvisionURI = property.mobileProvisionURI.split(',').collect { path -> return project.file(path).toURI() }
                 }
             }
             project.infoplist {

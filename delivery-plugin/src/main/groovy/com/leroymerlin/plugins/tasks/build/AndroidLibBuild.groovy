@@ -10,7 +10,7 @@ import org.gradle.api.tasks.bundling.Jar
 class AndroidLibBuild extends DeliveryBuild {
     @Input
     void addVariant(variant) {
-        def classifier = variant.buildType.name
+        String classifier = variant.buildType.name
         //After Android plugin 3.0.0
         try {
             String fileName = "$variantName-${classifier}.aar"
@@ -36,7 +36,7 @@ class AndroidLibBuild extends DeliveryBuild {
                     classifier = 'sources'
                     from sourceSet.java.srcDirs
                 }
-                outputFiles.put("sources-" + classifier, sourcesJar.outputs.getFiles().getSingleFile())
+                outputFiles.put("sources-$classifier" as String, sourcesJar.outputs.getFiles().getSingleFile())
                 dependsOn.add(sourcesJar)
             }
         }

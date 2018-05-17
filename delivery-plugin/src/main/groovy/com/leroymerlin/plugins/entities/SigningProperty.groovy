@@ -24,7 +24,7 @@ class SigningProperty {
             fileProp.each {
                 key, String value ->
                     //resolve relative path
-                    if ("mobileProvisionURI".equals(key)) {
+                    if ("mobileProvisionURI" == key) {
                         value = value.split(",").collect {
                             path ->
                                 def file = new File(propertiesFile.parentFile, path)
@@ -33,7 +33,7 @@ class SigningProperty {
                                 }
                                 return path
                         }.join(",")
-                    } else if ("certificateURI".equals(key) || "storeFile".equals(key)) {
+                    } else if ("certificateURI" == key || "storeFile" == key) {
                         def file = new File(propertiesFile.parentFile, value)
                         if (file.exists()) {
                             value = file.path
