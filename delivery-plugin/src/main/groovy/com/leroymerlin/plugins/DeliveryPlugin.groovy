@@ -216,7 +216,7 @@ class DeliveryPlugin implements Plugin<Project> {
                         }
                         step 'generateVersionFiles', "generate version files"
                         step 'commitVersionFiles', "commit version files"
-                        commit "chore (version) : Update version to $releaseVersion"
+                        commit "chore(version): Update version to $releaseVersion"
                         step 'build', 'build and archive'
                         build
                         if (baseBranch != 'false') {
@@ -234,7 +234,7 @@ class DeliveryPlugin implements Plugin<Project> {
                         getVersionFiles(project).each {
                             add it.path
                         }
-                        commit "chore (version) : Update to new version $releaseVersion and versionId $newVersionId"
+                        commit "chore(version): Update to new version $releaseVersion and versionId $newVersionId"
                         push
                         step 'mergeDevelop', "Merge release branch to $workBranch"
                         branch workBranch
