@@ -2,6 +2,7 @@ package com.leroymerlin.plugins
 
 import com.leroymerlin.plugins.cli.DeliveryLogger
 import com.leroymerlin.plugins.core.configurators.*
+import com.leroymerlin.plugins.tasks.ListArtifacts
 import com.leroymerlin.plugins.tasks.build.DeliveryBuild
 import com.leroymerlin.plugins.utils.PropertiesUtils
 import org.gradle.api.Action
@@ -181,6 +182,7 @@ class DeliveryPlugin implements Plugin<Project> {
             if (project.tasks.findByPath("install") == null) {
                 project.task("install", dependsOn: [TASK_INSTALL])
             }
+            project.task("listArtifacts", type: ListArtifacts, group: TASK_GROUP)
         }
     }
 
