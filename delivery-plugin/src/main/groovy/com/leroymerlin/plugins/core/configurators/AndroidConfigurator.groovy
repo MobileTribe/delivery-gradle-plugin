@@ -5,6 +5,7 @@ import com.leroymerlin.plugins.DeliveryPluginExtension
 import com.leroymerlin.plugins.entities.SigningProperty
 import com.leroymerlin.plugins.tasks.build.AndroidBuild
 import com.leroymerlin.plugins.tasks.build.AndroidLibBuild
+import com.leroymerlin.plugins.utils.PropertiesUtils
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.artifacts.maven.Conf2ScopeMappingContainer
@@ -71,13 +72,18 @@ class AndroidConfigurator extends ProjectConfigurator {
             if (!(project.android.defaultConfig.versionCode == Integer.parseInt(project.versionId as String))) {
                 throw new GradleException("app versionCode is ${project.android.defaultConfig.versionCode} but should be ${project.versionId}. Please set: android.defaultConfig.versionCode Integer.parseInt(versionId)")
             }
-
-            if (project.android.defaultConfig.applicationId) project.group = project.android.defaultConfig.applicationId
-        } else if (isAndroidLibrary) {
-            def manifestFile = project.file("src/main/AndroidManifest.xml")
-            if (manifestFile.exists()) {
-                def manifest = new XmlParser(false, false).parse(manifestFile)
-                project.group = manifest."@package"
+        }
+        if (PropertiesUtils.getSystemProperty(DeliveryPlugin.GROUP_ARG)) {
+            project.group = PropertiesUtils.getSystemProperty(DeliveryPlugin.GROUP_ARG)
+        } else {
+            if (isAndroidApp) {
+                if (project.android.defaultConfig.applicationId) project.group = project.android.defaultConfig.applicationId
+            } else if (isAndroidLibrary) {
+                def manifestFile = project.file("src/main/AndroidManifest.xml")
+                if (manifestFile.exists()) {
+                    def manifest = new XmlParser(false, false).parse(manifestFile)
+                    project.group = manifest."@package"
+                }
             }
         }
 
