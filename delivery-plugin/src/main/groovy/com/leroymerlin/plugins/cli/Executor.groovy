@@ -110,13 +110,13 @@ class Executor {
                             throw new Exception("Running '${commandsList.join(' ')}' produced an error: ${next}")
                         } else {
                             if (warning)
-                                deliveryLogger.logError(next)
+                                deliveryLogger.logWarning(next)
                             else
                                 deliveryLogger.logOutput(next)
                         }
                     } else {
                         if (warning)
-                            deliveryLogger.logError(next)
+                            deliveryLogger.logWarning(next)
                         else
                             deliveryLogger.logOutput(next)
                     }

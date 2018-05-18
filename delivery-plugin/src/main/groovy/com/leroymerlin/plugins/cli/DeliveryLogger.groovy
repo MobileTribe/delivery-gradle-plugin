@@ -13,7 +13,7 @@ class DeliveryLogger {
 
     void logError(String message) {
         logMessage(message, (System.getProperty("ugly") != null || System.getenv("ugly") != null)
-                ? null : new Ansi(Ansi.HIGH_INTENSITY, Ansi.RED), Level.WARNING)
+                ? null : new Ansi(Ansi.HIGH_INTENSITY, Ansi.RED), Level.SEVERE)
     }
 
     void logWarning(String message) {
