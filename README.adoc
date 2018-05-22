@@ -1,14 +1,13 @@
-= Gradle delivery plugin
-:hardbreaks:
+image::./delivery-doc/assets/logo.png[Delivery, 300, align=center]
+
++++<center>+++_Make your build faster and easier_+++</center>+++
+
++++<center><h1>+++Delivery+++</h1></center>+++
 
 :htmlPath:
 ifdef::env-github[:htmlPath: http://mobiletribe.github.io/delivery-gradle-plugin/]
 
 image:https://api.bintray.com/packages/mobiletribe/maven/com.leroymerlin.plugins:delivery-plugin/images/download.svg[link="https://bintray.com/mobiletribe/maven/com.leroymerlin.plugins:delivery-plugin/_latestVersion"] image:http://img.shields.io/badge/license-ASF2-blue.svg["Apache License 2", link="http://www.apache.org/licenses/LICENSE-2.0.txt"]
-
-[.text-center]
-image:./delivery-doc/assets/logo.png[Delivery,300,align="center"]
-_Delivery yourself from painful build process_
 
 == Note
 
@@ -32,6 +31,22 @@ This plugin is based on 2 other plugins :
 *Delivery use Maven naming convention to archive*
 
 == Changelog
+
+=== *3.1.0* - (2018-05-22)
+- Add Flutter compatibility
+- Check OS and platforms before builds
+- Add color for logs
+- Show more precise logs
+- Add task to list all artifacts
+- Use group system property if set for Android build
+
+=== *3.0.2* - (2018-04-12)
+- Fix POM dependencies priorities
+- Fix React test
+
+=== *3.0.1* - (2018-04-05)
+- Fix Ionic builds
+- Fix Android dependencies
 
 === *3.0.0* - (2018-02-16)
 link:{htmlPath}delivery-doc/html/Tutorial.html[Features]

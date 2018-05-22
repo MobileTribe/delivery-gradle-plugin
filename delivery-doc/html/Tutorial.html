@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.6.1">
-<meta name="author" content="Delivery v3.0.2, Thu Apr 12 13:17:41 CEST 2018">
+<meta name="author" content="Delivery v3.1.0-SNAPSHOT, Tue May 22 17:23:58 CEST 2018">
 <title>Tutorial</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -521,7 +521,7 @@ table.CodeRay td.code>pre{padding:0}
 <div id="header">
 <h1>Tutorial</h1>
 <div class="details">
-<span id="author" class="author">Delivery v3.0.2, Thu Apr 12 13:17:41 CEST 2018</span><br>
+<span id="author" class="author">Delivery v3.1.0-SNAPSHOT, Tue May 22 17:23:58 CEST 2018</span><br>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -777,7 +777,7 @@ To use it you have to set <strong>enableReleaseGitFlow = true</strong> in Delive
                         }
                         step 'generateVersionFiles', "generate version files"
                         step 'commitVersionFiles', "commit version files"
-                        commit "chore (version) : Update version to $releaseVersion"
+                        commit "chore(version): Update version to $releaseVersion"
                         step 'build', 'build and archive'
                         build
                         if (baseBranch != 'false') {
@@ -795,7 +795,7 @@ To use it you have to set <strong>enableReleaseGitFlow = true</strong> in Delive
                         getVersionFiles(project).each {
                             add it.path
                         }
-                        commit "chore (version) : Update to new version $releaseVersion and versionId $newVersionId"
+                        commit "chore(version): Update to new version $releaseVersion and versionId $newVersionId"
                         push
                         step 'mergeDevelop', "Merge release branch to $workBranch"
                         branch workBranch
@@ -1085,7 +1085,7 @@ You need to apply Delivery on all modules you want to use with Delivery
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-04-12 13:17:32 CEST
+Last updated 2018-03-22 10:58:53 CET
 </div>
 </div>
 </body>
