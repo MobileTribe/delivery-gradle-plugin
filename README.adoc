@@ -1,13 +1,12 @@
-image::./delivery-doc/assets/logo.png[Delivery, 300, align=center]
-
-+++<center>+++_Make your build faster and easier_+++</center>+++
-
-+++<center><h1>+++Delivery+++</h1></center>+++
+= Delivery
 
 :htmlPath:
 ifdef::env-github[:htmlPath: http://mobiletribe.github.io/delivery-gradle-plugin/]
 
 image:https://api.bintray.com/packages/mobiletribe/maven/com.leroymerlin.plugins:delivery-plugin/images/download.svg[link="https://bintray.com/mobiletribe/maven/com.leroymerlin.plugins:delivery-plugin/_latestVersion"] image:http://img.shields.io/badge/license-ASF2-blue.svg["Apache License 2", link="http://www.apache.org/licenses/LICENSE-2.0.txt"]
+
+image::./delivery-doc/assets/logo.png[Delivery, 300]
+_Make your build faster and easier_
 
 == Note
 
@@ -29,6 +28,23 @@ This plugin is based on 2 other plugins :
 - https://github.com/openbakery/gradle-xcodePlugin[gradle-xcodePlugin] from openbakery
 
 *Delivery use Maven naming convention to archive*
+
+== Compatibility
+
+[cols="^.^,^.^",width="10%",options="header"]
+|=======
+|Platform |State
+|image:./delivery-doc/assets/logos/java.png["Java",50] |image:./delivery-doc/assets/logos/done.png["Done",50]
+|image:./delivery-doc/assets/logos/kotlin.png["Kotlin",50] |image:./delivery-doc/assets/logos/done.png["Done",50]
+|image:./delivery-doc/assets/logos/groovy.png["Groovy",50] |image:./delivery-doc/assets/logos/done.png["Done",50]
+|image:./delivery-doc/assets/logos/android.png["Android",50] |image:./delivery-doc/assets/logos/done.png["Done",50]
+|image:./delivery-doc/assets/logos/ios.png["iOS",50] |image:./delivery-doc/assets/logos/done.png["Done",50]
+|image:./delivery-doc/assets/logos/ionic.png["Ionic",50] |image:./delivery-doc/assets/logos/done.png["Done",50]
+|image:./delivery-doc/assets/logos/react.png["React Native",50] |image:./delivery-doc/assets/logos/done.png["Done",50]
+|image:./delivery-doc/assets/logos/flutter.png["Flutter",50] |image:./delivery-doc/assets/logos/done.png["Done",50]
+|=======
+
+_All product names, logos, and brands are property of their respective owners. All company, product and service names used are for identification purposes only. Use of these names, logos, and brands does not imply endorsement._
 
 == Changelog
 
