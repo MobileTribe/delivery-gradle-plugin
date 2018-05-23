@@ -1,17 +1,21 @@
 :allVersion: *
 :ionicVersion: 3.x
 
-= Delivery image:https://api.bintray.com/packages/mobiletribe/maven/com.leroymerlin.plugins:delivery-plugin/images/download.svg[link="https://bintray.com/mobiletribe/maven/com.leroymerlin.plugins:delivery-plugin/_latestVersion"] image:http://img.shields.io/badge/license-ASF2-blue.svg?style=flat-square["Apache License 2", link="http://www.apache.org/licenses/LICENSE-2.0.txt"]
+= Delivery
 
 :htmlPath:
 ifdef::env-github[:htmlPath: http://mobiletribe.github.io/delivery-gradle-plugin/]
 
+image:https://api.bintray.com/packages/mobiletribe/maven/com.leroymerlin.plugins:delivery-plugin/images/download.svg[link="https://bintray.com/mobiletribe/maven/com.leroymerlin.plugins:delivery-plugin/_latestVersion"]
+image:http://img.shields.io/badge/license-ASF2-blue.svg?style=flat-square["Apache License 2", link="http://www.apache.org/licenses/LICENSE-2.0.txt"]
+{zwsp} +
+{zwsp} +
 image:https://img.shields.io/badge/Java-all-green.svg?style=flat-square["Java", link=""]
 image:https://img.shields.io/badge/Kotlin-all-green.svg?style=flat-square["Kotlin", link=""]
 image:https://img.shields.io/badge/Groovy-all-green.svg?style=flat-square["Groovy", link=""]
 image:https://img.shields.io/badge/Android-all-green.svg?style=flat-square["Android", link=""]
 image:https://img.shields.io/badge/iOS-all-green.svg?style=flat-square["iOS", link=""]
-image:https://img.shields.io/badge/Ionic-3.x-green.svg?style=flat-square["Ionic", link=""]
+image:https://img.shields.io/badge/Ionic-3.x-yellow.svg?style=flat-square["Ionic", link=""]
 image:https://img.shields.io/badge/React_Native-all-green.svg?style=flat-square["React", link=""]
 image:https://img.shields.io/badge/Flutter-all-green.svg?style=flat-square["Flutter", link=""]
 
