@@ -6,7 +6,7 @@ ifdef::env-github[:htmlPath: http://mobiletribe.github.io/delivery-gradle-plugin
 image:https://api.bintray.com/packages/mobiletribe/maven/com.leroymerlin.plugins:delivery-plugin/images/download.svg[link="https://bintray.com/mobiletribe/maven/com.leroymerlin.plugins:delivery-plugin/_latestVersion"] image:http://img.shields.io/badge/license-ASF2-blue.svg["Apache License 2", link="http://www.apache.org/licenses/LICENSE-2.0.txt"]
 
 image::./delivery-doc/assets/logo.png[Delivery, 300]
-_Make your build faster and easier_
+_Make your continuous delivery faster and easier_
 
 == Note
 
@@ -31,17 +31,11 @@ This plugin is based on 2 other plugins :
 
 == Compatibility
 
-[cols="^.^,^.^", options="header"]
+:size: 60
+[cols="10*^.^"]
 |=======
-|Platform |State
-|image:./delivery-doc/assets/logos/java.png["Java",50] |image:./delivery-doc/assets/logos/done.png["Done",50]
-|image:./delivery-doc/assets/logos/kotlin.png["Kotlin",50] |image:./delivery-doc/assets/logos/done.png["Done",50]
-|image:./delivery-doc/assets/logos/groovy.png["Groovy",50] |image:./delivery-doc/assets/logos/done.png["Done",50]
-|image:./delivery-doc/assets/logos/android.png["Android",50] |image:./delivery-doc/assets/logos/done.png["Done",50]
-|image:./delivery-doc/assets/logos/ios.png["iOS",50] |image:./delivery-doc/assets/logos/done.png["Done",50]
-|image:./delivery-doc/assets/logos/ionic.png["Ionic",50] |image:./delivery-doc/assets/logos/done.png["Done",50]
-|image:./delivery-doc/assets/logos/react.png["React Native",50] |image:./delivery-doc/assets/logos/done.png["Done",50]
-|image:./delivery-doc/assets/logos/flutter.png["Flutter",50] |image:./delivery-doc/assets/logos/done.png["Done",50]
+2+^e|Platform |image:./delivery-doc/assets/logos/java.png["Java", {size}] |image:./delivery-doc/assets/logos/kotlin.png["Kotlin", {size}] |image:./delivery-doc/assets/logos/groovy.png["Groovy", {size}] |image:./delivery-doc/assets/logos/android.png["Android", {size}] |image:./delivery-doc/assets/logos/ios.png["iOS", {size}] |image:./delivery-doc/assets/logos/ionic.png["Ionic", {size}] |image:./delivery-doc/assets/logos/react.png["React Native", {size}] |image:./delivery-doc/assets/logos/flutter.png["Flutter", {size}]
+2+^e|Version |*|*|*|*|*|3.X|*|*
 |=======
 
 _All product names, logos, and brands are property of their respective owners. All company, product and service names used are for identification purposes only. Use of these names, logos, and brands does not imply endorsement._
@@ -67,7 +61,7 @@ _All product names, logos, and brands are property of their respective owners. A
 === *3.0.0* - (2018-02-16)
 link:{htmlPath}delivery-doc/html/Tutorial.html[Features]
 
-== Get Started
+== Get Started - link:{htmlPath}delivery-doc/html/Tutorial.html[Tutorial]
 
 To learn how to use the plugin, please read link:{htmlPath}delivery-doc/html/Tutorial.html[tutorial part] of this wiki.
 
