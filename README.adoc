@@ -31,7 +31,7 @@ This plugin is based on 2 other plugins :
 
 == Compatibility
 
-[cols="^.^,^.^",width="10%",options="header"]
+[cols="^.^,^.^", options="header"]
 |=======
 |Platform |State
 |image:./delivery-doc/assets/logos/java.png["Java",50] |image:./delivery-doc/assets/logos/done.png["Done",50]
