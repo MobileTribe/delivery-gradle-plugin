@@ -14,6 +14,7 @@ asciidoctor {
     sources {
         include 'Tutorial.adoc'
         include 'Changelog.adoc'
+        include 'Flows.adoc'
     }
     outputDir './html/'
     attributes 'source-highlighter': 'coderay',

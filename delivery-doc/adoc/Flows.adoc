@@ -1,0 +1,12 @@
+include::./Header.adoc[]
+
+= Flows
+
+== ReleaseGit
+
+[source]
+----
+include::{groovyDir}com/leroymerlin/plugins/DeliveryPlugin.groovy[tags=gitReleaseFlow]
+----
+
+NOTE: To use it you have to set *enableReleaseGitFlow = true* in Delivery's extension and call *releaseGitFlow*.
