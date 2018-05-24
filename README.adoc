@@ -62,7 +62,13 @@ _All product names, logos, and brands are property of their respective owners. A
 
 == Changelog - link:{htmlPath}delivery-doc/html/Changelog.html[Full changelog]
 
-include::delivery-doc/adoc/Changelog.adoc[tag=changelogSelected]
+=== *3.1.0* - (2018-05-22)
+- Add Flutter compatibility
+- Check OS and platforms before builds
+- Add color for logs
+- Show more precise logs
+- Add task to list all artifacts
+- Use group system property if set for Android build
 
 == Get Started - link:{htmlPath}delivery-doc/html/Tutorial.html[Tutorial]
 
