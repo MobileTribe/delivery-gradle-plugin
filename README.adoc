@@ -60,6 +60,10 @@ This plugin is based on 2 other plugins :
 
 _All product names, logos, and brands are property of their respective owners. All company, product and service names used are for identification purposes only. Use of these names, logos, and brands does not imply endorsement._
 
+== How it works
+
+video::./delivery-doc/assets/videos/releaseGitFlow.mp4[width=500,options="nocontrols,autoplay"]
+
 == Changelog - link:{htmlPath}delivery-doc/html/Changelog.html[Full changelog]
 
 === *3.1.0* - (2018-05-22)
