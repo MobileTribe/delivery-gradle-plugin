@@ -52,10 +52,10 @@ This plugin is based on 2 other plugins :
 == Compatibility
 
 :size: 60
-[cols="10*^.^"]
+[cols="11*^.^"]
 |=======
-2+^e|Platform |image:./delivery-doc/assets/logos/java.png["Java", {size}] |image:./delivery-doc/assets/logos/kotlin.png["Kotlin", {size}] |image:./delivery-doc/assets/logos/groovy.png["Groovy", {size}] |image:./delivery-doc/assets/logos/android.png["Android", {size}] |image:./delivery-doc/assets/logos/ios.png["iOS", {size}] |image:./delivery-doc/assets/logos/ionic.png["Ionic", {size}] |image:./delivery-doc/assets/logos/react.png["React Native", {size}] |image:./delivery-doc/assets/logos/flutter.png["Flutter", {size}]
-2+^e|Version |{javaVersion}|{kotlinVersion}|{groovyVersion}|{androidVersion}|{iOSVersion}|{ionicVersion}|{reactVersion}|{flutterVersion}
+2+^e|Platform |image:./delivery-doc/assets/logos/java.png["Java", {size}] |image:./delivery-doc/assets/logos/kotlin.png["Kotlin", {size}] |image:./delivery-doc/assets/logos/groovy.png["Groovy", {size}] |image:./delivery-doc/assets/logos/android.png["Android", {size}] |image:./delivery-doc/assets/logos/ios.png["iOS", {size}] |image:./delivery-doc/assets/logos/ionic.png["Ionic", {size}] |image:./delivery-doc/assets/logos/react.png["React Native", {size}] |image:./delivery-doc/assets/logos/flutter.png["Flutter", {size}] |image:./delivery-doc/assets/logos/build.png["Anything", {size}]
+2+^e|Version |{javaVersion}|{kotlinVersion}|{groovyVersion}|{androidVersion}|{iOSVersion}|{ionicVersion}|{reactVersion}|{flutterVersion}|You choose
 |=======
 
 _All product names, logos, and brands are property of their respective owners. All company, product and service names used are for identification purposes only. Use of these names, logos, and brands does not imply endorsement._
