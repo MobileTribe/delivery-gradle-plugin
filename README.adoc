@@ -1,7 +1,7 @@
 :javaVersion: 1+
 :kotlinVersion: 1+
 :groovyVersion: 1+
-:androidVersion: 1+
+:androidVersion: 2+
 :iOSVersion: 8+
 :ionicVersion: 3+
 :reactVersion: 1+
@@ -19,7 +19,7 @@ image:http://img.shields.io/badge/license-ASF2-blue.svg?style=flat-square["Apach
 image:https://img.shields.io/badge/Java-1+-green.svg?style=flat-square["Java", link=""]
 image:https://img.shields.io/badge/Kotlin-1+-green.svg?style=flat-square["Kotlin", link=""]
 image:https://img.shields.io/badge/Groovy-1+-green.svg?style=flat-square["Groovy", link=""]
-image:https://img.shields.io/badge/Android-1+-green.svg?style=flat-square["Android", link=""]
+image:https://img.shields.io/badge/Android-2+-green.svg?style=flat-square["Android", link=""]
 image:https://img.shields.io/badge/iOS-8+-yellow.svg?style=flat-square["iOS", link=""]
 image:https://img.shields.io/badge/Ionic-3+-yellow.svg?style=flat-square["Ionic", link=""]
 image:https://img.shields.io/badge/React_Native-1+-green.svg?style=flat-square["React", link=""]
