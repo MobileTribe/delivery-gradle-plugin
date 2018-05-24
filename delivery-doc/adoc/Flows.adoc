@@ -1,6 +1,6 @@
 include::./Header.adoc[]
 
-= Flows
+= Preconfigured Flows
 
 == ReleaseGit
 
