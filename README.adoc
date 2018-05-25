@@ -62,7 +62,7 @@ _All product names, logos, and brands are property of their respective owners. A
 
 == How it works
 
-video::./delivery-doc/assets/videos/releaseGitFlow.mp4[width=500,options="nocontrols,autoplay"]
+image:./delivery-doc/assets/videos/releaseGitFlow.gif[]
 
 == Changelog - link:{htmlPath}delivery-doc/html/Changelog.html[Full changelog]
 
