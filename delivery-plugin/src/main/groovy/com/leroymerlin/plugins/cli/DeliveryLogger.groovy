@@ -23,11 +23,11 @@ class DeliveryLogger {
 
     void logOutput(String message) {
         logMessage(message, (System.getProperty("ugly") != null || System.getenv("ugly") != null)
-                ? null : Ansi.Green)
+                ? null : Ansi.Green, Level.WARNING)
     }
 
     void logInfo(String message) {
         logMessage(message, (System.getProperty("ugly") != null || System.getenv("ugly") != null)
-                ? null : Ansi.Blue)
+                ? null : Ansi.Blue, Level.WARNING)
     }
 }
