@@ -5,6 +5,7 @@ import com.leroymerlin.plugins.DeliveryPluginExtension
 import com.leroymerlin.plugins.cli.Executor
 import com.leroymerlin.plugins.entities.SigningProperty
 import com.leroymerlin.plugins.tasks.build.DeliveryBuild
+import org.apache.commons.io.FilenameUtils
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.api.GradleException
 import org.gradle.api.Project
@@ -85,6 +86,15 @@ class IOSConfigurator extends ProjectConfigurator {
             if (isFlutterProject) {
                 project.getTasksByName(taskName + "Process", false)[0].dependsOn("prepareIOSProject")
             }
+
+            project.task(taskName + "ProcessCodesign", type: GradleBuild, group: DeliveryPlugin.TASK_GROUP) {
+                for (File file : new File(project.projectDir.path + "/build/codesign").listFiles()) {
+                    if (FilenameUtils.getExtension(file.name) == "keychain") {
+                        Executor.exec(["security", "unlock-keychain", "-p", "This_is_the_default_keychain_password", file.path], [directory: project.rootDir])
+                        deliveryLogger.logInfo("file : ${file.name}")
+                    }
+                }
+            }.mustRunAfter("keychainCreate")
         }
         if (System.getProperty("xcodebuild") == property.name) {
             project.xcodebuild.target = target
