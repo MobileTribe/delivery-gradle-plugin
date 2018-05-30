@@ -28,6 +28,6 @@ class DeliveryLogger {
 
     void logInfo(String message) {
         logMessage(message, (System.getProperty("ugly") != null || System.getenv("ugly") != null)
-                ? null : Ansi.Blue, Level.WARNING)
+                ? null : Ansi.Cyan, Level.WARNING)
     }
 }
