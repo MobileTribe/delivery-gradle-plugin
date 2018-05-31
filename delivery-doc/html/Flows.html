@@ -5,8 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.6.1">
-<meta name="author" content="Delivery v3.1.0, Thu May 31 15:04:26 CEST 2018">
-<title>Tutorial</title>
+<title>Preconfigured Flows</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -519,81 +518,72 @@ table.CodeRay td.code>pre{padding:0}
 </head>
 <body class="book toc2 toc-left">
 <div id="header">
-<h1>Tutorial</h1>
-<div class="details">
-<span id="author" class="author">Delivery v3.1.0, Thu May 31 15:04:26 CEST 2018</span><br>
-</div>
+<h1>Preconfigured Flows</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#configuration">1. Configuration</a></li>
-<li><a href="#flows">2. Flows</a></li>
-<li><a href="#version-properties">3. Version.properties</a></li>
-<li><a href="#signing-config">4. Signing config</a>
-<ul class="sectlevel2">
-<li><a href="#android">4.1. Android</a></li>
-<li><a href="#ios">4.2. iOS</a></li>
-<li><a href="#ionic">4.3. Ionic</a></li>
-<li><a href="#react-native">4.4. React Native</a></li>
-</ul>
-</li>
-<li><a href="#multi-modules">5. Multi Modules</a></li>
-<li><a href="#custom-projects">6. Custom projects</a></li>
+<li><a href="#releasegit">1. ReleaseGit</a></li>
 </ul>
 </div>
 </div>
 <div id="content">
 <div class="sect1">
-<h2 id="configuration">1. Configuration</h2>
+<h2 id="releasegit">1. ReleaseGit</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>To use delivery, you just have to apply the plugin in your project.</p>
-</div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="Groovy">buildscript {
-        repositories {
-                jcenter()
-        }
+<pre class="CodeRay highlight"><code>                    'releaseGit',
+                    {
+                        def releaseVersion = PropertiesUtils.getSystemProperty("VERSION", (project.version as String) - '-SNAPSHOT')
+                        def releaseBranch = "release/${project.versionId}-$releaseVersion"
+                        def matcher
+                        def newVersion
+                        try {
+                            matcher = releaseVersion =~ /(\d+)([^\d]*$)/
+                            newVersion = PropertiesUtils.getSystemProperty("NEW_VERSION", matcher.replaceAll("${(matcher[0][1] as int) + 1}${matcher[0][2]}")) - "-SNAPSHOT" + "-SNAPSHOT"
+                        } catch (Exception ignored) {
+                            throw new GradleException("ReleaseGitFLow only support semantic version (Ex: 1.0.0)")
+                        }
+                        //Use 'false' value to skip merge to base branch
+                        def baseBranch = PropertiesUtils.getSystemProperty("BASE_BRANCH", 'master')
+                        def workBranch = PropertiesUtils.getSystemProperty("BRANCH", 'develop')
+                        def newVersionId = Integer.parseInt(project.versionId as String) + 1
 
-        dependencies {
-                classpath <span class="string"><span class="delimiter">'</span><span class="content">com.leroymerlin.plugins:delivery-plugin:LAST_VERSION</span><span class="delimiter">'</span></span>
-        }
-}
-
-apply <span class="key">plugin</span>: <span class="string"><span class="delimiter">'</span><span class="content">com.leroymerlin.delivery</span><span class="delimiter">'</span></span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Create a <strong>version.properties</strong> file in your module. This file will contain your module <strong>version</strong>, <strong>versionId</strong> and <strong>artifact</strong> the plugin needs.</p>
-</div>
-<div class="paragraph">
-<p>Configure the delivery gradle extension in your build.gradle to fit your need.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="Groovy">delivery {
-    <span class="comment">// Enable the default git flow</span>
-    enableReleaseGitFlow = <span class="predefined-constant">false</span>
-
-    <span class="comment">// Link submodules's Install and Upload tasks with parent's tasks</span>
-    autoLinkSubModules = <span class="predefined-constant">false</span>
-
-    <span class="comment">// Define modules that their Install and Upload tasks will be linked with their parents</span>
-    linkedSubModules = <span class="type">[]</span>
-
-    <span class="comment">// RepositoryHandler to archive your build artifact</span>
-    archiveRepositories = project.ext.archiveRepositories <span class="comment">//default value</span>
-
-    <span class="comment">// project flow container</span>
-    flows {
-        ...
-    }
-    <span class="comment">// artifact signing properties container</span>
-    signingProperties {
-        ...
-    }
-}</code></pre>
+                        branch workBranch
+                        step 'prepareReleaseBranch', "prepare branch $releaseBranch"
+                        branch releaseBranch, true
+                        step 'prepareVersion', "prepare version"
+                        changeProperties releaseVersion
+                        getVersionFiles(project).each {
+                            add it.path
+                        }
+                        step 'generateVersionFiles', "generate version files"
+                        step 'commitVersionFiles', "commit version files"
+                        commit "chore(version): Update version to $releaseVersion"
+                        step 'build', 'build and archive'
+                        build
+                        if (baseBranch != 'false') {
+                            step 'stepMergeToBaseBranch', 'merge to base branch'
+                            branch baseBranch
+                            merge releaseBranch
+                            push
+                        }
+                        step 'tagVersion', 'tag the commit'
+                        tag "$project.artifact-$project.versionId-$releaseVersion"
+                        pushTag
+                        step 'updateVersion', "Update version to $newVersionId - $newVersion"
+                        branch releaseBranch
+                        changeProperties newVersion, newVersionId
+                        getVersionFiles(project).each {
+                            add it.path
+                        }
+                        commit "chore(version): Update to new version $releaseVersion and versionId $newVersionId"
+                        push
+                        step 'mergeDevelop', "Merge release branch to $workBranch"
+                        branch workBranch
+                        merge releaseBranch
+                        push
+                    }</code></pre>
 </div>
 </div>
 <div class="admonitionblock note">
@@ -603,428 +593,10 @@ apply <span class="key">plugin</span>: <span class="string"><span class="delimit
 <div class="title">Note</div>
 </td>
 <td class="content">
-You can find more documentation about archiveRepositories on the <a href="https://docs.gradle.org/current/dsl/org.gradle.api.artifacts.dsl.RepositoryHandler.html">official groovy website</a>.<br>
-Flows and signingProperties DSL are based on <a href="http://mrhaki.blogspot.fr/2016/02/gradle-goodness-create-objects-with-dsl.html">Gradle NamedDomainObjectContainer</a>.
+To use it you have to set <strong>enableReleaseGitFlow = true</strong> in Delivery&#8217;s extension and call <strong>releaseGitFlow</strong>.
 </td>
 </tr>
 </table>
-</div>
-<div class="paragraph">
-<p>You can use system properties to inject scm credentials and set your project version.</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>SCM_EMAIL</strong> // git email</p>
-</li>
-<li>
-<p><strong>SCM_USER</strong> // git username</p>
-</li>
-<li>
-<p><strong>SCM_PASSWORD</strong> // git password</p>
-</li>
-<li>
-<p><strong>VERSION</strong> // override actual version</p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="flows">2. Flows</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Flow allows you to configure release steps.<br>
-Once a flow is configured, you can run it by calling the gradle task named "yourFlowName+<strong>Flow</strong>".</p>
-</div>
-<div class="listingblock">
-<div class="title">Methods provided by Delivery:</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">            <span class="comment">//...</span>
-            flows {
-                release { <span class="comment">//will generate releaseFlow task</span>
-                    <span class="comment">/**
-                     * change and create scm branch
-                     * @param name
-                     * @param @optional create (default: false)
-                     */</span>
-                    branch <span class="string"><span class="delimiter">'</span><span class="content">release</span><span class="delimiter">'</span></span>, <span class="predefined-constant">false</span>
-                    <span class="comment">/**
-                     * add files to be committed
-                     * if files is not set, all files will be added
-                     * @param files
-                     */</span>
-                    add <span class="string"><span class="delimiter">'</span><span class="content">test.txt</span><span class="delimiter">'</span></span>
-                    <span class="comment">/**
-                     * commit files
-                     * if addAll is true, will add all files before commit
-                     * @param message
-                     * @param @optional addAll (default: false)
-                     */</span>
-                    commit <span class="string"><span class="delimiter">'</span><span class="content">first commit</span><span class="delimiter">'</span></span>, <span class="predefined-constant">false</span>
-                    <span class="comment">/**
-                     * tag a commit
-                     * @param @optional message
-                     * @param @optional annotation
-                     */</span>
-                    tag <span class="string"><span class="delimiter">'</span><span class="content">a message</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">an annotation</span><span class="delimiter">'</span></span>
-                    <span class="comment">/**
-                     * merge a branch
-                     * @param branch
-                     */</span>
-                    merge <span class="string"><span class="delimiter">'</span><span class="content">develop</span><span class="delimiter">'</span></span>
-                    <span class="comment">/**
-                     * pull changes from origin
-                     */</span>
-                    pull
-                    <span class="comment">/**
-                     * push changes to branch
-                     * if branch is not set, push changes to actual branch
-                     * if tags is true push all tags to remote
-                     * @param @optional branch (default: current branch)
-                     * @param @optional tags (default: true)
-                     */</span>
-                    push
-                    <span class="comment">/**
-                     * push tag
-                     * if tagName is not set, push sane tags
-                     * @param @optional tagName (default = all commit)
-                     */</span>
-                    pushTag
-                    <span class="comment">/**
-                     * delete a branch
-                     * @param branchName
-                     */</span>
-                    delete <span class="string"><span class="delimiter">'</span><span class="content">develop</span><span class="delimiter">'</span></span>
-                    <span class="comment">/**
-                     * change the properties of the version.properties
-                     * @param @optional version (default: null)
-                     * @param @optional versionId (default: null)
-                     * @param @optional artifact (default: null)
-                     */</span>
-                    changeProperties <span class="string"><span class="delimiter">'</span><span class="content">1.0.0</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">3</span><span class="delimiter">'</span></span>
-                    <span class="comment">/**
-                     * build the project
-                     */</span>
-                    build
-                    <span class="comment">/**
-                     * execute a command in the folder
-                     * @param cmd
-                     */</span>
-                    cmd <span class="string"><span class="delimiter">'</span><span class="content">a command</span><span class="delimiter">'</span></span>
-                    <span class="comment">/**
-                     * cancel all changes not committed
-                     */</span>
-                    discardChange
-                    <span class="comment">/**
-                     * call a task by its name
-                     * if newBuild is true, executes a Gradle build
-                     * @param taskName
-                     * @param @optional newBuild (default: false)
-                     */</span>
-                    task <span class="string"><span class="delimiter">'</span><span class="content">customTask</span><span class="delimiter">'</span></span>
-                    <span class="comment">/**
-                     * display a title in log
-                     * @param stepName
-                     * @param @optional title (default: stepName)
-                     * @param @optional taskName (default: flowName+Step+stepName)
-                     */</span>
-                    step <span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">hello world</span><span class="delimiter">'</span></span>
-                }
-            }
-            <span class="comment">//...</span></code></pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<div class="title">Note</div>
-</td>
-<td class="content">
-To simplify your life, Delivery provides an implementation of git release flow.
-</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p><a href="{htmlPath}delivery-doc/html/Flows.html">See preconfigured Flows</a></p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="version-properties">3. Version.properties</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Delivery use version.properties file define in project&#8217;s root path</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="error">#</span>Version.properties sample
-version=<span class="float">1.0</span><span class="float">.0</span>
-artifact=android-app
-versionId=<span class="integer">2</span></code></pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="signing-config">4. Signing config</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>SigningConfiguration allows you to configure artifacts signatures.<br>
-A configuration is a set of key/value pair.
-You can externalize critical data using a <a href="https://en.wikipedia.org/wiki/.properties">properties file</a></p>
-</div>
-<div class="listingblock">
-<div class="title">Example:</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">            <span class="comment">//...</span>
-            signingProperties {
-                all {
-                    <span class="comment">// load file properties into all the signing property</span>
-                    propertiesFile = file(<span class="string"><span class="delimiter">&quot;</span><span class="content">path/to/my/signing.properties</span><span class="delimiter">&quot;</span></span>)
-                }
-                specificBuildType {
-                    <span class="comment">// override singing properties for specific buildtype</span>
-                    propertiesFile = file(<span class="string"><span class="delimiter">&quot;</span><span class="content">path/to/my/specific.properties</span><span class="delimiter">&quot;</span></span>)
-                }
-            }
-            <span class="comment">//...</span></code></pre>
-</div>
-</div>
-<div class="admonitionblock important">
-<table>
-<tr>
-<td class="icon">
-<div class="title">Important</div>
-</td>
-<td class="content">
-You should consider not to put keystore and credentials inside your repository.
-</td>
-</tr>
-</table>
-</div>
-<div class="sect2">
-<h3 id="android">4.1. Android</h3>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<div class="title">Note</div>
-</td>
-<td class="content">
-Delivery now support Android projects using Android plugin 2.x.x and 3.x.x
-</td>
-</tr>
-</table>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">            <span class="comment">//...</span>
-            signingProperties {
-                <span class="comment">// the name you set here has to match a buildtype</span>
-                buildTypeName {
-                    storeFile = <span class="string"><span class="delimiter">'</span><span class="content">path/to/my/store.jks</span><span class="delimiter">'</span></span>
-                    storePassword = <span class="string"><span class="delimiter">'</span><span class="content">myStorePassword</span><span class="delimiter">'</span></span>
-                    keyAlias = <span class="string"><span class="delimiter">'</span><span class="content">myAlias</span><span class="delimiter">'</span></span>
-                    keyPassword = <span class="string"><span class="delimiter">'</span><span class="content">myPass</span><span class="delimiter">'</span></span>
-                }
-            }
-            <span class="comment">//...</span></code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="ios">4.2. iOS</h3>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<div class="title">Note</div>
-</td>
-<td class="content">
-iOS support is based on the open source project <a href="https://github.com/openbakery/gradle-xcodePlugin">gradle-xcodePlugin</a>
-</td>
-</tr>
-</table>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">            <span class="comment">//...</span>
-            signingProperties {
-                <span class="comment">// you can set the name you want</span>
-                <span class="comment">// for each signingProperty, you'll archive an IPA</span>
-                nameYouWant {
-                    target = <span class="string"><span class="delimiter">&quot;</span><span class="content">delivery</span><span class="delimiter">&quot;</span></span>
-                    scheme = <span class="string"><span class="delimiter">&quot;</span><span class="content">delivery</span><span class="delimiter">&quot;</span></span>
-                    certificateURI = <span class="string"><span class="delimiter">'</span><span class="content">path/to/my/certificat.p12</span><span class="delimiter">'</span></span>
-                    certificatePassword = <span class="string"><span class="delimiter">'</span><span class="content">myPass</span><span class="delimiter">'</span></span>
-                    <span class="comment">// you can specify multiple files separated by a comma</span>
-                    mobileProvisionURI = <span class="string"><span class="delimiter">'</span><span class="content">path/to/my/Provisioning_Profile.mobileprovision,path/to/my/Provisioning_Profile2.mobileprovision</span><span class="delimiter">'</span></span>
-                }
-            }
-            <span class="comment">//...</span></code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="ionic">4.3. Ionic</h3>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<div class="title">Note</div>
-</td>
-<td class="content">
-Ionic support is only available with the last Ionic version
-</td>
-</tr>
-</table>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">            <span class="comment">//...</span>
-            signingProperties {
-                <span class="comment">// you have to use android or ios name for ionic signing configs</span>
-                android {
-                    <span class="comment">//See android needed properties</span>
-                }
-                ios {
-                    <span class="comment">//See ios needed properties</span>
-                    <span class="comment">//target and scheme are optionals for ionic</span>
-                }
-            }
-            <span class="comment">//...</span></code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="react-native">4.4. React Native</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">            <span class="comment">//...</span>
-            signingProperties {
-                <span class="comment">// you have to use android or ios name for react signing configs</span>
-                android {
-                    <span class="comment">//See android needed properties</span>
-                }
-                ios {
-                    <span class="comment">//See ios needed properties</span>
-                    <span class="comment">//target and scheme are optionals for ionic</span>
-                }
-            }
-            <span class="comment">//...</span></code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="multi-modules">5. Multi Modules</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>You can link <strong>Install</strong> task and <strong>Upload</strong> task from childs modules with parent module by using <strong>autoLinkSubModules = true</strong> or <strong>linkedSubModules = 'subModule1', &#8230;&#8203;</strong></p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="comment">//...</span>
-<span class="comment">//Here is a sample of a parent module's build.gradle</span>
-buildscript {
-    repositories {
-        mavenLocal()
-        jcenter()
-    }
-    dependencies {
-        classpath <span class="string"><span class="delimiter">'</span><span class="content">com.android.tools.build:gradle:2.3.3</span><span class="delimiter">'</span></span>
-        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">com.leroymerlin.plugins:delivery-plugin:</span><span class="inline"><span class="inline-delimiter">${</span><span class="predefined-type">System</span>.getProperty(<span class="string"><span class="delimiter">&quot;</span><span class="content">DELIVERY_VERSION</span><span class="delimiter">&quot;</span></span>)<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
-    }
-}
-allprojects {
-    repositories {
-        mavenLocal()
-        mavenCentral()
-    }
-}
-
-apply <span class="key">plugin</span>: <span class="string"><span class="delimiter">'</span><span class="content">com.leroymerlin.delivery</span><span class="delimiter">'</span></span>
-
-delivery {
-    <span class="comment">//autoLinkSubModules = true</span>
-    <span class="comment">//linkedSubModules = ':lib'</span>
-}
-<span class="comment">//...</span></code></pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<div class="title">Note</div>
-</td>
-<td class="content">
-Look at the <a href="https://github.com/MobileTribe/delivery-gradle-plugin/tree/master/delivery-plugin/src/test/resources/multiModules">sample</a> for more informations
-</td>
-</tr>
-</table>
-</div>
-<div class="admonitionblock important">
-<table>
-<tr>
-<td class="icon">
-<div class="title">Important</div>
-</td>
-<td class="content">
-You need to apply Delivery on all modules you want to use with Delivery
-</td>
-</tr>
-</table>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="custom-projects">6. Custom projects</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>If your project doesn&#8217;t answer the Delivery&#8217;s supported configurations (iOS, Android, Ionic, Java, Groovy), you can define your own configurator.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">            <span class="comment">//...</span>
-            delivery {
-                configurator = [
-                        <span class="comment">/**
-                         * Configure your project
-                         */</span>
-                        configure           : {<span class="comment">/*...*/</span> },
-                        <span class="comment">/**
-                         * Apply some properties to your project
-                         */</span>
-                        applyProperties     : {<span class="comment">/*...*/</span> },
-                        <span class="comment">/**
-                         * Apply the signing properties to your project
-                         * @param property
-                         */</span>
-                        <span class="key">applySigningProperty</span>: { property -&gt; <span class="comment">/*...*/</span> }
-                ]
-            }
-            <span class="comment">//...</span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>To achieve your project&#8217;s build, you have to create one or more DeliveryBuild tasks, and define the variant names and output files.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">            <span class="comment">//...</span>
-            task buildVariant(<span class="key">type</span>: DeliveryBuild) {
-                variantName = <span class="string"><span class="delimiter">'</span><span class="content">variant</span><span class="delimiter">'</span></span>
-                outputFiles = [<span class="string"><span class="delimiter">&quot;</span><span class="content">release</span><span class="delimiter">&quot;</span></span>: file(<span class="string"><span class="delimiter">'</span><span class="content">build/variant.txt</span><span class="delimiter">'</span></span>)]
-            } &lt;&lt; {
-                cmd(<span class="string"><span class="delimiter">'</span><span class="content">java -jar delivery-test.jar variant</span><span class="delimiter">'</span></span>)
-            }
-            <span class="comment">//...</span></code></pre>
-</div>
 </div>
 </div>
 </div>

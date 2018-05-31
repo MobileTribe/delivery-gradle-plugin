@@ -1,6 +1,8 @@
 package com.leroymerlin.plugins
 
+import com.leroymerlin.plugins.cli.DeliveryLogger
 import com.leroymerlin.plugins.core.configurators.*
+import com.leroymerlin.plugins.tasks.ListArtifacts
 import com.leroymerlin.plugins.tasks.build.DeliveryBuild
 import com.leroymerlin.plugins.utils.PropertiesUtils
 import org.gradle.api.Action
@@ -28,7 +30,6 @@ import org.gradle.internal.Factory
 import org.gradle.internal.logging.LoggingManagerInternal
 
 import javax.inject.Inject
-import java.util.logging.Logger
 
 class DeliveryPlugin implements Plugin<Project> {
 
@@ -49,6 +50,8 @@ class DeliveryPlugin implements Plugin<Project> {
     static final String PROJECT_NAME_ARG = 'ARTIFACT'
     static final String TASK_GROUP = 'delivery'
     static final String DELIVERY_CONF_FILE = 'delivery.properties'
+
+    private final DeliveryLogger deliveryLogger = new DeliveryLogger()
 
     def configurators = [ReactConfigurator, IonicConfigurator, FlutterConfigurator, AndroidConfigurator, JavaConfigurator, IOSConfigurator]
 
@@ -108,11 +111,11 @@ class DeliveryPlugin implements Plugin<Project> {
         ProjectConfigurator detectedConfigurator = configurators.find {
             configurator ->
                 configurator.newInstance().handleProject(project)
-        }?.newInstance()
+        }?.newInstance() as ProjectConfigurator
         if (detectedConfigurator == null) {
             detectedConfigurator = [] as ProjectConfigurator
         } else {
-            Logger.global.warning("${project.name} configured as ${detectedConfigurator.class.simpleName - "Configurator"} project")
+            deliveryLogger.logInfo("${project.name} configured as ${detectedConfigurator.class.simpleName - "Configurator"} project")
         }
         this.deliveryExtension.configurator = detectedConfigurator
 
@@ -179,6 +182,7 @@ class DeliveryPlugin implements Plugin<Project> {
             if (project.tasks.findByPath("install") == null) {
                 project.task("install", dependsOn: [TASK_INSTALL])
             }
+            project.task("listArtifacts", type: ListArtifacts, group: TASK_GROUP)
         }
     }
 
@@ -214,7 +218,7 @@ class DeliveryPlugin implements Plugin<Project> {
                         }
                         step 'generateVersionFiles', "generate version files"
                         step 'commitVersionFiles', "commit version files"
-                        commit "chore (version) : Update version to $releaseVersion"
+                        commit "chore(version): Update version to $releaseVersion"
                         step 'build', 'build and archive'
                         build
                         if (baseBranch != 'false') {
@@ -232,7 +236,7 @@ class DeliveryPlugin implements Plugin<Project> {
                         getVersionFiles(project).each {
                             add it.path
                         }
-                        commit "chore (version) : Update to new version $releaseVersion and versionId $newVersionId"
+                        commit "chore(version): Update to new version $releaseVersion and versionId $newVersionId"
                         push
                         step 'mergeDevelop', "Merge release branch to $workBranch"
                         branch workBranch
@@ -242,7 +246,7 @@ class DeliveryPlugin implements Plugin<Project> {
 //end::gitReleaseFlow[]
             )
         } else {
-            Logger.global.warning("releaseGitFlow was not created or already exists")
+            deliveryLogger.logWarning("releaseGitFlow was not created or already exists")
         }
     }
 

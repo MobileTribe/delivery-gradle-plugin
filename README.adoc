@@ -1,14 +1,32 @@
-= Gradle delivery plugin
-:hardbreaks:
+:javaVersion: 1+
+:kotlinVersion: 1+
+:groovyVersion: 1+
+:androidVersion: 2+
+:iOSVersion: 8+
+:ionicVersion: 3+
+:reactVersion: 1+
+:flutterVersion: Beta 1+
+
+= Delivery
 
 :htmlPath:
 ifdef::env-github[:htmlPath: http://mobiletribe.github.io/delivery-gradle-plugin/]
 
-image:https://api.bintray.com/packages/mobiletribe/maven/com.leroymerlin.plugins:delivery-plugin/images/download.svg[link="https://bintray.com/mobiletribe/maven/com.leroymerlin.plugins:delivery-plugin/_latestVersion"] image:http://img.shields.io/badge/license-ASF2-blue.svg["Apache License 2", link="http://www.apache.org/licenses/LICENSE-2.0.txt"]
+image:https://api.bintray.com/packages/mobiletribe/maven/com.leroymerlin.plugins:delivery-plugin/images/download.svg[link="https://bintray.com/mobiletribe/maven/com.leroymerlin.plugins:delivery-plugin/_latestVersion"]
+image:http://img.shields.io/badge/license-ASF2-blue.svg?style=flat-square["Apache License 2", link="http://www.apache.org/licenses/LICENSE-2.0.txt"]
+{zwsp} +
+{zwsp} +
+image:https://img.shields.io/badge/Java-1+-green.svg?style=flat-square["Java", link=""]
+image:https://img.shields.io/badge/Kotlin-1+-green.svg?style=flat-square["Kotlin", link=""]
+image:https://img.shields.io/badge/Groovy-1+-green.svg?style=flat-square["Groovy", link=""]
+image:https://img.shields.io/badge/Android-2+-green.svg?style=flat-square["Android", link=""]
+image:https://img.shields.io/badge/iOS-8+-yellow.svg?style=flat-square["iOS", link=""]
+image:https://img.shields.io/badge/Ionic-3+-yellow.svg?style=flat-square["Ionic", link=""]
+image:https://img.shields.io/badge/React_Native-1+-green.svg?style=flat-square["React", link=""]
+image:https://img.shields.io/badge/Flutter-Beta_1+-green.svg?style=flat-square["Flutter", link=""]
 
-[.text-center]
-image:./delivery-doc/assets/logo.png[Delivery,300,align="center"]
-_Delivery yourself from painful build process_
+image::./delivery-doc/assets/logo.png[Delivery, 300]
+_Make your continuous delivery faster and easier_
 
 == Note
 
@@ -31,12 +49,32 @@ This plugin is based on 2 other plugins :
 
 *Delivery use Maven naming convention to archive*
 
-== Changelog
+== Compatibility
 
-=== *3.0.0* - (2018-02-16)
-link:{htmlPath}delivery-doc/html/Tutorial.html[Features]
+:size: 60
+[cols="11*^.^"]
+|=======
+2+^e|Platform |image:./delivery-doc/assets/logos/java.png["Java", {size}] |image:./delivery-doc/assets/logos/kotlin.png["Kotlin", {size}] |image:./delivery-doc/assets/logos/groovy.png["Groovy", {size}] |image:./delivery-doc/assets/logos/android.png["Android", {size}] |image:./delivery-doc/assets/logos/ios.png["iOS", {size}] |image:./delivery-doc/assets/logos/ionic.png["Ionic", {size}] |image:./delivery-doc/assets/logos/react.png["React Native", {size}] |image:./delivery-doc/assets/logos/flutter.png["Flutter", {size}] |image:./delivery-doc/assets/logos/build.png["Anything", {size}]
+2+^e|Version |{javaVersion}|{kotlinVersion}|{groovyVersion}|{androidVersion}|{iOSVersion}|{ionicVersion}|{reactVersion}|{flutterVersion}|You choose
+|=======
 
-== Get Started
+_All product names, logos, and brands are property of their respective owners. All company, product and service names used are for identification purposes only. Use of these names, logos, and brands does not imply endorsement._
+
+== How it works
+
+image:./delivery-doc/assets/videos/releaseGitFlow.gif[]
+
+== Changelog - link:{htmlPath}delivery-doc/html/Changelog.html[Full changelog]
+
+=== *3.1.0* - (2018-05-31)
+- Add Flutter compatibility
+- Check OS and platforms before builds
+- Add color for logs
+- Show more precise logs
+- Add task to list all artifacts
+- Use group system property if set for Android build
+
+== Get Started - link:{htmlPath}delivery-doc/html/Tutorial.html[Tutorial]
 
 To learn how to use the plugin, please read link:{htmlPath}delivery-doc/html/Tutorial.html[tutorial part] of this wiki.
 

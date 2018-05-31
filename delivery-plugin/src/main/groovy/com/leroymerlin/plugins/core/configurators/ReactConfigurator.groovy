@@ -22,6 +22,9 @@ class ReactConfigurator extends ProjectConfigurator {
     void setup(Project project, DeliveryPluginExtension extension) {
         super.setup(project, extension)
         def signingBuild = System.getProperty(REACT_BUILD)
+
+        Executor.exec(["npm"], ["failOnStderr": true, "failOnStderrMessage": "I don't find npm :(, please look at https://www.npmjs.com/get-npm for more information"])
+
         if (signingBuild == 'ios') {
             nestedConfigurator = new IOSConfigurator()
             nestedConfigurator.hybridBuild = true

@@ -20,7 +20,7 @@ class MultiModulesTest extends AbstractIntegrationTest {
 delivery{
     archiveRepositories = {
         maven {
-            url uri("''' + archiveDirectory.absolutePath + '''")
+            url uri("''' + archiveDirectory.absolutePath.replace('\\',"/") + '''")
         }
     }
     flows{
@@ -36,7 +36,7 @@ delivery{
 delivery{
     archiveRepositories = {
         maven {
-            url uri("''' + archiveDirectory.absolutePath + '''")
+            url uri("''' + archiveDirectory.absolutePath.replace('\\',"/") + '''")
         }
     }
     flows{
@@ -64,7 +64,7 @@ delivery{
 delivery{
     archiveRepositories = {
         maven {
-            url uri("''' + archiveDirectory.absolutePath + '''")
+            url uri("''' + archiveDirectory.absolutePath.replace('\\',"/") + '''")
         }
     }
     flows{
@@ -80,7 +80,7 @@ delivery{
 delivery{
     archiveRepositories = {
         maven {
-            url uri("''' + archiveDirectory.absolutePath + '''")
+            url uri("''' + archiveDirectory.absolutePath.replace('\\',"/") + '''")
         }
     }
     flows{

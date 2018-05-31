@@ -1,12 +1,12 @@
 package com.leroymerlin.plugins.entities
 
-import java.util.logging.Logger
+import com.leroymerlin.plugins.cli.DeliveryLogger
 
 class SigningProperty {
 
     final String name
-
     def properties = [:]
+    public final DeliveryLogger deliveryLogger = new DeliveryLogger()
 
     SigningProperty(String name) {
         this.name = name
@@ -14,9 +14,9 @@ class SigningProperty {
 
     void setPropertiesFile(File propertiesFile) {
         if (!propertiesFile.exists()) {
-            Logger.global.warning("Can't load ${propertiesFile.path} in $name signingProperty")
+            deliveryLogger.logError("Can't load ${propertiesFile.path} in $name signingProperty")
         } else {
-            Logger.global.info("$name signingProperty loaded from ${propertiesFile.path}")
+            deliveryLogger.logInfo("$name signingProperty loaded from ${propertiesFile.path}")
             Properties fileProp = new Properties()
             propertiesFile.withInputStream {
                 stream -> fileProp.load(stream)
@@ -24,7 +24,7 @@ class SigningProperty {
             fileProp.each {
                 key, String value ->
                     //resolve relative path
-                    if ("mobileProvisionURI".equals(key)) {
+                    if ("mobileProvisionURI" == key) {
                         value = value.split(",").collect {
                             path ->
                                 def file = new File(propertiesFile.parentFile, path)
@@ -33,7 +33,7 @@ class SigningProperty {
                                 }
                                 return path
                         }.join(",")
-                    } else if ("certificateURI".equals(key) || "storeFile".equals(key)) {
+                    } else if ("certificateURI" == key || "storeFile" == key) {
                         def file = new File(propertiesFile.parentFile, value)
                         if (file.exists()) {
                             value = file.path

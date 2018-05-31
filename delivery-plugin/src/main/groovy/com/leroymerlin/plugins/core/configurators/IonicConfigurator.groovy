@@ -9,8 +9,6 @@ import org.gradle.api.Project
 import org.gradle.api.tasks.GradleBuild
 import org.gradle.api.tasks.Upload
 
-import java.util.logging.Logger
-
 /**
  * Created by alexandre on 27/03/2017.
  */
@@ -23,6 +21,10 @@ class IonicConfigurator extends ProjectConfigurator {
     void setup(Project project, DeliveryPluginExtension extension) {
         super.setup(project, extension)
         String signingBuild = System.getProperty(IONIC_BUILD)
+
+        Executor.exec(["npm"], ["failOnStderr": true, "failOnStderrMessage": "I don't find npm :(, please look at https://www.npmjs.com/get-npm for more information"])
+        Executor.exec(["ionic"], ["failOnStderr": true, "failOnStderrMessage": "I don't find ionic :(, please look at https://ionicframework.com/ for more information"])
+
         if (signingBuild == 'ios') {
             nestedConfigurator = new IOSConfigurator()
             nestedConfigurator.hybridBuild = true
@@ -35,7 +37,7 @@ class IonicConfigurator extends ProjectConfigurator {
             project.file("platforms")?.deleteDir()
         }
         project.task("prepareNpm", group: DeliveryPlugin.TASK_GROUP).doLast {
-            Logger.global.warning("Delivery support Ionic > 3.0 & Cordova > 7.0")
+            deliveryLogger.logInfo("Delivery support Ionic > 3.0 & Cordova > 7.0")
             Executor.exec(["npm", "install"], [directory: project.projectDir], true)
             Executor.exec(["ionic", "-v"], [directory: project.projectDir], true)
         }.dependsOn("prepareProject")
@@ -66,7 +68,7 @@ class IonicConfigurator extends ProjectConfigurator {
             if (!project.group) {
                 throw new GradleException("Project group is not defined. Please use a gradle properties or configure your id in config.xml")
             }
-            Logger.global.info("group used : ${project.group}")
+            deliveryLogger.logInfo("group used : ${project.group}")
 
             extension.signingProperties.each { signingProperty -> handleProperty(signingProperty) }
         }

@@ -44,10 +44,8 @@ fi
 '''
                 credentialFile.setExecutable(true)
                 credentialFile.deleteOnExit()
-                logger.warning("GIT_ASKPASS configured")
+                deliveryLogger.logInfo("GIT_ASKPASS configured")
                 gitEnv.put("GIT_ASKPASS", credentialFile.absolutePath)
-
-
             }
 
             //configure origin

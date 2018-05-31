@@ -2,15 +2,13 @@ package com.leroymerlin.plugins.cli
 
 import org.gradle.api.GradleException
 
-import java.util.logging.Logger
-
 /**
  * Created by alexandre on 31/01/2017.
  */
 
 class Executor {
 
-    public static Logger logger = Logger.global
+    public static DeliveryLogger deliveryLogger = new DeliveryLogger()
     public static Map optionsMap
     public static List<String> commandsList
     public static boolean warning
@@ -27,10 +25,17 @@ class Executor {
             "$it.key=$it.value"
         } : null
 
-        logger.warning("Running $commands in [$directory]")
-        Process process = commands.execute(processEnv, directory)
-        waitForProcessOutput(process, out)
-
+        deliveryLogger.logInfo("Running $commands in [${directory != null ? directory : System.getProperty("os.name")}]")
+        try {
+            Process process = commands.execute(processEnv, directory)
+            waitForProcessOutput(process, out)
+        } catch (Exception e) {
+            if (optionsMap['failOnStderr'] as boolean && optionsMap['failOnStderrMessage'] != null) {
+                throw new Exception(optionsMap['failOnStderrMessage'] as String)
+            } else {
+                e.printStackTrace()
+            }
+        }
         return out.toString()
     }
 
@@ -53,8 +58,6 @@ class Executor {
         terr.start()
         tout.join()
         terr.join()
-
-
 
         process.waitFor()
         process.closeStreams()
@@ -101,18 +104,21 @@ class Executor {
                     }
                     if (catchError) {
                         if (optionsMap['failOnStderr'] as boolean) {
-                            throw new GradleException("Running '${commandsList.join(' ')}' produced an error: ${next}")
+                            if (optionsMap['failOnStderrMessage'] != null) {
+                                throw new Exception(optionsMap['failOnStderrMessage'] as String)
+                            }
+                            throw new Exception("Running '${commandsList.join(' ')}' produced an error: ${next}")
                         } else {
                             if (warning)
-                                logger.warning(next)
+                                deliveryLogger.logWarning(next)
                             else
-                                logger.finest(next)
+                                deliveryLogger.logOutput(next)
                         }
                     } else {
                         if (warning)
-                            logger.warning(next)
+                            deliveryLogger.logWarning(next)
                         else
-                            logger.finest(next)
+                            deliveryLogger.logOutput(next)
                     }
 
                     if (optionsMap['errorPatterns'] && [next]*.toString().any { String s ->

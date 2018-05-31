@@ -22,13 +22,15 @@ class FlutterConfigurator extends ProjectConfigurator {
         super.setup(project, extension)
         def signingBuild = System.getProperty(FLUTTER_BUILD)
 
+        Executor.exec(["flutter"], ["failOnStderr": true, "failOnStderrMessage": "I don't find flutter :(, please look at https://flutter.io/ for more information"])
+
         if (signingBuild == 'ios') {
             nestedConfigurator = new IOSConfigurator()
-            nestedConfigurator.isFlutterProject = true
         } else if (signingBuild == 'android') {
             nestedConfigurator = new AndroidConfigurator()
-            nestedConfigurator.isFlutterProject = true
         }
+
+        nestedConfigurator?.isFlutterProject = true
         nestedConfigurator?.setup(project, extension)
     }
 

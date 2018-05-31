@@ -70,13 +70,9 @@ Once a flow is configured, you can run it by calling the gradle task named "your
 include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[tags=flowExample]
 ----
 
-NOTE: To simplify your life, Delivery provides an implementation of git release flow. +
-To use it you have to set *enableReleaseGitFlow = true* in Delivery's extension and call *releaseGitFlow*.
+NOTE: To simplify your life, Delivery provides an implementation of git release flow.
 
-[source]
-----
-include::{groovyDir}com/leroymerlin/plugins/DeliveryPlugin.groovy[tags=gitReleaseFlow]
-----
+link:{htmlPath}delivery-doc/html/Flows.html[See preconfigured Flows]
 
 == Version.properties
 

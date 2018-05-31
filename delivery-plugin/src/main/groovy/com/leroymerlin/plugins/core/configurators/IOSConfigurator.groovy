@@ -5,12 +5,11 @@ import com.leroymerlin.plugins.DeliveryPluginExtension
 import com.leroymerlin.plugins.cli.Executor
 import com.leroymerlin.plugins.entities.SigningProperty
 import com.leroymerlin.plugins.tasks.build.DeliveryBuild
+import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.tasks.GradleBuild
-
-import java.util.logging.Logger
 
 /**
  * Created by florian on 30/01/2017.
@@ -23,6 +22,10 @@ class IOSConfigurator extends ProjectConfigurator {
 
     @Override
     void setup(Project project, DeliveryPluginExtension extension) {
+        if (!Os.isFamily(Os.FAMILY_MAC)) {
+            throw new Exception("Please use macOS to use this feature")
+        }
+
         super.setup(project, extension)
         if (isFlutterProject) {
             project.task("prepareIOSProject", group: DeliveryPlugin.TASK_GROUP).doLast {
@@ -40,7 +43,7 @@ class IOSConfigurator extends ProjectConfigurator {
         if (!project.plugins.hasPlugin(pluginId)) {
             project.plugins.apply(pluginId)
             applyProperties()
-            Logger.global.info("group used : ${project.group}")
+            deliveryLogger.logInfo("group used : ${project.group}")
         }
     }
 
@@ -94,7 +97,7 @@ class IOSConfigurator extends ProjectConfigurator {
                 signing {
                     certificateURI = project.file(property.certificateURI).toURI()
                     certificatePassword = property.certificatePassword
-                    mobileProvisionURI = property.mobileProvisionURI.split(",").collect { path -> return project.file(path).toURI() }
+                    mobileProvisionURI = property.mobileProvisionURI.split(',').collect { path -> return project.file(path).toURI() }
                 }
             }
             project.infoplist {

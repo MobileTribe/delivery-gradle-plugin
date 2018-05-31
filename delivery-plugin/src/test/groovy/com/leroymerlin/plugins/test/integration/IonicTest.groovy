@@ -15,11 +15,6 @@ class IonicTest extends AbstractIntegrationTest {
         return "ionic"
     }
 
-    @Before
-    void setupIonic() {
-        "chmod -R a+rwx ${workingDirectory.absolutePath}".execute()
-    }
-
     @Test
     void testBuildTaskGeneration() {
         testTask('ionicFlow')

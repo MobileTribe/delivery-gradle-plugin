@@ -7,8 +7,6 @@ import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.artifacts.maven.Conf2ScopeMappingContainer
 
-import java.util.logging.Logger
-
 /**
  * Created by florian on 30/01/2017.
  */
@@ -42,9 +40,10 @@ class JavaConfigurator extends ProjectConfigurator {
         if (!project.group) {
             throw new GradleException("Project group is not defined. Please use a gradle properties group")
         }
-        Logger.global.info("group used : ${project.group}")
 
-        Logger.global.info("Generate Java Build tasks")
+        deliveryLogger.logInfo("group used : ${project.group}")
+        deliveryLogger.logInfo("Generate Java Build tasks")
+
         project.task("build${project.artifact.capitalize()}Artifacts", type: JavaBuild, group: DeliveryPlugin.TASK_GROUP) {
             variantName project.artifact
         }
