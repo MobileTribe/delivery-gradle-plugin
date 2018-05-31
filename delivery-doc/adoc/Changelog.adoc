@@ -3,7 +3,7 @@
 :htmlPath:
 ifdef::env-github[:htmlPath: http://mobiletribe.github.io/delivery-gradle-plugin/]
 
-=== *3.1.0* - (2018-05-22)
+=== *3.1.0* - (2018-05-31)
 - Add Flutter compatibility
 - Check OS and platforms before builds
 - Add color for logs
