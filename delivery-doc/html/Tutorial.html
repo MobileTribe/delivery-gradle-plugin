@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.6.1">
-<meta name="author" content="Delivery v3.1.1-SNAPSHOT, Fri Jul 06 09:09:41 CEST 2018">
+<meta name="author" content="Delivery v3.1.1-SNAPSHOT, Fri Jul 06 09:57:52 CEST 2018">
 <title>Tutorial</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -521,7 +521,7 @@ table.CodeRay td.code>pre{padding:0}
 <div id="header">
 <h1>Tutorial</h1>
 <div class="details">
-<span id="author" class="author">Delivery v3.1.1-SNAPSHOT, Fri Jul 06 09:09:41 CEST 2018</span><br>
+<span id="author" class="author">Delivery v3.1.1-SNAPSHOT, Fri Jul 06 09:57:52 CEST 2018</span><br>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -539,6 +539,7 @@ table.CodeRay td.code>pre{padding:0}
 </li>
 <li><a href="#multi-modules">5. Multi Modules</a></li>
 <li><a href="#custom-projects">6. Custom projects</a></li>
+<li><a href="#logs">7. Logs</a></li>
 </ul>
 </div>
 </div>
@@ -625,6 +626,9 @@ Flows and signingProperties DSL are based on <a href="http://mrhaki.blogspot.fr/
 </li>
 <li>
 <p><strong>VERSION</strong> // override actual version</p>
+</li>
+<li>
+<p><strong>GROUP_ID</strong> // override project&#8217;s group</p>
 </li>
 </ul>
 </div>
@@ -763,7 +767,10 @@ To simplify your life, Delivery provides an implementation of git release flow.
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="error">#</span>Version.properties sample
 version=<span class="float">1.0</span><span class="float">.0</span>
 artifact=android-app
-versionId=<span class="integer">2</span></code></pre>
+versionId=<span class="integer">2</span>
+
+<span class="error">#</span>You can override the project<span class="string"><span class="delimiter">'</span><span class="content">s group by adding group in this file</span></span><span class="error">
+</span><span class="error">#</span>group=com.leroymerlin.delivery.group</code></pre>
 </div>
 </div>
 </div>
@@ -1028,10 +1035,31 @@ You need to apply Delivery on all modules you want to use with Delivery
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="logs">7. Logs</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>By default Delivery provide beautiful and colorful logs.
+But if you prefer to watch classic logs you can set a system property or environment variable named <strong>ugly</strong></p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+gradle myFlow -Dugly
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-07-06 09:05:52 CEST
+Last updated 2018-07-06 09:56:45 CEST
 </div>
 </div>
 </body>

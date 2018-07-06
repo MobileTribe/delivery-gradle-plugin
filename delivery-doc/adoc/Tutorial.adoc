@@ -58,6 +58,7 @@ You can use system properties to inject scm credentials and set your project ver
 * *SCM_USER* // git username
 * *SCM_PASSWORD* // git password
 * *VERSION* // override actual version
+* *GROUP_ID* // override project's group
 
 == Flows
 
@@ -159,3 +160,10 @@ To achieve your project's build, you have to create one or more DeliveryBuild ta
 ----
 include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[tags=deliveryBuildExample]
 ----
+
+== Logs
+
+By default Delivery provide beautiful and colorful logs.
+But if you prefer to watch classic logs you can set a system property or environment variable named *ugly*
+
+NOTE: gradle myFlow -Dugly
