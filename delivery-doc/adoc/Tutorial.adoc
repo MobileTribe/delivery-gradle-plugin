@@ -72,7 +72,7 @@ include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[t
 
 NOTE: To simplify your life, Delivery provides an implementation of git release flow.
 
-link:{htmlPath}delivery-doc/html/Flows.html[See preconfigured Flows]
+link:Flows.html[See preconfigured Flows]
 
 == Version.properties
 
