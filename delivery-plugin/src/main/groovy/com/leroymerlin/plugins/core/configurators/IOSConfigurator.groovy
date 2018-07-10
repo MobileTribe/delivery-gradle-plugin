@@ -27,6 +27,11 @@ class IOSConfigurator extends ProjectConfigurator {
         }
 
         super.setup(project, extension)
+
+        if (System.getenv("KEYCHAIN_PASSWORD") != null) {
+            Executor.exec(["security", "unlock-keychain", "-p", System.getenv("KEYCHAIN_PASSWORD"), "~/Library/Keychains/login.keychain-db"], [directory: project.projectDir])
+        }
+
         if (isFlutterProject) {
             project.task("prepareIOSProject", group: DeliveryPlugin.TASK_GROUP).doLast {
                 project.file("Flutter/Generated.xcconfig").delete()
