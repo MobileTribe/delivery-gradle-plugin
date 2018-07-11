@@ -29,7 +29,7 @@ class IOSConfigurator extends ProjectConfigurator {
 
         super.setup(project, extension)
 
-        if (!SystemUtils.getEnvProperty("KEYCHAIN_PASSWORD").isEmpty()) {
+        if (SystemUtils.getEnvProperty("KEYCHAIN_PASSWORD") != null) {
             Executor.exec(["security", "unlock-keychain", "-p", SystemUtils.getEnvProperty("KEYCHAIN_PASSWORD"), "~/Library/Keychains/login.keychain-db"], [directory: project.projectDir])
         }
 
