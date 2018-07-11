@@ -5,6 +5,7 @@ import com.leroymerlin.plugins.DeliveryPluginExtension
 import com.leroymerlin.plugins.cli.Executor
 import com.leroymerlin.plugins.entities.SigningProperty
 import com.leroymerlin.plugins.tasks.build.DeliveryBuild
+import com.leroymerlin.plugins.utils.SystemUtils
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.api.GradleException
 import org.gradle.api.Project
@@ -27,6 +28,11 @@ class IOSConfigurator extends ProjectConfigurator {
         }
 
         super.setup(project, extension)
+
+        if (SystemUtils.getEnvProperty("KEYCHAIN_PASSWORD") != null) {
+            Executor.exec(["security", "unlock-keychain", "-p", SystemUtils.getEnvProperty("KEYCHAIN_PASSWORD"), "~/Library/Keychains/login.keychain-db"], [directory: project.projectDir])
+        }
+
         if (isFlutterProject) {
             project.task("prepareIOSProject", group: DeliveryPlugin.TASK_GROUP).doLast {
                 project.file("Flutter/Generated.xcconfig").delete()
@@ -86,7 +92,7 @@ class IOSConfigurator extends ProjectConfigurator {
                 project.getTasksByName(taskName + "Process", false)[0].dependsOn("prepareIOSProject")
             }
         }
-        if (System.getProperty("xcodebuild") == property.name) {
+        if (SystemUtils.getEnvProperty("xcodebuild") == property.name) {
             project.xcodebuild.target = target
             project.xcodebuild.scheme = scheme
             project.xcodebuild {

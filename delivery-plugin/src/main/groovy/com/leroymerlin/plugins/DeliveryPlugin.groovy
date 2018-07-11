@@ -46,7 +46,7 @@ class DeliveryPlugin implements Plugin<Project> {
 
     static final String VERSION_ARG = 'VERSION'
     static final String VERSION_ID_ARG = 'VERSION_ID'
-    static final String GROUP_ARG = 'GROUP'
+    static final String GROUP_ARG = 'GROUP_ID'
     static final String PROJECT_NAME_ARG = 'ARTIFACT'
     static final String TASK_GROUP = 'delivery'
     static final String DELIVERY_CONF_FILE = 'delivery.properties'

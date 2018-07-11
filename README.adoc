@@ -66,6 +66,10 @@ image:./delivery-doc/assets/videos/releaseGitFlow.gif[]
 
 == Changelog - link:{htmlPath}delivery-doc/html/Changelog.html[Full changelog]
 
+=== *3.1.1* - (2018-07-11)
+- Change group arg from GROUP to GROUP_ID
+- Unlock Apple keychain before ios builds
+
 === *3.1.0* - (2018-05-31)
 - Add Flutter compatibility
 - Check OS and platforms before builds
