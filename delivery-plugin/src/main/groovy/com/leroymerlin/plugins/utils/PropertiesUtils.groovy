@@ -9,7 +9,7 @@ import org.gradle.api.Project
 class PropertiesUtils extends Executor {
 
     static String getSystemProperty(String key, String defaultValue = null) {
-        def property = SystemUtils.getEnvProperty(key)
+        def property = System.getProperty(key)
         if (property == null || property.isEmpty()) {
             return defaultValue
         }
@@ -34,7 +34,7 @@ class PropertiesUtils extends Executor {
         ByteArrayOutputStream arrayOut = new ByteArrayOutputStream()
         properties.store(arrayOut, null)
         String string = new String(arrayOut.toByteArray(), "8859_1")
-        String sep = SystemUtils.getEnvProperty("line.separator")
+        String sep = System.getProperty("line.separator")
         String content = string.substring(string.indexOf(sep) + sep.length())
         out.write(content.getBytes("8859_1"))
         out.close()

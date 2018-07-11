@@ -14,22 +14,22 @@ class DeliveryLogger {
     }
 
     void logError(String message) {
-        logMessage(message, (!SystemUtils.getEnvProperty("ugly").isEmpty())
+        logMessage(message, (SystemUtils.getEnvProperty("ugly") != null)
                 ? null : new Ansi(Ansi.HIGH_INTENSITY, Ansi.RED), Level.SEVERE)
     }
 
     void logWarning(String message) {
-        logMessage(message, (!SystemUtils.getEnvProperty("ugly").isEmpty())
+        logMessage(message, (SystemUtils.getEnvProperty("ugly") != null)
                 ? null : new Ansi(Ansi.HIGH_INTENSITY, Ansi.YELLOW), Level.WARNING)
     }
 
     void logOutput(String message) {
-        logMessage(message, (!SystemUtils.getEnvProperty("ugly").isEmpty())
+        logMessage(message, (SystemUtils.getEnvProperty("ugly") != null)
                 ? null : Ansi.Green, Level.WARNING)
     }
 
     void logInfo(String message) {
-        logMessage(message, (!SystemUtils.getEnvProperty("ugly").isEmpty())
+        logMessage(message, (SystemUtils.getEnvProperty("ugly") != null)
                 ? null : Ansi.Cyan, Level.WARNING)
     }
 }
