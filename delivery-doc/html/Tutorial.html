@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.6.1">
-<meta name="author" content="Delivery v3.1.1-SNAPSHOT, Fri Jul 06 09:57:52 CEST 2018">
+<meta name="author" content="Delivery v3.1.1-SNAPSHOT, Wed Jul 11 10:42:18 CEST 2018">
 <title>Tutorial</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -521,7 +521,7 @@ table.CodeRay td.code>pre{padding:0}
 <div id="header">
 <h1>Tutorial</h1>
 <div class="details">
-<span id="author" class="author">Delivery v3.1.1-SNAPSHOT, Fri Jul 06 09:57:52 CEST 2018</span><br>
+<span id="author" class="author">Delivery v3.1.1-SNAPSHOT, Wed Jul 11 10:42:18 CEST 2018</span><br>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -540,6 +540,11 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#multi-modules">5. Multi Modules</a></li>
 <li><a href="#custom-projects">6. Custom projects</a></li>
 <li><a href="#logs">7. Logs</a></li>
+<li><a href="#troubleshooting">8. Troubleshooting</a>
+<ul class="sectlevel2">
+<li><a href="#unknown-error-1-ffffffffffffffff">8.1. Unknown error -1=ffffffffffffffff</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -611,7 +616,7 @@ Flows and signingProperties DSL are based on <a href="http://mrhaki.blogspot.fr/
 </table>
 </div>
 <div class="paragraph">
-<p>You can use system properties to inject scm credentials and set your project version.</p>
+<p>You can use system properties to inject scm credentials, set your project version and define your project group.</p>
 </div>
 <div class="ulist">
 <ul>
@@ -800,11 +805,11 @@ You can externalize critical data using a <a href="https://en.wikipedia.org/wiki
             <span class="comment">//...</span></code></pre>
 </div>
 </div>
-<div class="admonitionblock important">
+<div class="admonitionblock warning">
 <table>
 <tr>
 <td class="icon">
-<div class="title">Important</div>
+<div class="title">Warning</div>
 </td>
 <td class="content">
 You should consider not to put keystore and credentials inside your repository.
@@ -877,11 +882,11 @@ iOS support is based on the open source project <a href="https://github.com/open
 </div>
 <div class="sect2">
 <h3 id="ionic">4.3. Ionic</h3>
-<div class="admonitionblock note">
+<div class="admonitionblock important">
 <table>
 <tr>
 <td class="icon">
-<div class="title">Note</div>
+<div class="title">Important</div>
 </td>
 <td class="content">
 Ionic support is only available with the last Ionic version
@@ -975,11 +980,11 @@ Look at the <a href="https://github.com/MobileTribe/delivery-gradle-plugin/tree/
 </tr>
 </table>
 </div>
-<div class="admonitionblock important">
+<div class="admonitionblock caution">
 <table>
 <tr>
 <td class="icon">
-<div class="title">Important</div>
+<div class="title">Caution</div>
 </td>
 <td class="content">
 You need to apply Delivery on all modules you want to use with Delivery
@@ -1040,15 +1045,16 @@ You need to apply Delivery on all modules you want to use with Delivery
 <div class="sectionbody">
 <div class="paragraph">
 <p>By default Delivery provide beautiful and colorful logs.
-But if you prefer to watch classic logs you can set a system property or environment variable named <strong>ugly</strong></p>
+But if you prefer to watch classic logs you can set a system property or environment variable named <strong>ugly</strong>.</p>
 </div>
-<div class="admonitionblock note">
+<div class="admonitionblock tip">
 <table>
 <tr>
 <td class="icon">
-<div class="title">Note</div>
+<div class="title">Tip</div>
 </td>
 <td class="content">
+<div class="title">Sample to disable color logs</div>
 gradle myFlow -Dugly
 </td>
 </tr>
@@ -1056,10 +1062,37 @@ gradle myFlow -Dugly
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="troubleshooting">8. Troubleshooting</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="unknown-error-1-ffffffffffffffff">8.1. Unknown error -1=ffffffffffffffff</h3>
+<div class="paragraph">
+<p>If you&#8217;re using Delivery with automation server like Jenkins for iOS builds, you may see this error happens. To solve this, we made the plugin to be able to unlock the Apple Keychain which can solve this problem.<br></p>
+</div>
+<div class="paragraph">
+<p>To use this feature, define a system property or environment variable named <strong>KEYCHAIN_PASSWORD</strong>.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Tip</div>
+</td>
+<td class="content">
+<div class="title">Command executed to unlock the Apple Keychain</div>
+security unlock-keychain -p $KEYCHAIN_PASSWORD ~/Library/Keychains/login.keychain-db
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-07-06 09:56:45 CEST
+Last updated 2018-07-11 10:39:57 CEST
 </div>
 </div>
 </body>

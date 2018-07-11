@@ -52,7 +52,7 @@ delivery {
 NOTE: You can find more documentation about archiveRepositories on the https://docs.gradle.org/current/dsl/org.gradle.api.artifacts.dsl.RepositoryHandler.html[official groovy website]. +
 Flows and signingProperties DSL are based on http://mrhaki.blogspot.fr/2016/02/gradle-goodness-create-objects-with-dsl.html[Gradle NamedDomainObjectContainer].
 
-You can use system properties to inject scm credentials and set your project version.
+You can use system properties to inject scm credentials, set your project version and define your project group.
 
 * *SCM_EMAIL* // git email
 * *SCM_USER* // git username
@@ -96,7 +96,7 @@ You can externalize critical data using a https://en.wikipedia.org/wiki/.propert
 include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[tags=signingFileExample]
 ----
 
-IMPORTANT: You should consider not to put keystore and credentials inside your repository.
+WARNING: You should consider not to put keystore and credentials inside your repository.
 
 === Android
 
@@ -118,7 +118,7 @@ include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[t
 
 === Ionic
 
-NOTE: Ionic support is only available with the last Ionic version
+IMPORTANT: Ionic support is only available with the last Ionic version
 
 [source,groovy]
 ----
@@ -143,7 +143,7 @@ include::{testProjectDir}multiModules/build.gradle[tags=multiModulesExample]
 
 NOTE: Look at the https://github.com/MobileTribe/delivery-gradle-plugin/tree/master/delivery-plugin/src/test/resources/multiModules[sample] for more informations
 
-IMPORTANT: You need to apply Delivery on all modules you want to use with Delivery
+CAUTION: You need to apply Delivery on all modules you want to use with Delivery
 
 == Custom projects
 
@@ -164,6 +164,18 @@ include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[t
 == Logs
 
 By default Delivery provide beautiful and colorful logs.
-But if you prefer to watch classic logs you can set a system property or environment variable named *ugly*
+But if you prefer to watch classic logs you can set a system property or environment variable named *ugly*.
 
-NOTE: gradle myFlow -Dugly
+.Sample to disable color logs
+TIP: gradle myFlow -Dugly
+
+== Troubleshooting
+
+=== Unknown error -1=ffffffffffffffff
+
+If you're using Delivery with automation server like Jenkins for iOS builds, you may see this error happens. To solve this, we made the plugin to be able to unlock the Apple Keychain which can solve this problem. +
+
+To use this feature, define a system property or environment variable named *KEYCHAIN_PASSWORD*.
+
+.Command executed to unlock the Apple Keychain
+TIP: security unlock-keychain -p $KEYCHAIN_PASSWORD ~/Library/Keychains/login.keychain-db
