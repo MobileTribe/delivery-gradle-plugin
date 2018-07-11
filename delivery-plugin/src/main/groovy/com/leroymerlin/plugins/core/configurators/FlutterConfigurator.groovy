@@ -4,6 +4,7 @@ import com.leroymerlin.plugins.DeliveryPlugin
 import com.leroymerlin.plugins.DeliveryPluginExtension
 import com.leroymerlin.plugins.cli.Executor
 import com.leroymerlin.plugins.entities.SigningProperty
+import com.leroymerlin.plugins.utils.SystemUtils
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.tasks.GradleBuild
@@ -20,7 +21,7 @@ class FlutterConfigurator extends ProjectConfigurator {
     @Override
     void setup(Project project, DeliveryPluginExtension extension) {
         super.setup(project, extension)
-        def signingBuild = System.getProperty(FLUTTER_BUILD)
+        def signingBuild = SystemUtils.getEnvProperty(FLUTTER_BUILD)
 
         Executor.exec(["flutter"], ["failOnStderr": true, "failOnStderrMessage": "I don't find flutter :(, please look at https://flutter.io/ for more information"])
 
@@ -37,7 +38,7 @@ class FlutterConfigurator extends ProjectConfigurator {
     @Override
     void configure() {
         if (nestedConfigurator) {
-            if (System.getProperty(FLUTTER_BUILD) == 'android') {
+            if (SystemUtils.getEnvProperty(FLUTTER_BUILD) == 'android') {
                 try {
                     project.android.defaultConfig.versionName = project.version
                     project.android.defaultConfig.versionCode = Integer.parseInt(project.versionId as String)
@@ -138,7 +139,7 @@ class FlutterConfigurator extends ProjectConfigurator {
     void applySigningProperty(SigningProperty signingProperty) {
         def signingName = signingProperty.name.toLowerCase()
 
-        if (nestedConfigurator && signingName == System.getProperty(FLUTTER_BUILD)) {
+        if (nestedConfigurator && signingName == SystemUtils.getEnvProperty(FLUTTER_BUILD)) {
             SigningProperty signingPropertyCopy = new SigningProperty('release')
             signingPropertyCopy.setProperties(signingProperty.properties)
             if (signingName == "ios") {
@@ -160,7 +161,7 @@ class FlutterConfigurator extends ProjectConfigurator {
         if (project.file("pubspec.yaml").exists() && project.file("pubspec.yaml").text.contains("flutter:")) {
             flutterProject = true
         }
-        return (System.getProperty(FLUTTER_BUILD) != null || flutterProject)
+        return (SystemUtils.getEnvProperty(FLUTTER_BUILD) != null || flutterProject)
     }
 
 }

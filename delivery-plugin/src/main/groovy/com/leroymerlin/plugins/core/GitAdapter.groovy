@@ -2,6 +2,7 @@ package com.leroymerlin.plugins.core
 
 import com.leroymerlin.plugins.DeliveryPluginExtension
 import com.leroymerlin.plugins.cli.Executor
+import com.leroymerlin.plugins.utils.SystemUtils
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 
@@ -24,9 +25,9 @@ class GitAdapter extends Executor implements BaseScmAdapter {
             throw new GradleException("Delivery threw an error \n" +
                     "git status".execute().errorStream.text + "Please fix this before continue")
         } else {
-            email = System.getProperty('SCM_EMAIL')
-            username = System.getProperty('SCM_USER')
-            password = System.getProperty('SCM_PASSWORD')
+            email = SystemUtils.getEnvProperty('SCM_EMAIL')
+            username = SystemUtils.getEnvProperty('SCM_USER')
+            password = SystemUtils.getEnvProperty('SCM_PASSWORD')
 
             if (username != null && !username.isEmpty() && password != null && !password.isEmpty()) {
 

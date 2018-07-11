@@ -4,6 +4,7 @@ import com.leroymerlin.plugins.DeliveryPlugin
 import com.leroymerlin.plugins.DeliveryPluginExtension
 import com.leroymerlin.plugins.cli.Executor
 import com.leroymerlin.plugins.entities.SigningProperty
+import com.leroymerlin.plugins.utils.SystemUtils
 import groovy.json.JsonSlurper
 import org.gradle.api.GradleException
 import org.gradle.api.Project
@@ -21,7 +22,7 @@ class ReactConfigurator extends ProjectConfigurator {
     @Override
     void setup(Project project, DeliveryPluginExtension extension) {
         super.setup(project, extension)
-        def signingBuild = System.getProperty(REACT_BUILD)
+        def signingBuild = SystemUtils.getEnvProperty(REACT_BUILD)
 
         Executor.exec(["npm"], ["failOnStderr": true, "failOnStderrMessage": "I don't find npm :(, please look at https://www.npmjs.com/get-npm for more information"])
 
@@ -41,7 +42,7 @@ class ReactConfigurator extends ProjectConfigurator {
     @Override
     void configure() {
         if (nestedConfigurator) {
-            if (System.getProperty(REACT_BUILD) == 'android') {
+            if (SystemUtils.getEnvProperty(REACT_BUILD) == 'android') {
                 try {
                     project.android.defaultConfig.versionName = project.version
                     project.android.defaultConfig.versionCode = Integer.parseInt(project.versionId as String)
@@ -139,7 +140,7 @@ class ReactConfigurator extends ProjectConfigurator {
     void applySigningProperty(SigningProperty signingProperty) {
         def signingName = signingProperty.name.toLowerCase()
 
-        if (nestedConfigurator && signingName == System.getProperty(REACT_BUILD)) {
+        if (nestedConfigurator && signingName == SystemUtils.getEnvProperty(REACT_BUILD)) {
             SigningProperty signingPropertyCopy = new SigningProperty('release')
             signingPropertyCopy.setProperties(signingProperty.properties)
             signingPropertyCopy.target = project.artifact
@@ -156,6 +157,6 @@ class ReactConfigurator extends ProjectConfigurator {
             if (json.dependencies.react != null || json.dependencies."react-native" != null)
                 reactProject = true
         }
-        return (System.getProperty(REACT_BUILD) != null || reactProject)
+        return (SystemUtils.getEnvProperty(REACT_BUILD) != null || reactProject)
     }
 }

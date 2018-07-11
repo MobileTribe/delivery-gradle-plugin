@@ -1,5 +1,7 @@
 package com.leroymerlin.plugins.cli
 
+import com.leroymerlin.plugins.utils.SystemUtils
+
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -12,22 +14,22 @@ class DeliveryLogger {
     }
 
     void logError(String message) {
-        logMessage(message, (System.getProperty("ugly") != null || System.getenv("ugly") != null)
+        logMessage(message, (!SystemUtils.getEnvProperty("ugly").isEmpty())
                 ? null : new Ansi(Ansi.HIGH_INTENSITY, Ansi.RED), Level.SEVERE)
     }
 
     void logWarning(String message) {
-        logMessage(message, (System.getProperty("ugly") != null || System.getenv("ugly") != null)
+        logMessage(message, (!SystemUtils.getEnvProperty("ugly").isEmpty())
                 ? null : new Ansi(Ansi.HIGH_INTENSITY, Ansi.YELLOW), Level.WARNING)
     }
 
     void logOutput(String message) {
-        logMessage(message, (System.getProperty("ugly") != null || System.getenv("ugly") != null)
+        logMessage(message, (!SystemUtils.getEnvProperty("ugly").isEmpty())
                 ? null : Ansi.Green, Level.WARNING)
     }
 
     void logInfo(String message) {
-        logMessage(message, (System.getProperty("ugly") != null || System.getenv("ugly") != null)
+        logMessage(message, (!SystemUtils.getEnvProperty("ugly").isEmpty())
                 ? null : Ansi.Cyan, Level.WARNING)
     }
 }

@@ -1,5 +1,6 @@
 package com.leroymerlin.plugins.cli
 
+import com.leroymerlin.plugins.utils.SystemUtils
 import org.gradle.api.GradleException
 
 /**
@@ -25,7 +26,7 @@ class Executor {
             "$it.key=$it.value"
         } : null
 
-        deliveryLogger.logInfo("Running $commands in [${directory != null ? directory : System.getProperty("os.name")}]")
+        deliveryLogger.logInfo("Running $commands in [${directory != null ? directory : SystemUtils.getEnvProperty("os.name")}]")
         try {
             Process process = commands.execute(processEnv, directory)
             waitForProcessOutput(process, out)

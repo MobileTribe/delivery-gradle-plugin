@@ -4,6 +4,7 @@ import com.leroymerlin.plugins.DeliveryPlugin
 import com.leroymerlin.plugins.DeliveryPluginExtension
 import com.leroymerlin.plugins.cli.Executor
 import com.leroymerlin.plugins.entities.SigningProperty
+import com.leroymerlin.plugins.utils.SystemUtils
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.tasks.GradleBuild
@@ -20,7 +21,7 @@ class IonicConfigurator extends ProjectConfigurator {
     @Override
     void setup(Project project, DeliveryPluginExtension extension) {
         super.setup(project, extension)
-        String signingBuild = System.getProperty(IONIC_BUILD)
+        String signingBuild = SystemUtils.getEnvProperty(IONIC_BUILD)
 
         Executor.exec(["npm"], ["failOnStderr": true, "failOnStderrMessage": "I don't find npm :(, please look at https://www.npmjs.com/get-npm for more information"])
         Executor.exec(["ionic"], ["failOnStderr": true, "failOnStderrMessage": "I don't find ionic :(, please look at https://ionicframework.com/ for more information"])
@@ -46,7 +47,7 @@ class IonicConfigurator extends ProjectConfigurator {
     @Override
     void configure() {
         if (nestedConfigurator) {
-            if (System.getProperty(IONIC_BUILD) == 'android') {
+            if (SystemUtils.getEnvProperty(IONIC_BUILD) == 'android') {
                 try {
                     project.android.defaultConfig.versionName = project.version
                     project.android.defaultConfig.versionCode = Integer.parseInt(project.versionId as String)
@@ -138,7 +139,7 @@ class IonicConfigurator extends ProjectConfigurator {
     void applySigningProperty(SigningProperty signingProperty) {
         def signingName = signingProperty.name.toLowerCase()
 
-        if (nestedConfigurator && signingName == System.getProperty(IONIC_BUILD)) {
+        if (nestedConfigurator && signingName == SystemUtils.getEnvProperty(IONIC_BUILD)) {
             SigningProperty signingPropertyCopy = new SigningProperty('release')
             signingPropertyCopy.setProperties(signingProperty.properties)
             signingPropertyCopy.target = project.artifact
@@ -149,6 +150,6 @@ class IonicConfigurator extends ProjectConfigurator {
 
     @Override
     boolean handleProject(Project project) {
-        return System.getProperty(IONIC_BUILD) != null || project.file('ionic.project').exists() || (project.file('ionic.config.json').exists())
+        return SystemUtils.getEnvProperty(IONIC_BUILD) != null || project.file('ionic.project').exists() || (project.file('ionic.config.json').exists())
     }
 }
