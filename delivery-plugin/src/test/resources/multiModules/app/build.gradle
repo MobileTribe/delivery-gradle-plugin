@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.leroymerlin.delivery'
 
 android {
     compileSdkVersion 26
@@ -35,6 +36,11 @@ dependencies {
     testCompile 'junit:junit:4.12'
 }
 
-if (file('../extra.gradle').exists()) {
-    apply from: '../extra.gradle'
+
+delivery {
+    archiveRepositories = {
+        maven {
+            url uri(new File(project.parent.buildDir, 'archive'))
+        }
+    }
 }

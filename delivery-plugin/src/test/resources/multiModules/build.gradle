@@ -26,3 +26,8 @@ delivery {
 }
 //...
 //end::multiModulesExample[]
+
+
+if (file('./extra.gradle').exists()) {
+    apply from: './extra.gradle'
+}

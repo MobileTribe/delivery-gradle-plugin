@@ -1,4 +1,5 @@
 apply plugin: 'java'
+apply plugin: 'com.leroymerlin.delivery'
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
@@ -7,6 +8,13 @@ dependencies {
 sourceCompatibility = "1.7"
 targetCompatibility = "1.7"
 
-if (file('../extra2.gradle').exists()) {
-    apply from: '../extra2.gradle'
+
+
+
+delivery {
+    archiveRepositories = {
+        maven {
+            url uri(new File(project.parent.buildDir, 'archive'))
+        }
+    }
 }

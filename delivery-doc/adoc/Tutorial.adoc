@@ -32,7 +32,7 @@ delivery {
     // Link submodules's Install and Upload tasks with parent's tasks
     autoLinkSubModules = false
 
-    // Define modules that their Install and Upload tasks will be linked with their parents
+    // Define submodules path to link Install and Upload tasks with the project build tasks
     linkedSubModules = []
 
     // RepositoryHandler to archive your build artifact

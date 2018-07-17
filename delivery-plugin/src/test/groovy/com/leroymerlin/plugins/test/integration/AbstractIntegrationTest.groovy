@@ -54,10 +54,6 @@ abstract class AbstractIntegrationTest {
         new File(workingDirectory, "extra.gradle") << string
     }
 
-    protected void applySecondExtraGradle(String string) {
-        new File(workingDirectory, "extra2.gradle") << string
-    }
-
     protected String testTask(String... tasks) {
         ProjectConnection connection = GradleConnector.newConnector()
                 .forProjectDirectory(workingDirectory)
