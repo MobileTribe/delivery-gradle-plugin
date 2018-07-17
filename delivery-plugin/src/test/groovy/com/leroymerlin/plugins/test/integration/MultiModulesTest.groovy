@@ -11,6 +11,8 @@ class MultiModulesTest extends AbstractIntegrationTest {
         return "multiModules"
     }
 
+
+
     @Test
     void testBuildTaskGeneration() {
         def archiveDirectory = new File(workingDirectory, "build/archive")
@@ -27,26 +29,12 @@ delivery{
         build{
             build
         }
-    } 
-}
-''')
-        applySecondExtraGradle('''
-    apply plugin: \'com.leroymerlin.delivery\'
-
-delivery{
-    archiveRepositories = {
-        maven {
-            url uri("''' + archiveDirectory.absolutePath.replace('\\',"/") + '''")
-        }
     }
-    flows{
-        build{
-            build
-        }
-    } 
+    linkedSubModules = [":lib", ':app'] 
 }
 ''')
-        testTask('buildFlow')
+
+        testTask(':buildFlow')
         def list = []
         archiveDirectory.eachFileRecurse(FileType.FILES, {
             f ->
@@ -72,26 +60,11 @@ delivery{
             build
         }
     } 
+    autoLinkSubModules = true
 }
 ''')
-        applySecondExtraGradle('''
-    apply plugin: \'com.leroymerlin.delivery\'
 
-delivery{
-    archiveRepositories = {
-        maven {
-            url uri("''' + archiveDirectory.absolutePath.replace('\\',"/") + '''")
-        }
-    }
-    flows{
-        build{
-            changeProperties '1.1.1', 111
-            build
-        }
-    } 
-}
-''')
-        testTask('buildFlow')
+        testTask(':buildFlow')
         def list = []
         archiveDirectory.eachFileRecurse(FileType.FILES, {
             f ->
