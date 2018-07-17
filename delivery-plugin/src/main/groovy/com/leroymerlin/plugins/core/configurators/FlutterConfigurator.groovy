@@ -23,7 +23,7 @@ class FlutterConfigurator extends ProjectConfigurator {
         super.setup(project, extension)
         def signingBuild = SystemUtils.getEnvProperty(FLUTTER_BUILD)
 
-        Executor.exec(["flutter"], ["failOnStderr": true, "failOnStderrMessage": "I don't find flutter :(, please look at https://flutter.io/ for more information"])
+        Executor.exec(["flutter", "--version"], ["failOnStderr": true, "failOnStderrMessage": "I don't find flutter :(, please look at https://flutter.io/ for more information"])
 
         if (signingBuild == 'ios') {
             nestedConfigurator = new IOSConfigurator()
