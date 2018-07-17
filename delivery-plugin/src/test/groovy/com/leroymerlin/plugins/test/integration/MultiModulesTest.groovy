@@ -14,7 +14,7 @@ class MultiModulesTest extends AbstractIntegrationTest {
 
 
     @Test
-    void testBuildTaskGeneration() {
+    void testLinkedSubModules() {
         def archiveDirectory = new File(workingDirectory, "build/archive")
         applyExtraGradle('''
     apply plugin: \'com.leroymerlin.delivery\'
@@ -44,7 +44,7 @@ delivery{
     }
 
     @Test
-    void changePropertiesTest(){
+    void testAutoLinkSubModules(){
         def archiveDirectory = new File(workingDirectory, "build/archive")
         applyExtraGradle('''
     apply plugin: \'com.leroymerlin.delivery\'
