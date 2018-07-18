@@ -29,11 +29,11 @@ class IonicTest extends AbstractIntegrationTest {
         })
 
         for (file in list) {
-            if (!file.name.contains("myapp-1.0.0-SNAPSHOT-debug")
-                    && !file.name.contains("myapp-1.0.0-SNAPSHOT-release")
-                    && !file.name.contains("myapp-1.0.0-SNAPSHOT-sources-sources")
-                    && !file.name.contains("myapp-1.0.0-SNAPSHOT-test-debug")
-                    && !file.name.contains("myapp-1.0.0-SNAPSHOT-myapp"))
+            if (!file.name.contains("myapps-1.0.0-SNAPSHOT-debug")
+                    && !file.name.contains("myapps-1.0.0-SNAPSHOT-release")
+                    && !file.name.contains("myapps-1.0.0-SNAPSHOT-sources-sources")
+                    && !file.name.contains("myapps-1.0.0-SNAPSHOT-test-debug")
+                    && !file.name.contains("myapps-1.0.0-SNAPSHOT-myapp"))
                 throw new AssertionError("${file.name} has not a correct name")
         }
 

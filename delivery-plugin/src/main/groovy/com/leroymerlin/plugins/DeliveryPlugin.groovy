@@ -122,12 +122,15 @@ class DeliveryPlugin implements Plugin<Project> {
         project.task(TASK_UPLOAD, group: TASK_GROUP)
         project.task(TASK_INSTALL, group: TASK_GROUP)
         project.subprojects {
-            subprojects ->
-                subprojects.afterEvaluate {
-                    if (deliveryExtension.autoLinkSubModules || deliveryExtension.linkedSubModules.contains(it.name)) {
-                        subprojects.plugins.withType(DeliveryPlugin.class) {
-                            project.tasks.getByName(TASK_INSTALL).dependsOn += subprojects.tasks.getByName(TASK_INSTALL)
-                            project.tasks.getByName(TASK_UPLOAD).dependsOn += subprojects.tasks.getByName(TASK_UPLOAD)
+            Project subproject ->
+                subproject.afterEvaluate {
+                    if (deliveryExtension.autoLinkSubModules || deliveryExtension.linkedSubModules.contains(subproject.path)) {
+
+                        subproject.plugins.withType(DeliveryPlugin.class) {
+                            deliveryLogger.logInfo("${subproject.path} Install and Upload tasks linked to ${project.path}")
+
+                            project.tasks.getByName(TASK_INSTALL).dependsOn += subproject.tasks.getByName(TASK_INSTALL)
+                            project.tasks.getByName(TASK_UPLOAD).dependsOn += subproject.tasks.getByName(TASK_UPLOAD)
                         }
                     }
                 }
@@ -218,7 +221,7 @@ class DeliveryPlugin implements Plugin<Project> {
                         }
                         step 'generateVersionFiles', "generate version files"
                         step 'commitVersionFiles', "commit version files"
-                        commit "chore(version): Update version to $releaseVersion"
+                        commit "chore(version): Update version to $releaseVersion", true
                         step 'build', 'build and archive'
                         build
                         if (baseBranch != 'false') {
@@ -236,7 +239,7 @@ class DeliveryPlugin implements Plugin<Project> {
                         getVersionFiles(project).each {
                             add it.path
                         }
-                        commit "chore(version): Update to new version $releaseVersion and versionId $newVersionId"
+                        commit "chore(version): Update to new version $releaseVersion and versionId $newVersionId", true
                         push
                         step 'mergeDevelop', "Merge release branch to $workBranch"
                         branch workBranch

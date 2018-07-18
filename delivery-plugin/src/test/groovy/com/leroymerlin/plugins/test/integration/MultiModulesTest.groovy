@@ -11,8 +11,10 @@ class MultiModulesTest extends AbstractIntegrationTest {
         return "multiModules"
     }
 
+
+
     @Test
-    void testBuildTaskGeneration() {
+    void testLinkedSubModules() {
         def archiveDirectory = new File(workingDirectory, "build/archive")
         applyExtraGradle('''
     apply plugin: \'com.leroymerlin.delivery\'
@@ -27,26 +29,12 @@ delivery{
         build{
             build
         }
-    } 
-}
-''')
-        applySecondExtraGradle('''
-    apply plugin: \'com.leroymerlin.delivery\'
-
-delivery{
-    archiveRepositories = {
-        maven {
-            url uri("''' + archiveDirectory.absolutePath.replace('\\',"/") + '''")
-        }
     }
-    flows{
-        build{
-            build
-        }
-    } 
+    linkedSubModules = [":lib", ':app'] 
 }
 ''')
-        testTask('buildFlow')
+
+        testTask(':buildFlow')
         def list = []
         archiveDirectory.eachFileRecurse(FileType.FILES, {
             f ->
@@ -56,7 +44,7 @@ delivery{
     }
 
     @Test
-    void changePropertiesTest(){
+    void testAutoLinkSubModules(){
         def archiveDirectory = new File(workingDirectory, "build/archive")
         applyExtraGradle('''
     apply plugin: \'com.leroymerlin.delivery\'
@@ -72,26 +60,11 @@ delivery{
             build
         }
     } 
+    autoLinkSubModules = true
 }
 ''')
-        applySecondExtraGradle('''
-    apply plugin: \'com.leroymerlin.delivery\'
 
-delivery{
-    archiveRepositories = {
-        maven {
-            url uri("''' + archiveDirectory.absolutePath.replace('\\',"/") + '''")
-        }
-    }
-    flows{
-        build{
-            changeProperties '1.1.1', 111
-            build
-        }
-    } 
-}
-''')
-        testTask('buildFlow')
+        testTask(':buildFlow')
         def list = []
         archiveDirectory.eachFileRecurse(FileType.FILES, {
             f ->
