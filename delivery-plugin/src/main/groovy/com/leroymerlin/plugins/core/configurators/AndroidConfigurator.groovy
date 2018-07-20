@@ -87,8 +87,6 @@ class AndroidConfigurator extends ProjectConfigurator {
         if (!project.group) {
             throw new GradleException("Project group is not defined. Please use a gradle properties or configure your defaultConfig.applicationId")
         }
-        deliveryLogger.logInfo("group used : ${project.group}")
-        deliveryLogger.logInfo("Generate Android Build tasks")
         if (isAndroidApp) {
             project.android.applicationVariants.all { currentVariant ->
                 String flavorName = project.artifact.toString().split(' ').collect({ m -> return m.toLowerCase().capitalize() }).join("") + (currentVariant.flavorName.capitalize() ? "-${currentVariant.flavorName.capitalize()}" : "")

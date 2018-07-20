@@ -69,8 +69,6 @@ class IonicConfigurator extends ProjectConfigurator {
             if (!project.group) {
                 throw new GradleException("Project group is not defined. Please use a gradle properties or configure your id in config.xml")
             }
-            deliveryLogger.logInfo("group used : ${project.group}")
-
             extension.signingProperties.each { signingProperty -> handleProperty(signingProperty) }
         }
     }
