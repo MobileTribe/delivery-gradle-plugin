@@ -49,7 +49,6 @@ class IOSConfigurator extends ProjectConfigurator {
         if (!project.plugins.hasPlugin(pluginId)) {
             project.plugins.apply(pluginId)
             applyProperties()
-            deliveryLogger.logInfo("group used : ${project.group}")
         }
     }
 

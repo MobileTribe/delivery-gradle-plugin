@@ -75,6 +75,36 @@ NOTE: To simplify your life, Delivery provides an implementation of git release 
 
 link:Flows.html[See preconfigured Flows]
 
+== Tasks
+
+=== listArtifacts
+
+This task provide many informations about the artifacts that will be archived in the project
+
+.Example:
+[source,shell]
+----
+> Task :listArtifacts
+File n°1
+Name: android-app-dev-1.0.0-SNAPSHOT-debug.apk
+Extension: apk
+Type: apk
+Classifier: debug
+Group: com.leroymerlin.pandroid.plugin.testapp
+Path: /Users/alexandre/Workspace/LM/delivery-gradle-plugin/delivery-plugin/build/tests/integration/android/build/outputs/apk/dev/debug/android-app-dev-1.0.0-SNAPSHOT-debug.apk
+Url: file:/Users/alexandre/Workspace/LM/delivery-gradle-plugin/delivery-plugin/build/tests/integration/android/build/archive/
+
+
+File n°2
+Name: android-app-dev-1.0.0-SNAPSHOT-debug.apk
+Extension: apk
+Type: apk
+Classifier: test-debug
+Group: com.leroymerlin.pandroid.plugin.testapp
+Path: /Users/alexandre/Workspace/LM/delivery-gradle-plugin/delivery-plugin/build/tests/integration/android/build/outputs/apk/dev/debug/android-app-dev-1.0.0-SNAPSHOT-debug.apk
+Url: file:/Users/alexandre/Workspace/LM/delivery-gradle-plugin/delivery-plugin/build/tests/integration/android/build/archive/
+----
+
 == Version.properties
 
 Delivery use version.properties file define in project's root path

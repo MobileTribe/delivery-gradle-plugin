@@ -121,14 +121,14 @@ class DeliveryPlugin implements Plugin<Project> {
 
         project.task(TASK_UPLOAD, group: TASK_GROUP)
         project.task(TASK_INSTALL, group: TASK_GROUP)
+        //TODO Create install task if not existed
         project.subprojects {
             Project subproject ->
                 subproject.afterEvaluate {
                     if (deliveryExtension.autoLinkSubModules || deliveryExtension.linkedSubModules.contains(subproject.path)) {
 
                         subproject.plugins.withType(DeliveryPlugin.class) {
-                            deliveryLogger.logInfo("${subproject.path} Install and Upload tasks linked to ${project.path}")
-
+                            //TODO Link install task with sub install task if exist
                             project.tasks.getByName(TASK_INSTALL).dependsOn += subproject.tasks.getByName(TASK_INSTALL)
                             project.tasks.getByName(TASK_UPLOAD).dependsOn += subproject.tasks.getByName(TASK_UPLOAD)
                         }

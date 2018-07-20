@@ -40,10 +40,6 @@ class JavaConfigurator extends ProjectConfigurator {
         if (!project.group) {
             throw new GradleException("Project group is not defined. Please use a gradle properties group")
         }
-
-        deliveryLogger.logInfo("group used : ${project.group}")
-        deliveryLogger.logInfo("Generate Java Build tasks")
-
         project.task("build${project.artifact.capitalize()}Artifacts", type: JavaBuild, group: DeliveryPlugin.TASK_GROUP) {
             variantName project.artifact
         }
