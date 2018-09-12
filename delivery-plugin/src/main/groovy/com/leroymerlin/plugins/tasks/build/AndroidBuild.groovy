@@ -12,6 +12,8 @@ class AndroidBuild extends DeliveryBuild {
 
     private DeliveryLogger deliveryLogger = new DeliveryLogger()
 
+    boolean flutterProject
+
     @Input
     void addVariant(variant) {
         String classifier = variant.buildType.name
