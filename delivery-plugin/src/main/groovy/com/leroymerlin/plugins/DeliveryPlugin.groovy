@@ -4,6 +4,8 @@ import com.leroymerlin.plugins.cli.DeliveryLogger
 import com.leroymerlin.plugins.core.configurators.*
 import com.leroymerlin.plugins.tasks.ListArtifacts
 import com.leroymerlin.plugins.tasks.build.DeliveryBuild
+import com.leroymerlin.plugins.tasks.build.DockerBuild
+import com.leroymerlin.plugins.tasks.build.DockerUpload
 import com.leroymerlin.plugins.utils.PropertiesUtils
 import org.gradle.api.Action
 import org.gradle.api.GradleException
@@ -143,10 +145,7 @@ class DeliveryPlugin implements Plugin<Project> {
             }
             deliveryExtension.configurator.configure()
 
-            def buildTasks = []
-            buildTasks.addAll(project.tasks.withType(DeliveryBuild))
-
-            buildTasks.each {
+            project.tasks.withType(DeliveryBuild).each {
                 task ->
 
                     if (project.versionId == null) throwException("VersionId", project)
@@ -174,6 +173,7 @@ class DeliveryPlugin implements Plugin<Project> {
                         pom.setArtifactId(task.variantName as String)
                     }
                     ((Configuration) project.configurations."${configurationName}").artifacts.addAll(task.getArtifacts() as PublishArtifact[])
+
             }
 
             def uploadArtifacts = project.tasks.findByName(UPLOAD_TASK)
@@ -187,10 +187,27 @@ class DeliveryPlugin implements Plugin<Project> {
                 project.task("install", dependsOn: [INSTALL_TASK])
             }
             project.task("listArtifacts", type: ListArtifacts, group: TASK_GROUP)
+
+//Docker build
+
+            project.tasks.withType(DockerBuild).each {
+                DockerBuild task ->
+                    if (project.version == null) throwException("Version", project)
+                    if (project.artifact == null) throwException("Artifact", project)
+
+                    project.task("${UPLOAD_TASK_PREFIX}${task.imageName}Images", type: DockerUpload, group: TASK_GROUP, dependsOn: [task]) {
+                        imageName = task.imageName
+                        registry = task.registry
+                    }
+            }
+
+            uploadArtifacts.dependsOn += project.tasks.withType(DockerUpload)
+            project.tasks.findByName(INSTALL_TASK).dependsOn += project.tasks.withType(DockerBuild)
+            project.task("listArtifacts", type: ListArtifacts, group: TASK_GROUP)
         }
     }
 
-    //create default release git flow
+//create default release git flow
     void enableReleaseGitFlow(boolean enable) {
         if (enable && !project.tasks.findByPath("releaseGitFlow")) {
             deliveryExtension.flowsContainer.create(
@@ -350,4 +367,5 @@ class DeliveryPlugin implements Plugin<Project> {
     static void throwException(String missingElement, Project project) {
         throw new GradleException("$missingElement is not set, please add it in a version.properties in ${project.name} or one of his parent")
     }
+
 }
