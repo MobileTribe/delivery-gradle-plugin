@@ -2,10 +2,11 @@ package com.leroymerlin.plugins
 
 import com.leroymerlin.plugins.cli.DeliveryLogger
 import com.leroymerlin.plugins.core.configurators.*
+import com.leroymerlin.plugins.tasks.DockerUpload
 import com.leroymerlin.plugins.tasks.ListArtifacts
+import com.leroymerlin.plugins.tasks.ListDockerImages
 import com.leroymerlin.plugins.tasks.build.DeliveryBuild
 import com.leroymerlin.plugins.tasks.build.DockerBuild
-import com.leroymerlin.plugins.tasks.build.DockerUpload
 import com.leroymerlin.plugins.utils.PropertiesUtils
 import org.gradle.api.Action
 import org.gradle.api.GradleException
@@ -108,6 +109,7 @@ class DeliveryPlugin implements Plugin<Project> {
         })
 
         project.ext.DeliveryBuild = DeliveryBuild
+        project.ext.DockerBuild = DockerBuild
 
         setupProperties()
 
@@ -145,8 +147,8 @@ class DeliveryPlugin implements Plugin<Project> {
             }
             deliveryExtension.configurator.configure()
 
-            project.tasks.withType(DeliveryBuild).each {
-                task ->
+            project.tasks.withType(DeliveryBuild).asMap.each {
+                taskName, task ->
 
                     if (project.versionId == null) throwException("VersionId", project)
                     if (project.version == null) throwException("Version", project)
@@ -183,27 +185,27 @@ class DeliveryPlugin implements Plugin<Project> {
             }
 
             project.tasks.findByName(INSTALL_TASK).dependsOn += project.tasks.withType(Upload).findAll { task -> task.name.startsWith(INSTALL_TASK_PREFIX) }
-            if (project.tasks.findByPath("install") == null) {
-                project.task("install", dependsOn: [INSTALL_TASK])
-            }
             project.task("listArtifacts", type: ListArtifacts, group: TASK_GROUP)
 
 //Docker build
 
-            project.tasks.withType(DockerBuild).each {
-                DockerBuild task ->
+            project.tasks.withType(DockerBuild).asMap.each {
+                String taskName, DockerBuild task ->
                     if (project.version == null) throwException("Version", project)
                     if (project.artifact == null) throwException("Artifact", project)
 
-                    project.task("${UPLOAD_TASK_PREFIX}${task.imageName}Images", type: DockerUpload, group: TASK_GROUP, dependsOn: [task]) {
-                        imageName = task.imageName
-                        registry = task.registry
+                    project.task("${UPLOAD_TASK_PREFIX}${task.name.capitalize()}", type: DockerUpload, group: TASK_GROUP, dependsOn: [task]) {
+                        buildTask = task
                     }
             }
 
             uploadArtifacts.dependsOn += project.tasks.withType(DockerUpload)
             project.tasks.findByName(INSTALL_TASK).dependsOn += project.tasks.withType(DockerBuild)
-            project.task("listArtifacts", type: ListArtifacts, group: TASK_GROUP)
+            project.task("listDockerImages", type: ListDockerImages, group: TASK_GROUP)
+
+
+
+            project.tasks.findByPath(BASE_INSTALL_TASK).dependsOn += INSTALL_TASK
         }
     }
 

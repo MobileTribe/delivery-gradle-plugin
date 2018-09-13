@@ -9,34 +9,13 @@ import org.gradle.api.GradleException
 class Executor {
 
     public static DeliveryLogger deliveryLogger = new DeliveryLogger()
-    public static Map optionsMap
-    public static List<String> commandsList
-    public static boolean warning
+    public Map options
+    public List<String> commands
+    public boolean warning
 
     static String exec(List<String> commands, Map options = [:], boolean warning = false) {
-        optionsMap = options
-        commandsList = commands
-        this.warning = warning
-
-        StringBuffer out = new StringBuffer()
-
-        File directory = options['directory'] ? options['directory'] as File : null
-        List processEnv = options['env'] ? ((options['env'] as Map) << System.getenv()).collect {
-            "$it.key=$it.value"
-        } : null
-
-        deliveryLogger.logInfo("Running $commands in [${directory != null ? directory : System.getProperty("os.name")}]")
-        try {
-            Process process = commands.execute(processEnv, directory)
-            waitForProcessOutput(process, out)
-        } catch (Exception e) {
-            if (optionsMap['failOnStderr'] as boolean && optionsMap['failOnStderrMessage'] != null) {
-                throw new Exception(optionsMap['failOnStderrMessage'] as String)
-            } else {
-                e.printStackTrace()
-            }
-        }
-        return out.toString()
+        Executor executor = new Executor(commands, options, warning)
+        executor.run()
     }
 
     static List<String> convertToCommandLine(String cmd) {
@@ -47,7 +26,38 @@ class Executor {
         cmdList
     }
 
-    static void waitForProcessOutput(Process process, Appendable output) {
+    private Executor(List<String> commands, Map options = [:], boolean warning = false){
+        this.options = options
+        this.commands = commands
+        this.warning = warning
+    }
+
+    private String run(){
+        StringBuffer out = new StringBuffer()
+        File directory = options['directory'] ? options['directory'] as File : null
+        List processEnv = options['env'] ? ((options['env'] as Map) << System.getenv()).collect {
+            "$it.key=$it.value"
+        } : null
+
+        if (!(options['hideCommand'] as boolean)) {
+            deliveryLogger.logInfo("Running $commands in [${directory != null ? directory : System.getProperty("os.name")}]")
+        }
+        try {
+            Process process = commands.execute(processEnv, directory)
+            waitForProcessOutput(process, out)
+        } catch (Exception e) {
+            if (options['failOnStderr'] as boolean && options['failOnStderrMessage'] != null) {
+                throw new Exception(options['failOnStderrMessage'] as String)
+            } else {
+                e.printStackTrace()
+            }
+        }
+        return out.toString()
+    }
+
+
+
+     private void waitForProcessOutput(Process process, Appendable output) {
         def dumperOut = new TextDumper(process.getOutputStream(), process.getInputStream(), false, output)
         def dumperErr = new TextDumper(process.getOutputStream(), process.getErrorStream(), true, output)
 
@@ -71,7 +81,7 @@ class Executor {
 
     }
 
-    private static class TextDumper implements Runnable {
+    private class TextDumper implements Runnable {
         InputStream input
         OutputStream output
         boolean catchError
@@ -103,11 +113,11 @@ class Executor {
                         this.app.append("\n")
                     }
                     if (catchError) {
-                        if (optionsMap['failOnStderr'] as boolean) {
-                            if (optionsMap['failOnStderrMessage'] != null) {
-                                throw new Exception(optionsMap['failOnStderrMessage'] as String)
+                        if (options['failOnStderr'] as boolean) {
+                            if (options['failOnStderrMessage'] != null) {
+                                throw new Exception(options['failOnStderrMessage'] as String)
                             }
-                            throw new Exception("Running '${commandsList.join(' ')}' produced an error: ${next}")
+                            throw new Exception("Running '${commands.join(' ')}' produced an error: ${next}")
                         } else {
                             if (warning)
                                 deliveryLogger.logWarning(next)
@@ -121,12 +131,12 @@ class Executor {
                             deliveryLogger.logOutput(next)
                     }
 
-                    if (optionsMap['errorPatterns'] && [next]*.toString().any { String s ->
-                        (optionsMap['errorPatterns'] as List<String>).any {
+                    if (options['errorPatterns'] && [next]*.toString().any { String s ->
+                        (options['errorPatterns'] as List<String>).any {
                             s.contains(it)
                         }
                     }) {
-                        throw new GradleException(optionsMap['errorMessage'] ? optionsMap['errorMessage'] as String : "Failed to run '${commandsList.join(' ')}' - $next")
+                        throw new GradleException(options['errorMessage'] ? options['errorMessage'] as String : "Failed to run '${commands.join(' ')}' - $next")
                     }
                 }
             } catch (IOException var5) {

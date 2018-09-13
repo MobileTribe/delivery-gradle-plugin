@@ -8,7 +8,7 @@ class RegistryProperty {
     String url
     String password
     String user
-    public final DeliveryLogger deliveryLogger = new DeliveryLogger()
+    private final DeliveryLogger deliveryLogger = new DeliveryLogger()
 
     RegistryProperty(String name) {
         this.name = name
@@ -28,5 +28,17 @@ class RegistryProperty {
                     this[key] = value
             }
         }
+    }
+
+    void url(String url) {
+        this.url = url
+    }
+
+    void password(String password) {
+        this.password = password
+    }
+
+    void user(String user) {
+        this.user = user
     }
 }
