@@ -10,7 +10,7 @@ import org.gradle.api.Project
  * Created by alexandre on 06/02/2017.
  */
 
-class GitAdapter extends Executor implements BaseScmAdapter {
+class GitAdapter implements BaseScmAdapter {
 
     private String email, username, password
     private List<String> list
@@ -144,5 +144,10 @@ fi
         result += exec(['git', 'reset', 'HEAD', '.'], [directory: project.rootDir])
         result += exec(['git', 'clean', '-df'], [directory: project.rootDir])
         return result
+    }
+
+
+    private static exec(List<String> commands, Map options = [:], boolean warning = false){
+        Executor.exec(commands, options, warning)
     }
 }

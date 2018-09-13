@@ -152,111 +152,117 @@ class DeliveryPluginTest {
         Asserts.notNull(project.tasks.findByPath('releaseFlow'), "Flow release")
     }
 
-    void testSigningMethods() {
-        project.delivery {
-            //tag::signingFileExample[]
-            //...
-            signingProperties {
-                all {
-                    // load file properties into all the signing property
-                    propertiesFile = file("path/to/my/signing.properties")
+    @Test
+    void testDocSyntax() {
+        def closure = {
+            project.delivery {
+                //tag::signingFileExample[]
+                //...
+                signingProperties {
+                    all {
+                        // load file properties into all the signing property
+                        propertiesFile = file("path/to/my/signing.properties")
+                    }
+                    specificBuildType {
+                        // override singing properties for specific buildtype
+                        propertiesFile = file("path/to/my/specific.properties")
+                    }
                 }
-                specificBuildType {
-                    // override singing properties for specific buildtype
-                    propertiesFile = file("path/to/my/specific.properties")
+                //...
+                //end::signingFileExample[]
+                //tag::signingAndroidExample[]
+                //...
+                signingProperties {
+                    // the name you set here has to match a buildtype
+                    buildTypeName {
+                        storeFile = 'path/to/my/store.jks'
+                        storePassword = 'myStorePassword'
+                        keyAlias = 'myAlias'
+                        keyPassword = 'myPass'
+                    }
                 }
+                //...
+                //end::signingAndroidExample[]
+                //tag::signingiOSExample[]
+                //...
+                signingProperties {
+                    // you can set the name you want
+                    // for each signingProperty, you'll archive an IPA
+                    nameYouWant {
+                        target = "delivery"
+                        scheme = "delivery"
+                        certificateURI = 'path/to/my/certificat.p12'
+                        certificatePassword = 'myPass'
+                        // you can specify multiple files separated by a comma
+                        mobileProvisionURI = 'path/to/my/Provisioning_Profile.mobileprovision,path/to/my/Provisioning_Profile2.mobileprovision'
+                    }
+                }
+                //...
+                //end::signingiOSExample[]
+                //tag::signingIonicExample[]
+                //...
+                signingProperties {
+                    // you have to use android or ios name for ionic signing configs
+                    android {
+                        //See android needed properties
+                    }
+                    ios {
+                        //See ios needed properties
+                        //target and scheme are optionals for ionic
+                    }
+                }
+                //...
+                //end::signingIonicExample[]
+                //tag::signingReactExample[]
+                //...
+                signingProperties {
+                    // you have to use android or ios name for react signing configs
+                    android {
+                        //See android needed properties
+                    }
+                    ios {
+                        //See ios needed properties
+                        //target and scheme are optionals for ionic
+                    }
+                }
+                //...
+                //end::signingReactExample[]
+                //tag::deliveryBuildExample[]
+                //...
+                task('buildVariant', type: DeliveryBuild) {
+                    variantName = 'variant'
+                    outputFiles = ["release": file('build/variant.txt')]
+                }.doFirst {
+                    cmd('java -jar delivery-test.jar variant')
+                }
+                //...
+                //end::deliveryBuildExample[]
+                //tag::configuratorExample[]
+                //...
+                delivery {
+                    configurator = [
+                            /**
+                             * Configure your project
+                             */
+                            configure           : {/*...*/ },
+                            /**
+                             * Apply some properties to your project
+                             */
+                            applyProperties     : {/*...*/ },
+                            /**
+                             * Apply the signing properties to your project
+                             * @param property
+                             */
+                            applySigningProperty: { property -> /*...*/ }
+                    ]
+                }
+                //...
+                //end::configuratorExample[]
             }
-            //...
-            //end::signingFileExample[]
-            //tag::signingAndroidExample[]
-            //...
-            signingProperties {
-                // the name you set here has to match a buildtype
-                buildTypeName {
-                    storeFile = 'path/to/my/store.jks'
-                    storePassword = 'myStorePassword'
-                    keyAlias = 'myAlias'
-                    keyPassword = 'myPass'
-                }
-            }
-            //...
-            //end::signingAndroidExample[]
-            //tag::signingiOSExample[]
-            //...
-            signingProperties {
-                // you can set the name you want
-                // for each signingProperty, you'll archive an IPA
-                nameYouWant {
-                    target = "delivery"
-                    scheme = "delivery"
-                    certificateURI = 'path/to/my/certificat.p12'
-                    certificatePassword = 'myPass'
-                    // you can specify multiple files separated by a comma
-                    mobileProvisionURI = 'path/to/my/Provisioning_Profile.mobileprovision,path/to/my/Provisioning_Profile2.mobileprovision'
-                }
-            }
-            //...
-            //end::signingiOSExample[]
-            //tag::signingIonicExample[]
-            //...
-            signingProperties {
-                // you have to use android or ios name for ionic signing configs
-                android {
-                    //See android needed properties
-                }
-                ios {
-                    //See ios needed properties
-                    //target and scheme are optionals for ionic
-                }
-            }
-            //...
-            //end::signingIonicExample[]
-            //tag::signingReactExample[]
-            //...
-            signingProperties {
-                // you have to use android or ios name for react signing configs
-                android {
-                    //See android needed properties
-                }
-                ios {
-                    //See ios needed properties
-                    //target and scheme are optionals for ionic
-                }
-            }
-            //...
-            //end::signingReactExample[]
-            //tag::deliveryBuildExample[]
-            //...
-            task buildVariant(type: DeliveryBuild) {
-                variantName = 'variant'
-                outputFiles = ["release": file('build/variant.txt')]
-            } << {
-                cmd('java -jar delivery-test.jar variant')
-            }
-            //...
-            //end::deliveryBuildExample[]
-            //tag::configuratorExample[]
-            //...
-            delivery {
-                configurator = [
-                        /**
-                         * Configure your project
-                         */
-                        configure           : {/*...*/ },
-                        /**
-                         * Apply some properties to your project
-                         */
-                        applyProperties     : {/*...*/ },
-                        /**
-                         * Apply the signing properties to your project
-                         * @param property
-                         */
-                        applySigningProperty: { property -> /*...*/ }
-                ]
-            }
-            //...
-            //end::configuratorExample[]
         }
+
+        closure.delegate = project
+        closure.run()
         project.evaluate()
     }
 }
