@@ -1,6 +1,7 @@
 package com.leroymerlin.plugins.core
 
 import com.leroymerlin.plugins.DeliveryPluginExtension
+import com.leroymerlin.plugins.cli.DeliveryLogger
 import com.leroymerlin.plugins.cli.Executor
 import com.leroymerlin.plugins.utils.SystemUtils
 import org.gradle.api.GradleException
@@ -11,6 +12,8 @@ import org.gradle.api.Project
  */
 
 class GitAdapter implements BaseScmAdapter {
+
+    private final DeliveryLogger deliveryLogger = new DeliveryLogger()
 
     private String email, username, password
     private List<String> list
