@@ -24,7 +24,13 @@ class ReactConfigurator extends ProjectConfigurator {
         super.setup(project, extension)
         def signingBuild = SystemUtils.getEnvProperty(REACT_BUILD)
 
-        Executor.exec(["npm"], ["failOnStderr": true, "failOnStderrMessage": "I don't find npm :(, please look at https://www.npmjs.com/get-npm for more information"])
+        def npmResult = Executor.exec(["npm"]) {
+            needSuccessExitCode = false
+        }
+
+        if (npmResult.exitValue == Executor.EXIT_CODE_NOT_FOUND) {
+            throw new GradleException("I don't find npm :(, please look at https://www.npmjs.com/get-npm for more information")
+        }
 
         if (signingBuild == 'ios') {
             nestedConfigurator = new IOSConfigurator()
@@ -35,7 +41,9 @@ class ReactConfigurator extends ProjectConfigurator {
         nestedConfigurator?.setup(project, extension)
 
         project.task("prepareNpm", group: DeliveryPlugin.TASK_GROUP).doLast {
-            Executor.exec(["npm", "install"], [directory: project.projectDir], true)
+            Executor.exec(["npm", "install"]) {
+                directory = project.projectDir
+            }
         }
     }
 

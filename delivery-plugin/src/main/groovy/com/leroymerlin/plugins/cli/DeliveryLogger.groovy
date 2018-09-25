@@ -13,10 +13,6 @@ class DeliveryLogger {
         logger.log(logLevel, color != null ? color.colorize(message) : message)
     }
 
-    void log(String message, Level logLevel) {
-        logMessage(message, (SystemUtils.getEnvProperty("ugly") != null)
-                ? null : new Ansi(Ansi.HIGH_INTENSITY, Ansi.RED), logLevel)
-    }
     void logError(String message) {
         logMessage(message, (SystemUtils.getEnvProperty("ugly") != null)
                 ? null : new Ansi(Ansi.HIGH_INTENSITY, Ansi.RED), Level.SEVERE)

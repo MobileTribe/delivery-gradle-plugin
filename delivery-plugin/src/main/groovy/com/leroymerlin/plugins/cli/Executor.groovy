@@ -3,25 +3,25 @@ package com.leroymerlin.plugins.cli
 import groovy.transform.TypeChecked
 import org.gradle.api.GradleException
 
-import java.util.logging.Level
-
 /**
  * Created by alexandre on 31/01/2017.
  */
 
 
 class Executor {
+    public static final int EXIT_CODE_NOT_FOUND = 127
+    public static final int EXIT_CODE_OK = 0
+
     static DeliveryLogger deliveryLogger = new DeliveryLogger()
 
-    static ExecutorResult exec(List<String> commands, @DelegatesTo(ExecutorParams) Closure closure) {
+    static ExecutorResult exec(List<String> commands, @DelegatesTo(ExecutorParams) Closure closure = {}) {
         def params = new ExecutorParams()
-        def code = closure.rehydrate(params, this, this)
-        code.resolveStrategy = Closure.DELEGATE_ONLY
-        code()
+        closure.delegate = params
+        //code.resolveStrategy = Closure.DELEGATE_ONLY
+        closure()
 
         return new Executor(commands, params).run()
     }
-
 
     static List<String> convertToCommandLine(String cmd) {
         StringTokenizer st = new StringTokenizer(cmd)
@@ -52,7 +52,7 @@ class Executor {
         if (!params.hideCommand) {
             deliveryLogger.logInfo("Running $commands in [${directory != null ? directory : System.getProperty("user.dir")}]")
         }
-        int exitValue = 127
+        int exitValue = EXIT_CODE_NOT_FOUND
         try {
             Process process = commands.execute(processEnv, directory)
             def dumperOut = new TextDumper(process.getOutputStream(), process.getInputStream(), false, out)
@@ -86,14 +86,14 @@ class Executor {
     private class TextDumper implements Runnable {
         InputStream input
         OutputStream output
-        boolean catchError
+        boolean errorOutput
         Appendable out
 
 
-        TextDumper(OutputStream outputStream, InputStream inputStream, boolean catchError, Appendable out) {
+        TextDumper(OutputStream outputStream, InputStream inputStream, boolean errorOutput, Appendable out) {
             this.input = inputStream
             this.output = outputStream
-            this.catchError = catchError
+            this.errorOutput = errorOutput
             this.out = out
         }
 
@@ -126,28 +126,30 @@ class Executor {
                     this.out.append(next)
                     this.out.append("\n")
                 }
-                deliveryLogger.log(next, params.logLevel)
+                if (errorOutput) deliveryLogger.logError(next)
+                else deliveryLogger.logInfo(next)
             }
-
         }
-
     }
 
-    private static class ExecutorParams {
+    static class ExecutorParams {
+        private ExecutorParams() {}
+
         boolean needSuccessExitCode = true
         File directory
         Map<String, String> env = System.getenv()
         Boolean hideCommand = false
         Map<String, String> inputPatterns = [:]
         Map<String, ExecutorError> errorPatterns = [:]
-        Level logLevel = Level.INFO
 
-        void handleError(String pattern, @DelegatesTo(ExecutorError) Closure closure) {
+        void handleError(List<String> patterns, @DelegatesTo(ExecutorError) Closure closure) {
             def error = new ExecutorError()
-            def code = closure.rehydrate(error, this, this)
-            code.resolveStrategy = Closure.DELEGATE_ONLY
-            code()
-            errorPatterns.put(pattern, error)
+            closure.delegate = error
+            //code.resolveStrategy = Closure.DELEGATE_ONLY
+            closure()
+            patterns.forEach({
+                pattern -> errorPatterns.put(pattern, error)
+            })
         }
     }
 
@@ -158,12 +160,11 @@ class Executor {
         Boolean fatal = true
     }
 
-    private static class ExecutorResult {
+    static class ExecutorResult {
         Exception error
         String logs
         int exitValue
     }
-
 }
 
 //

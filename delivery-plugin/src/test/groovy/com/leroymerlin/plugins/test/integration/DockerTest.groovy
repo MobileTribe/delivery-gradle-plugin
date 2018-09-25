@@ -16,9 +16,10 @@ class DockerTest extends AbstractIntegrationTest {
     @Before
     void beforeMethod() {
         //Executor.exec(Executor.convertToCommandLine("docker images"))
-        def exec = Executor.exec(Executor.convertToCommandLine("docker ps"))
-        def notRunning = exec.contains("docker daemon running") || exec.isEmpty()
-        Assume.assumeTrue("docker is not installed or running" ,!notRunning)
+        def exec = Executor.exec(Executor.convertToCommandLine("docker ps")) {
+            needSuccessExitCode = false
+        }
+        Assume.assumeTrue("docker is not installed or running", exec.exitValue == Executor.EXIT_CODE_OK)
         // rest of setup.
     }
 
@@ -46,7 +47,7 @@ task('buildDockerImage', type: DockerBuild, group: 'delivery'){
 }
 
 ''')
-        testTask('listDockerImages','install')
+        testTask('listDockerImages', 'install')
 //        def list = []
 //        archiveDirectory.eachFileRecurse(FileType.FILES, {
 //            f ->
@@ -54,8 +55,9 @@ task('buildDockerImage', type: DockerBuild, group: 'delivery'){
 //        })
 
 
-        def lineCount = Executor.exec(Executor.convertToCommandLine("docker images delivery-test"), [directory: project.projectDir])
-                .readLines().size()
+        def lineCount = Executor.exec(Executor.convertToCommandLine("docker images delivery-test")) {
+            directory = project.projectDir
+        }.logs.readLines().size()
         Assert.assertEquals("image delivery-test not found", 2, lineCount)
     }
 }

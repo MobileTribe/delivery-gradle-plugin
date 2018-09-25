@@ -23,7 +23,13 @@ class FlutterConfigurator extends ProjectConfigurator {
         super.setup(project, extension)
         def signingBuild = SystemUtils.getEnvProperty(FLUTTER_BUILD)
 
-        Executor.exec(["flutter", "--version"], ["failOnStderr": true, "failOnStderrMessage": "I don't find flutter :(, please look at https://flutter.io/ for more information"])
+        def result = Executor.exec(["flutter", "--version"]) {
+            needSuccessExitCode = false
+        }
+
+        if (result.exitValue == Executor.EXIT_CODE_NOT_FOUND) {
+            throw new GradleException("I don't find flutter :(, please look at https://flutter.io/ for more information")
+        }
 
         if (signingBuild == 'ios') {
             nestedConfigurator = new IOSConfigurator()
@@ -49,7 +55,9 @@ class FlutterConfigurator extends ProjectConfigurator {
             }
             nestedConfigurator.configure()
         } else {
-            Executor.exec(["flutter", "build", "apk", "--debug"], [directory: project.projectDir.toString()])
+            Executor.exec(["flutter", "build", "apk", "--debug"], {
+                directory = project.projectDir
+            })
 
             extension.signingProperties.each { signingProperty ->
                 project.file("pubspec.yaml").eachLine {

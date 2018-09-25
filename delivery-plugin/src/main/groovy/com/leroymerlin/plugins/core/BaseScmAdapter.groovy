@@ -10,25 +10,23 @@ interface BaseScmAdapter {
 
     void setup(Project project, DeliveryPluginExtension extension)
 
-    String addFiles(String[] files)
+    void addFiles(String[] files)
 
-    String commit(String message)
+    void commit(String message)
 
-    String deleteBranch(String branchName)
+    void deleteBranch(String branchName)
 
-    String switchBranch(String branchName, boolean createIfNeeded)
+    void switchBranch(String branchName, boolean createIfNeeded)
 
-    String tag(String annotation, String message)
+    void tag(String annotation, String message)
 
-    String merge(String from)
+    void merge(String from)
 
-    String push(String branch, boolean tags)
+    void push(String branch, boolean tags)
 
-    String pushTag(String tagName)
+    void pushTag(String tagName)
 
-    String pull()
+    void pull()
 
-    List<String> generateGitCommand(List<String> command)
-
-    String discardChange()
+    void discardChange()
 }
