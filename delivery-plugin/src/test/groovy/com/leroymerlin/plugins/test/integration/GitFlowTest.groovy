@@ -18,8 +18,9 @@ class GitFlowTest extends AbstractIntegrationTest {
     @Before
     void initGit() {
         testTask()
-        Executor.exec(["git", "init"], [directory: workingDirectory])
-        Executor.exec(["git", "commit", '-am', '"init commit"'], [directory: workingDirectory])
+        Executor.exec(["git", "init"]) {
+            directory = workingDirectory
+        }
     }
 
     @Test
@@ -188,6 +189,8 @@ delivery{
     }
 
     def getGitStatus() {
-        return Executor.exec(["git", "status"], [directory: workingDirectory])
+        return Executor.exec(["git", "status"]) {
+            directory = workingDirectory
+        }.logs
     }
 }

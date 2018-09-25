@@ -33,12 +33,9 @@ class DeliveryBuild extends DefaultTask {
     }
 
 
-    def cmd(String cmd, Map options = [:]) {
-        Map finalOptions = [directory: project.projectDir]
-        if (options) {
-            finalOptions.putAll(options)
-        }
-        return Executor.exec(Executor.convertToCommandLine(cmd), finalOptions)
+    def cmd(String cmd, @DelegatesTo(Executor.ExecutorParams) Closure closure = {}) {
+        return Executor.exec(Executor.convertToCommandLine(cmd), {
+            directory = project.projectDir
+        } << closure)
     }
-
 }

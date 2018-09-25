@@ -16,15 +16,15 @@ class ReleaseGitFlowTest extends AbstractIntegrationTest {
     @Test
     void releaseGitFLowTest() {
         def archiveDirectory = new File(workingDirectory, "build/archive")
-        Executor.exec(['git', 'init'], [directory: project.rootDir, errorMessage: "Failed to init git", errorPatterns: ['[rejected]', 'error: ', 'fatal: ']])
-        Executor.exec(['git', 'remote', 'add', 'origin', '.'], [directory: project.rootDir, errorMessage: "Failed to add origin", errorPatterns: ['[rejected]', 'error: ', 'fatal: ']])
-        Executor.exec(['git', 'add', '.'], [directory: project.rootDir, errorMessage: "Failed to add", errorPatterns: ['[rejected]', 'error: ', 'fatal: ']])
-        Executor.exec(['git', 'commit', '-am', 'first commit'], [directory: project.rootDir, errorMessage: "Failed to commit", errorPatterns: ['[rejected]', 'error: ', 'fatal: ']])
-        Executor.exec(['git', 'push', '--set-upstream', 'origin', 'master'], [directory: project.rootDir, errorMessage: "Failed to push", errorPatterns: ['[rejected]', 'error: ', 'fatal: ']])
-        Executor.exec(['git', 'checkout', '-B', 'develop'], [directory: project.rootDir, errorMessage: "Failed to create branch", errorPatterns: ['[rejected]', 'error: ', 'fatal: ']])
-        Executor.exec(['git', 'add', '.'], [directory: project.rootDir, errorMessage: "Failed to add files", errorPatterns: ['[rejected]', 'error: ', 'fatal: ']])
-        Executor.exec(['git', 'commit', '-am', 'first commit'], [directory: project.rootDir, errorMessage: "Failed to commit files", errorPatterns: ['[rejected]', 'error: ', 'fatal: ']])
-        Executor.exec(['git', 'push', '--set-upstream', 'origin', 'develop'], [directory: project.rootDir, errorMessage: "Failed to push", errorPatterns: ['[rejected]', 'error: ', 'fatal: ']])
+        exec(['git', 'init'], "Failed to init git")
+        exec(['git', 'remote', 'add', 'origin', '.'], "Failed to add origin")
+        exec(['git', 'add', '.'], "Failed to add")
+        exec(['git', 'commit', '-am', 'first commit'], "Failed to commit")
+        exec(['git', 'push', '--set-upstream', 'origin', 'master'], "Failed to push")
+        exec(['git', 'checkout', '-B', 'develop'], "Failed to create branch")
+        exec(['git', 'add', '.'], "Failed to add files")
+        exec(['git', 'commit', '-am', 'first commit'], "Failed to commit files")
+        exec(['git', 'push', '--set-upstream', 'origin', 'develop'], "Failed to push")
         applyExtraGradle('''
 delivery{
 
@@ -38,5 +38,16 @@ delivery{
 }
 ''')
         testTask('releaseGitFlow')
+    }
+
+    private void exec(List<String> cmd, String errorMessage) {
+        Executor.exec(cmd) {
+            directory = project.rootDir
+            needSuccessExitCode = false
+            handleError(['[rejected]', 'error: ', 'fatal: '], {
+                fatal = true
+                message = errorMessage
+            })
+        }
     }
 }

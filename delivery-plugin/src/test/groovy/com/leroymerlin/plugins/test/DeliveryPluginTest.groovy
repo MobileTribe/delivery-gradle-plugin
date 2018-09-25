@@ -1,6 +1,7 @@
 package com.leroymerlin.plugins.test
 
 import com.leroymerlin.plugins.DeliveryPlugin
+import com.leroymerlin.plugins.cli.Executor
 import com.leroymerlin.plugins.tasks.build.DeliveryBuild
 import org.gradle.api.Project
 import org.gradle.internal.impldep.org.apache.http.util.Asserts
@@ -51,6 +52,9 @@ class DeliveryPluginTest {
 
     @Test
     void testFlowMethods() {
+        Executor.exec(["git", "init"]) {
+            directory = project.rootDir
+        }
         project.delivery {
             //tag::flowExample[]
             //...

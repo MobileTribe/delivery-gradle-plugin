@@ -4,7 +4,6 @@ import com.leroymerlin.plugins.DeliveryPluginExtension
 import com.leroymerlin.plugins.cli.DeliveryLogger
 import com.leroymerlin.plugins.cli.Executor
 import com.leroymerlin.plugins.utils.SystemUtils
-import org.gradle.api.GradleException
 import org.gradle.api.Project
 
 /**
@@ -24,9 +23,11 @@ class GitAdapter implements BaseScmAdapter {
     @Override
     void setup(Project project, DeliveryPluginExtension extension) {
         this.project = project
-        if ("git status".execute().errorStream.text.length() > 0) {
-            throw new GradleException("Delivery threw an error \n" +
-                    "git status".execute().errorStream.text + "Please fix this before continue")
+        def result = exec(["git", "status"]) {
+            needSuccessExitCode = false
+        }
+        if (result.exitValue != Executor.EXIT_CODE_OK) {
+            deliveryLogger.logWarning("Git is not initialized on this project")
         } else {
             email = SystemUtils.getEnvProperty('SCM_EMAIL')
             username = SystemUtils.getEnvProperty('SCM_USER')
@@ -53,87 +54,142 @@ fi
             }
 
             //configure origin
-            exec(['git', 'config', 'remote.origin.fetch', "+refs/heads/*:refs/remotes/origin/*"], [directory: project.rootDir])
+            exec(['git', 'config', 'remote.origin.fetch', "+refs/heads/*:refs/remotes/origin/*"])
         }
     }
 
     @Override
-    String addFiles(String[] files) {
-        def result = ""
+    void addFiles(String[] files) {
         files.each {
             f ->
-                result = exec(generateGitCommand(['git', 'add', f]), [env: gitEnv, directory: project.rootDir, errorMessage: "Failed to add files", errorPatterns: ['[rejected]', 'error: ', 'fatal: ']]) + '\n'
+                exec(generateGitCommand(['git', 'add', f])) {
+                    env += gitEnv
+                    handleError(['[rejected]', 'error: ', 'fatal: '], {
+                        fatal = true
+                        message = "Failed to add files"
+                    })
+                }
         }
-        return result
     }
 
     @Override
-    String commit(String message) {
-        def result = exec(generateGitCommand(['git', 'commit', '-m', "\'" + message + "\'"]), [env: gitEnv, directory: project.rootDir, errorMessage: "Failed to commit", errorPatterns: ['[rejected]', 'error: ', 'fatal: ']])
-        return result
+    void commit(String message) {
+        exec(generateGitCommand(['git', 'commit', '-m', "\'" + message + "\'"])) {
+            env += gitEnv
+            handleError(['[rejected]', 'error: ', 'fatal: '], {
+                fatal = true
+                message = "Failed to commit"
+            })
+        }
     }
 
     @Override
-    String deleteBranch(String branchName) {
-        def result = exec(generateGitCommand(['git', 'branch', '-d', branchName]), [env: gitEnv, directory: project.rootDir, errorMessage: "Failed to delete $branchName", errorPatterns: ['[rejected]', 'error: ', 'fatal: ']])
-        return result
+    void deleteBranch(String branchName) {
+        exec(generateGitCommand(['git', 'branch', '-d', branchName])) {
+            env += gitEnv
+            handleError(['[rejected]', 'error: ', 'fatal: '], {
+                fatal = true
+                message = "Failed to delete $branchName"
+            })
+        }
     }
 
     @Override
-    String switchBranch(String branchName, boolean createIfNeeded) {
+    void switchBranch(String branchName, boolean createIfNeeded) {
         def params = ['git', 'checkout', branchName]
         if (createIfNeeded) {
             params.add(2, "-B")
         }
-        def result = exec(generateGitCommand(params), [env: gitEnv, directory: project.rootDir, errorMessage: "Couldn't switch to $branchName", errorPatterns: ['[rejected]', 'error: ', 'fatal: ']])
-        return result
+        exec(generateGitCommand(params)) {
+            env += gitEnv
+            handleError(['[rejected]', 'error: ', 'fatal: '], {
+                fatal = true
+                message = "Couldn't switch to $branchName"
+            })
+        }
     }
 
     @Override
-    String tag(String annotation, String message) {
+    void tag(String annotation, String message) {
         def tagName = annotation.replace(" ", "")
-        def result = exec(generateGitCommand(['git', 'tag', '-a', tagName, '-m', '\'' + message + '\'']), [env: gitEnv, directory: project.rootDir, errorMessage: "Duplicate tag [$annotation]", errorPatterns: ['already exists']])
-        return result
+        exec(generateGitCommand(['git', 'tag', '-a', tagName, '-m', '\'' + message + '\''])) {
+            env += gitEnv
+            handleError(['already exists'], {
+                fatal = true
+                message = "Duplicate tag [$annotation]"
+            })
+        }
     }
 
     @Override
-    String merge(String from) {
-        def result = exec(generateGitCommand(['git', 'merge', '--no-ff', from]), [env: gitEnv, directory: project.rootDir, errorMessage: "Failed to merge $from", errorPatterns: ['[rejected]', 'error: ', 'fatal: ']])
-        return result
+    void merge(String from) {
+        exec(generateGitCommand(['git', 'merge', '--no-ff', from])) {
+            env += gitEnv
+            handleError(['[rejected]', 'error: ', 'fatal: '], {
+                fatal = true
+                message = "Failed to merge $from"
+            })
+        }
     }
 
     @Override
-    String push(String branch = "", boolean tags) {
+    void push(String branch = "", boolean tags) {
         if (branch == null || branch.isEmpty()) {
-            branch = exec(['git', 'rev-parse', '--abbrev-ref', "HEAD"], [env: gitEnv, directory: project.rootDir, errorPatterns: ['HEAD'], errorMessage: "Can't push detached HEAD"]).replace("\n", "").replace("\r", "")
+            branch = exec(generateGitCommand(['git', 'rev-parse', '--abbrev-ref', "HEAD"])) {
+                env += gitEnv
+                handleError(['HEAD'], {
+                    fatal = true
+                    message = "Can't push detached HEAD"
+                })
+            }.logs.replace("\n", "").replace("\r", "")
         }
         def params = ['git', 'push', '-u', 'origin', branch]
         if (tags) {
             params << '--follow-tags'
         }
-        def result = exec(generateGitCommand(params), [env: gitEnv, directory: project.rootDir, errorMessage: ' Failed to push to remote ', errorPatterns: ['[rejected] ', 'error: ', 'fatal: ']])
-        return result
+        exec(generateGitCommand(params)) {
+            env += gitEnv
+            handleError(['[rejected] ', 'error: ', 'fatal: '], {
+                fatal = true
+                message = "Failed to push to remote"
+            })
+        }
     }
 
     @Override
-    String pushTag(String tagName) {
-        def result
+    void pushTag(String tagName) {
         if (tagName == null) {
             // If no tag is specified, push all sane tags (means annotated and reachable)
-            result = exec(generateGitCommand(['git', 'push', '--follow-tags']), [env: gitEnv, directory: project.rootDir, errorMessage: ' Failed to push tags to remote ', errorPatterns: ['[rejected] ', 'error: ', 'fatal: ']])
+            exec(generateGitCommand(['git', 'push', '--follow-tags'])) {
+                env += gitEnv
+                handleError(['[rejected] ', 'error: ', 'fatal: '], {
+                    fatal = true
+                    message = "Failed to push tags to remote"
+                })
+            }
         } else {
             // If a tag is specified, only push this one
-            result = exec(generateGitCommand(['git', 'push', 'origin', tagName]), [env: gitEnv, directory: project.rootDir, errorMessage: ' Failed to push tag to remote ', errorPatterns: ['[rejected] ', 'error: ', 'fatal: ']])
+            exec(generateGitCommand(['git', 'push', 'origin', tagName])) {
+                env += gitEnv
+                handleError(['[rejected] ', 'error: ', 'fatal: '], {
+                    fatal = true
+                    message = "Failed to push tags to remote"
+                })
+            }
         }
-        return result
     }
 
     @Override
-    String pull() {
-        return exec(generateGitCommand(['git', 'pull']), [env: gitEnv, directory: project.rootDir, errorMessage: ' Failed to pull from remote ', errorPatterns: ['[rejected] ', 'error: ', 'fatal: ']])
+    void pull() {
+        exec(generateGitCommand(['git', 'pull'])) {
+            env += gitEnv
+            handleError(['[rejected] ', 'error: ', 'fatal: '], {
+                fatal = true
+                message = "Failed to pull from remote"
+            })
+        }
     }
 
-    @Override
     List<String> generateGitCommand(List<String> command) {
         list = command
         if (email != null && !email.isEmpty())
@@ -142,15 +198,19 @@ fi
     }
 
     @Override
-    String discardChange() {
-        def result = exec(['git', 'checkout', '--', '.'], [directory: project.rootDir])
-        result += exec(['git', 'reset', 'HEAD', '.'], [directory: project.rootDir])
-        result += exec(['git', 'clean', '-df'], [directory: project.rootDir])
-        return result
+    void discardChange() {
+        exec(['git', 'checkout', '--', '.'])
+        exec(['git', 'reset', 'HEAD', '.'])
+        exec(['git', 'clean', '-df'])
     }
 
+    private Executor.ExecutorResult exec(List<String> cmd, @DelegatesTo(Executor.ExecutorParams) Closure closure = {
+    }) {
 
-    private static exec(List<String> commands, Map options = [:], boolean warning = false){
-        Executor.exec(commands, options, warning)
+        def baseParams = {
+            directory = project.rootDir
+        }
+        def finalClosure = baseParams << closure
+        return Executor.exec(cmd, finalClosure)
     }
 }
