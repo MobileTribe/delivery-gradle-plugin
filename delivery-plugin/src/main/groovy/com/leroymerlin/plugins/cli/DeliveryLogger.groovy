@@ -2,12 +2,31 @@ package com.leroymerlin.plugins.cli
 
 import com.leroymerlin.plugins.utils.SystemUtils
 
-import java.util.logging.Level
-import java.util.logging.Logger
+import java.util.logging.*
 
 class DeliveryLogger {
 
-    Logger logger = Logger.getGlobal()
+
+    private static class DeliveryFormatter extends Formatter {
+
+        @Override
+        synchronized String format(LogRecord record) {
+            String message = formatMessage(record);
+            return String.format('%1$s: %2$s\n',
+                    record.getLevel().getLocalizedName(),
+                    message)
+        }
+    }
+    static Logger logger = Logger.getLogger("DeliveryLogger")
+
+    static {
+        Handler consoleHandler = new ConsoleHandler()
+        def formatter = new DeliveryFormatter()
+        consoleHandler.setFormatter(formatter)
+        logger.setUseParentHandlers(false)
+        logger.addHandler(consoleHandler)
+    }
+
 
     private void logMessage(String message, Ansi color = null, Level logLevel = Level.INFO) {
         logger.log(logLevel, color != null ? color.colorize(message) : message)

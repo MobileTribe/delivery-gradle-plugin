@@ -16,11 +16,12 @@ class ExecutorTest {
     }
 
     @Test
-    void testDeliveryExtension() {
+    void testUnknownCommand() {
         def result = Executor.exec(["unknownCommand"]) {
             needSuccessExitCode = false
             directory = new File("")
         }
         assert result.exitValue == 127
     }
+
 }
