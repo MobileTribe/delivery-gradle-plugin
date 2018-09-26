@@ -5,6 +5,7 @@ import com.leroymerlin.plugins.DeliveryPluginExtension
 import com.leroymerlin.plugins.cli.Executor
 import com.leroymerlin.plugins.entities.SigningProperty
 import com.leroymerlin.plugins.utils.SystemUtils
+import groovy.io.FileType
 import groovy.json.JsonSlurper
 import org.gradle.api.GradleException
 import org.gradle.api.Project
@@ -44,6 +45,7 @@ class ReactConfigurator extends ProjectConfigurator {
             Executor.exec(["npm", "install"]) {
                 directory = project.projectDir
             }
+
         }
     }
 

@@ -209,3 +209,9 @@ To use this feature, define a system property or environment variable named *KEY
 
 .Command executed to unlock the Apple Keychain
 TIP: security unlock-keychain -p $KEYCHAIN_PASSWORD ~/Library/Keychains/login.keychain-db
+
+=== attempt to unlock read lock, not locked by current thread
+
+Known issue with Android plugin 3.1.+ https://issuetracker.google.com/issues/80464216
+
+To fix it you should migrate to 3.2.+. For react project you may have to replace *OutputFile.ABI* by *com.android.build.OutputFile.ABI* in *app/build.gradle*
