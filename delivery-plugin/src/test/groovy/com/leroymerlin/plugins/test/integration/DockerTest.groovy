@@ -15,17 +15,17 @@ class DockerTest extends AbstractIntegrationTest {
 
     @Before
     void beforeMethod() {
-        //Executor.exec(Executor.convertToCommandLine("docker images"))
         def exec = Executor.exec(Executor.convertToCommandLine("docker ps")) {
             needSuccessExitCode = false
         }
         Assume.assumeTrue("docker is not installed or running", exec.exitValue == Executor.EXIT_CODE_OK)
-        // rest of setup.
     }
 
     @After
     void cleanImage() {
-        Executor.exec(Executor.convertToCommandLine("docker rmi delivery-test:1.0.0-SNAPSHOT"))
+        Executor.exec(Executor.convertToCommandLine("docker rmi delivery-test:1.0.0-SNAPSHOT")) {
+            needSuccessExitCode = false
+        }
     }
 
     @Test
