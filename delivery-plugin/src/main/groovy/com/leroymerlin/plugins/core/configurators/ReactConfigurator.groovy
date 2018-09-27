@@ -5,7 +5,6 @@ import com.leroymerlin.plugins.DeliveryPluginExtension
 import com.leroymerlin.plugins.cli.Executor
 import com.leroymerlin.plugins.entities.SigningProperty
 import com.leroymerlin.plugins.utils.SystemUtils
-import groovy.io.FileType
 import groovy.json.JsonSlurper
 import org.gradle.api.GradleException
 import org.gradle.api.Project
@@ -46,6 +45,21 @@ class ReactConfigurator extends ProjectConfigurator {
                 directory = project.projectDir
             }
 
+            // Temporary fix the issue https://github.com/facebook/react-native/issues/21168 from Xcode 10
+
+            Executor.exec(["./scripts/ios-install-third-party.sh"]) {
+                directory = new File(project.projectDir, "node_modules/react-native")
+                needSuccessExitCode = false
+            }
+            def glogFolder = new File(project.projectDir, "node_modules/react-native/third-party").listFiles().find {
+                it.name.startsWith("glog")
+            }
+            if (glogFolder?.exists()) {
+                Executor.exec(["../../scripts/ios-configure-glog.sh"]) {
+                    directory = glogFolder
+                    needSuccessExitCode = false
+                }
+            }
         }
     }
 
