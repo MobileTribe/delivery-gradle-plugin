@@ -12,7 +12,7 @@ class DeliveryLogger {
         @Override
         synchronized String format(LogRecord record) {
             String message = formatMessage(record)
-            if (SystemUtils.getEnvProperty("ugly") != null) {
+            if (SystemUtils.getEnvProperty("ugly") == null) {
                 return message
             }
             return String.format('%1$s: %2$s\n',
