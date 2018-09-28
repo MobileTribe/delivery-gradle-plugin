@@ -35,16 +35,21 @@ class DockerTest extends AbstractIntegrationTest {
 
 delivery{
     dockerRegistries {
-        main {
+        myEnterpriseRegistry {
             url 'docker.registry.com'
         }
     }
 }
+//tag::dockerBuild[]
 
-task('buildDockerImage', type: DockerBuild, group: 'delivery'){
-    registry 'main'
-    imageName 'delivery-test'
+
+task('buildDockerImage', type: DockerBuild){
+    buildPath '.' //default '.'
+    imageName 'delivery-test' //default project.artifact
+    registry 'myEnterpriseRegistry'
 }
+
+//end::dockerBuild[]
 
 ''')
         testTask('listDockerImages', 'install')

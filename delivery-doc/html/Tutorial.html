@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.6.1">
-<meta name="author" content="Delivery v3.1.2, Wed Jul 18 13:59:43 CEST 2018">
+<meta name="author" content="Delivery v3.1.3-SNAPSHOT, Fri Sep 28 12:00:02 CEST 2018">
 <title>Tutorial</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -521,28 +521,33 @@ table.CodeRay td.code>pre{padding:0}
 <div id="header">
 <h1>Tutorial</h1>
 <div class="details">
-<span id="author" class="author">Delivery v3.1.2, Wed Jul 18 13:59:43 CEST 2018</span><br>
+<span id="author" class="author">Delivery v3.1.3-SNAPSHOT, Fri Sep 28 12:00:02 CEST 2018</span><br>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
 <li><a href="#configuration">1. Configuration</a></li>
-<li><a href="#flows">2. Flows</a></li>
-<li><a href="#version-properties">3. Version.properties</a></li>
-<li><a href="#signing-config">4. Signing config</a>
+<li><a href="#version-properties">2. Version.properties</a></li>
+<li><a href="#delivery-extension">3. Delivery extension</a></li>
+<li><a href="#flows">4. Flows</a></li>
+<li><a href="#tasks">5. Tasks</a></li>
+<li><a href="#signing-config">6. Signing config</a>
 <ul class="sectlevel2">
-<li><a href="#android">4.1. Android</a></li>
-<li><a href="#ios">4.2. iOS</a></li>
-<li><a href="#ionic">4.3. Ionic</a></li>
-<li><a href="#react-native">4.4. React Native</a></li>
+<li><a href="#android">6.1. Android</a></li>
+<li><a href="#ios">6.2. iOS</a></li>
+<li><a href="#ionic">6.3. Ionic</a></li>
+<li><a href="#react-native">6.4. React Native</a></li>
+<li><a href="#docker">6.5. Docker</a></li>
 </ul>
 </li>
-<li><a href="#multi-modules">5. Multi Modules</a></li>
-<li><a href="#custom-projects">6. Custom projects</a></li>
-<li><a href="#logs">7. Logs</a></li>
-<li><a href="#troubleshooting">8. Troubleshooting</a>
+<li><a href="#multi-modules">7. Multi Modules</a></li>
+<li><a href="#custom-projects">8. Custom projects</a></li>
+<li><a href="#logs">9. Logs</a></li>
+<li><a href="#debug">10. Debug</a></li>
+<li><a href="#troubleshooting">11. Troubleshooting</a>
 <ul class="sectlevel2">
-<li><a href="#unknown-error-1-ffffffffffffffff">8.1. Unknown error -1=ffffffffffffffff</a></li>
+<li><a href="#unknown-error-1-ffffffffffffffff">11.1. Unknown error -1=ffffffffffffffff</a></li>
+<li><a href="#attempt-to-unlock-read-lock-not-locked-by-current-thread">11.2. attempt to unlock read lock, not locked by current thread</a></li>
 </ul>
 </li>
 </ul>
@@ -570,9 +575,42 @@ table.CodeRay td.code>pre{padding:0}
 apply <span class="key">plugin</span>: <span class="string"><span class="delimiter">'</span><span class="content">com.leroymerlin.delivery</span><span class="delimiter">'</span></span></code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>Create a <strong>version.properties</strong> file in your module. This file will contain your module <strong>version</strong>, <strong>versionId</strong> and <strong>artifact</strong> the plugin needs.</p>
 </div>
+</div>
+<div class="sect1">
+<h2 id="version-properties">2. Version.properties</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Delivery use version.properties file define in project&#8217;s root path</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="error">#</span>Version.properties sample
+version=<span class="float">1.0</span><span class="float">.0</span>
+artifact=android-app
+versionId=<span class="integer">2</span>
+
+<span class="error">#</span>You can override the project<span class="string"><span class="delimiter">'</span><span class="content">s group by adding group in this file</span></span><span class="error">
+</span><span class="error">#</span>group=com.leroymerlin.delivery.group</code></pre>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Warning</div>
+</td>
+<td class="content">
+Delivery needs a <strong>version.properties</strong> file in your module. This file will contain your module <strong>version</strong>, <strong>versionId</strong> and <strong>artifact</strong>.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="delivery-extension">3. Delivery extension</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>Configure the delivery gradle extension in your build.gradle to fit your need.</p>
 </div>
@@ -597,6 +635,11 @@ apply <span class="key">plugin</span>: <span class="string"><span class="delimit
     }
     <span class="comment">// artifact signing properties container</span>
     signingProperties {
+        ...
+    }
+
+    <span class="comment">// docker registries configuration</span>
+    dockerRegistries {
         ...
     }
 }</code></pre>
@@ -640,10 +683,10 @@ Flows and signingProperties DSL are based on <a href="http://mrhaki.blogspot.fr/
 </div>
 </div>
 <div class="sect1">
-<h2 id="flows">2. Flows</h2>
+<h2 id="flows">4. Flows</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Flow allows you to configure release steps.<br>
+<p>Flow allows you to configure build steps.<br>
 Once a flow is configured, you can run it by calling the gradle task named "yourFlowName+<strong>Flow</strong>".</p>
 </div>
 <div class="listingblock">
@@ -762,26 +805,13 @@ To simplify your life, Delivery provides an implementation of git release flow.
 </div>
 </div>
 <div class="sect1">
-<h2 id="version-properties">3. Version.properties</h2>
+<h2 id="tasks">5. Tasks</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>Delivery use version.properties file define in project&#8217;s root path</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="error">#</span>Version.properties sample
-version=<span class="float">1.0</span><span class="float">.0</span>
-artifact=android-app
-versionId=<span class="integer">2</span>
 
-<span class="error">#</span>You can override the project<span class="string"><span class="delimiter">'</span><span class="content">s group by adding group in this file</span></span><span class="error">
-</span><span class="error">#</span>group=com.leroymerlin.delivery.group</code></pre>
-</div>
-</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="signing-config">4. Signing config</h2>
+<h2 id="signing-config">6. Signing config</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>SigningConfiguration allows you to configure artifacts signatures.<br>
@@ -791,18 +821,18 @@ You can externalize critical data using a <a href="https://en.wikipedia.org/wiki
 <div class="listingblock">
 <div class="title">Example:</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">            <span class="comment">//...</span>
-            signingProperties {
-                all {
-                    <span class="comment">// load file properties into all the signing property</span>
-                    propertiesFile = file(<span class="string"><span class="delimiter">&quot;</span><span class="content">path/to/my/signing.properties</span><span class="delimiter">&quot;</span></span>)
+<pre class="CodeRay highlight"><code data-lang="groovy">                <span class="comment">//...</span>
+                signingProperties {
+                    all {
+                        <span class="comment">// load file properties into all the signing property</span>
+                        propertiesFile = file(<span class="string"><span class="delimiter">&quot;</span><span class="content">path/to/my/signing.properties</span><span class="delimiter">&quot;</span></span>)
+                    }
+                    specificBuildType {
+                        <span class="comment">// override singing properties for specific buildtype</span>
+                        propertiesFile = file(<span class="string"><span class="delimiter">&quot;</span><span class="content">path/to/my/specific.properties</span><span class="delimiter">&quot;</span></span>)
+                    }
                 }
-                specificBuildType {
-                    <span class="comment">// override singing properties for specific buildtype</span>
-                    propertiesFile = file(<span class="string"><span class="delimiter">&quot;</span><span class="content">path/to/my/specific.properties</span><span class="delimiter">&quot;</span></span>)
-                }
-            }
-            <span class="comment">//...</span></code></pre>
+                <span class="comment">//...</span></code></pre>
 </div>
 </div>
 <div class="admonitionblock warning">
@@ -818,7 +848,7 @@ You should consider not to put keystore and credentials inside your repository.
 </table>
 </div>
 <div class="sect2">
-<h3 id="android">4.1. Android</h3>
+<h3 id="android">6.1. Android</h3>
 <div class="admonitionblock note">
 <table>
 <tr>
@@ -833,22 +863,22 @@ Delivery now support Android projects using Android plugin 2.x.x and 3.x.x
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">            <span class="comment">//...</span>
-            signingProperties {
-                <span class="comment">// the name you set here has to match a buildtype</span>
-                buildTypeName {
-                    storeFile = <span class="string"><span class="delimiter">'</span><span class="content">path/to/my/store.jks</span><span class="delimiter">'</span></span>
-                    storePassword = <span class="string"><span class="delimiter">'</span><span class="content">myStorePassword</span><span class="delimiter">'</span></span>
-                    keyAlias = <span class="string"><span class="delimiter">'</span><span class="content">myAlias</span><span class="delimiter">'</span></span>
-                    keyPassword = <span class="string"><span class="delimiter">'</span><span class="content">myPass</span><span class="delimiter">'</span></span>
+<pre class="CodeRay highlight"><code data-lang="groovy">                <span class="comment">//...</span>
+                signingProperties {
+                    <span class="comment">// the name you set here has to match a buildtype</span>
+                    buildTypeName {
+                        storeFile = <span class="string"><span class="delimiter">'</span><span class="content">path/to/my/store.jks</span><span class="delimiter">'</span></span>
+                        storePassword = <span class="string"><span class="delimiter">'</span><span class="content">myStorePassword</span><span class="delimiter">'</span></span>
+                        keyAlias = <span class="string"><span class="delimiter">'</span><span class="content">myAlias</span><span class="delimiter">'</span></span>
+                        keyPassword = <span class="string"><span class="delimiter">'</span><span class="content">myPass</span><span class="delimiter">'</span></span>
+                    }
                 }
-            }
-            <span class="comment">//...</span></code></pre>
+                <span class="comment">//...</span></code></pre>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="ios">4.2. iOS</h3>
+<h3 id="ios">6.2. iOS</h3>
 <div class="admonitionblock note">
 <table>
 <tr>
@@ -863,25 +893,25 @@ iOS support is based on the open source project <a href="https://github.com/open
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">            <span class="comment">//...</span>
-            signingProperties {
-                <span class="comment">// you can set the name you want</span>
-                <span class="comment">// for each signingProperty, you'll archive an IPA</span>
-                nameYouWant {
-                    target = <span class="string"><span class="delimiter">&quot;</span><span class="content">delivery</span><span class="delimiter">&quot;</span></span>
-                    scheme = <span class="string"><span class="delimiter">&quot;</span><span class="content">delivery</span><span class="delimiter">&quot;</span></span>
-                    certificateURI = <span class="string"><span class="delimiter">'</span><span class="content">path/to/my/certificat.p12</span><span class="delimiter">'</span></span>
-                    certificatePassword = <span class="string"><span class="delimiter">'</span><span class="content">myPass</span><span class="delimiter">'</span></span>
-                    <span class="comment">// you can specify multiple files separated by a comma</span>
-                    mobileProvisionURI = <span class="string"><span class="delimiter">'</span><span class="content">path/to/my/Provisioning_Profile.mobileprovision,path/to/my/Provisioning_Profile2.mobileprovision</span><span class="delimiter">'</span></span>
+<pre class="CodeRay highlight"><code data-lang="groovy">                <span class="comment">//...</span>
+                signingProperties {
+                    <span class="comment">// you can set the name you want</span>
+                    <span class="comment">// for each signingProperty, you'll archive an IPA</span>
+                    nameYouWant {
+                        target = <span class="string"><span class="delimiter">&quot;</span><span class="content">delivery</span><span class="delimiter">&quot;</span></span>
+                        scheme = <span class="string"><span class="delimiter">&quot;</span><span class="content">delivery</span><span class="delimiter">&quot;</span></span>
+                        certificateURI = <span class="string"><span class="delimiter">'</span><span class="content">path/to/my/certificat.p12</span><span class="delimiter">'</span></span>
+                        certificatePassword = <span class="string"><span class="delimiter">'</span><span class="content">myPass</span><span class="delimiter">'</span></span>
+                        <span class="comment">// you can specify multiple files separated by a comma</span>
+                        mobileProvisionURI = <span class="string"><span class="delimiter">'</span><span class="content">path/to/my/Provisioning_Profile.mobileprovision,path/to/my/Provisioning_Profile2.mobileprovision</span><span class="delimiter">'</span></span>
+                    }
                 }
-            }
-            <span class="comment">//...</span></code></pre>
+                <span class="comment">//...</span></code></pre>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="ionic">4.3. Ionic</h3>
+<h3 id="ionic">6.3. Ionic</h3>
 <div class="admonitionblock important">
 <table>
 <tr>
@@ -896,44 +926,81 @@ Ionic support is only available with the last Ionic version
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">            <span class="comment">//...</span>
-            signingProperties {
-                <span class="comment">// you have to use android or ios name for ionic signing configs</span>
-                android {
-                    <span class="comment">//See android needed properties</span>
+<pre class="CodeRay highlight"><code data-lang="groovy">                <span class="comment">//...</span>
+                signingProperties {
+                    <span class="comment">// you have to use android or ios name for ionic signing configs</span>
+                    android {
+                        <span class="comment">//See android needed properties</span>
+                    }
+                    ios {
+                        <span class="comment">//See ios needed properties</span>
+                        <span class="comment">//target and scheme are optionals for ionic</span>
+                    }
                 }
-                ios {
-                    <span class="comment">//See ios needed properties</span>
-                    <span class="comment">//target and scheme are optionals for ionic</span>
-                }
-            }
-            <span class="comment">//...</span></code></pre>
+                <span class="comment">//...</span></code></pre>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="react-native">4.4. React Native</h3>
+<h3 id="react-native">6.4. React Native</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">            <span class="comment">//...</span>
-            signingProperties {
-                <span class="comment">// you have to use android or ios name for react signing configs</span>
-                android {
-                    <span class="comment">//See android needed properties</span>
+<pre class="CodeRay highlight"><code data-lang="groovy">                <span class="comment">//...</span>
+                signingProperties {
+                    <span class="comment">// you have to use android or ios name for react signing configs</span>
+                    android {
+                        <span class="comment">//See android needed properties</span>
+                    }
+                    ios {
+                        <span class="comment">//See ios needed properties</span>
+                        <span class="comment">//target and scheme are optionals for ionic</span>
+                    }
                 }
-                ios {
-                    <span class="comment">//See ios needed properties</span>
-                    <span class="comment">//target and scheme are optionals for ionic</span>
+                <span class="comment">//...</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="docker">6.5. Docker</h3>
+<div class="paragraph">
+<p>Delivery allows you to build and push Docker images to registry.</p>
+</div>
+<div class="paragraph">
+<p>You can configure docker registry in the delivery extension :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">                <span class="comment">//...</span>
+                dockerRegistries {
+                    myEnterpriseRegistry {
+                        url = <span class="string"><span class="delimiter">&quot;</span><span class="content">https://my-enterprise.registry.com</span><span class="delimiter">&quot;</span></span>
+                        password = <span class="string"><span class="delimiter">&quot;</span><span class="content">topsecret</span><span class="delimiter">&quot;</span></span>
+                        user = <span class="string"><span class="delimiter">&quot;</span><span class="content">panda</span><span class="delimiter">&quot;</span></span>
+                    }
+                    homeRegistry {
+                        propertiesFile = file(<span class="string"><span class="delimiter">&quot;</span><span class="content">path/to/my/registry.properties</span><span class="delimiter">&quot;</span></span>)
+                    }
                 }
-            }
-            <span class="comment">//...</span></code></pre>
+                <span class="comment">//...</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To build a docker image you have to create a DockerBuild task. Delivery will detect it and add it to the build tasks.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">task(<span class="string"><span class="delimiter">'</span><span class="content">buildDockerImage</span><span class="delimiter">'</span></span>, <span class="key">type</span>: DockerBuild){
+    buildPath <span class="string"><span class="delimiter">'</span><span class="content">.</span><span class="delimiter">'</span></span> <span class="comment">//default '.'</span>
+    imageName <span class="string"><span class="delimiter">'</span><span class="content">delivery-test</span><span class="delimiter">'</span></span> <span class="comment">//default project.artifact</span>
+    registry <span class="string"><span class="delimiter">'</span><span class="content">myEnterpriseRegistry</span><span class="delimiter">'</span></span>
+}</code></pre>
 </div>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="multi-modules">5. Multi Modules</h2>
+<h2 id="multi-modules">7. Multi Modules</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>You can link <strong>Install</strong> task and <strong>Upload</strong> task from childs modules with parent module by using <strong>autoLinkSubModules = true</strong> or <strong>linkedSubModules = 'subModule1', &#8230;&#8203;</strong></p>
@@ -995,15 +1062,14 @@ You need to apply Delivery on all modules you want to use with Delivery
 </div>
 </div>
 <div class="sect1">
-<h2 id="custom-projects">6. Custom projects</h2>
+<h2 id="custom-projects">8. Custom projects</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>If your project doesn&#8217;t answer the Delivery&#8217;s supported configurations (iOS, Android, Ionic, Java, Groovy), you can define your own configurator.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">            <span class="comment">//...</span>
-            delivery {
+<pre class="CodeRay highlight"><code data-lang="groovy">                <span class="comment">//...</span>
                 configurator = [
                         <span class="comment">/**
                          * Configure your project
@@ -1019,8 +1085,7 @@ You need to apply Delivery on all modules you want to use with Delivery
                          */</span>
                         <span class="key">applySigningProperty</span>: { property -&gt; <span class="comment">/*...*/</span> }
                 ]
-            }
-            <span class="comment">//...</span></code></pre>
+                <span class="comment">//...</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1028,20 +1093,20 @@ You need to apply Delivery on all modules you want to use with Delivery
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">            <span class="comment">//...</span>
-            task buildVariant(<span class="key">type</span>: DeliveryBuild) {
-                variantName = <span class="string"><span class="delimiter">'</span><span class="content">variant</span><span class="delimiter">'</span></span>
-                outputFiles = [<span class="string"><span class="delimiter">&quot;</span><span class="content">release</span><span class="delimiter">&quot;</span></span>: file(<span class="string"><span class="delimiter">'</span><span class="content">build/variant.txt</span><span class="delimiter">'</span></span>)]
-            } &lt;&lt; {
-                cmd(<span class="string"><span class="delimiter">'</span><span class="content">java -jar delivery-test.jar variant</span><span class="delimiter">'</span></span>)
-            }
-            <span class="comment">//...</span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">                <span class="comment">//...</span>
+                task(<span class="string"><span class="delimiter">'</span><span class="content">buildVariant</span><span class="delimiter">'</span></span>, <span class="key">type</span>: DeliveryBuild) {
+                    variantName = <span class="string"><span class="delimiter">'</span><span class="content">variant</span><span class="delimiter">'</span></span>
+                    outputFiles = [<span class="string"><span class="delimiter">&quot;</span><span class="content">release</span><span class="delimiter">&quot;</span></span>: file(<span class="string"><span class="delimiter">'</span><span class="content">build/variant.txt</span><span class="delimiter">'</span></span>)]
+                }.doFirst {
+                    cmd(<span class="string"><span class="delimiter">'</span><span class="content">java -jar delivery-test.jar variant</span><span class="delimiter">'</span></span>)
+                }
+                <span class="comment">//...</span></code></pre>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="logs">7. Logs</h2>
+<h2 id="logs">9. Logs</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>By default Delivery provide beautiful and colorful logs.
@@ -1063,10 +1128,45 @@ gradle myFlow -Dugly
 </div>
 </div>
 <div class="sect1">
-<h2 id="troubleshooting">8. Troubleshooting</h2>
+<h2 id="debug">10. Debug</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>listArtifacts</strong> task provides many informations about the artifacts that will be archived in the project</p>
+</div>
+<div class="listingblock">
+<div class="title">Example:</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="shell">&gt; Task :listArtifacts
+File n°1
+Name: android-app-dev-1.0.0-SNAPSHOT-debug.apk
+Extension: apk
+Type: apk
+Classifier: debug
+Group: com.leroymerlin.pandroid.plugin.testapp
+Path: /Users/alexandre/Workspace/LM/delivery-gradle-plugin/delivery-plugin/build/tests/integration/android/build/outputs/apk/dev/debug/android-app-dev-1.0.0-SNAPSHOT-debug.apk
+Url: file:/Users/alexandre/Workspace/LM/delivery-gradle-plugin/delivery-plugin/build/tests/integration/android/build/archive/
+
+
+File n°2
+Name: android-app-dev-1.0.0-SNAPSHOT-debug.apk
+Extension: apk
+Type: apk
+Classifier: test-debug
+Group: com.leroymerlin.pandroid.plugin.testapp
+Path: /Users/alexandre/Workspace/LM/delivery-gradle-plugin/delivery-plugin/build/tests/integration/android/build/outputs/apk/dev/debug/android-app-dev-1.0.0-SNAPSHOT-debug.apk
+Url: file:/Users/alexandre/Workspace/LM/delivery-gradle-plugin/delivery-plugin/build/tests/integration/android/build/archive/</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>listDockerImages</strong> task provides many informations about the docker image that will be archived in the project</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="troubleshooting">11. Troubleshooting</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="unknown-error-1-ffffffffffffffff">8.1. Unknown error -1=ffffffffffffffff</h3>
+<h3 id="unknown-error-1-ffffffffffffffff">11.1. Unknown error -1=ffffffffffffffff</h3>
 <div class="paragraph">
 <p>If you&#8217;re using Delivery with automation server like Jenkins for iOS builds, you may see this error happens. To solve this, we made the plugin to be able to unlock the Apple Keychain which can solve this problem.<br></p>
 </div>
@@ -1087,12 +1187,21 @@ security unlock-keychain -p $KEYCHAIN_PASSWORD ~/Library/Keychains/login.keychai
 </table>
 </div>
 </div>
+<div class="sect2">
+<h3 id="attempt-to-unlock-read-lock-not-locked-by-current-thread">11.2. attempt to unlock read lock, not locked by current thread</h3>
+<div class="paragraph">
+<p>Known issue with Android plugin 3.1.+ <a href="https://issuetracker.google.com/issues/80464216" class="bare">https://issuetracker.google.com/issues/80464216</a></p>
+</div>
+<div class="paragraph">
+<p>To fix it you should migrate to 3.2.+. For react project you may have to replace <strong>OutputFile.ABI</strong> by <strong>com.android.build.OutputFile.ABI</strong> in <strong>app/build.gradle</strong></p>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-07-18 13:59:35 CEST
+Last updated 2018-09-28 12:00:00 CEST
 </div>
 </div>
 </body>

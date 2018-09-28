@@ -241,27 +241,41 @@ class DeliveryPluginTest {
                 }
                 //...
                 //end::deliveryBuildExample[]
+
                 //tag::configuratorExample[]
                 //...
-                delivery {
-                    configurator = [
-                            /**
-                             * Configure your project
-                             */
-                            configure           : {/*...*/ },
-                            /**
-                             * Apply some properties to your project
-                             */
-                            applyProperties     : {/*...*/ },
-                            /**
-                             * Apply the signing properties to your project
-                             * @param property
-                             */
-                            applySigningProperty: { property -> /*...*/ }
-                    ]
-                }
+                configurator = [
+                        /**
+                         * Configure your project
+                         */
+                        configure           : {/*...*/ },
+                        /**
+                         * Apply some properties to your project
+                         */
+                        applyProperties     : {/*...*/ },
+                        /**
+                         * Apply the signing properties to your project
+                         * @param property
+                         */
+                        applySigningProperty: { property -> /*...*/ }
+                ]
                 //...
                 //end::configuratorExample[]
+
+                //tag::dockerRegistryExample[]
+                //...
+                dockerRegistries {
+                    myEnterpriseRegistry {
+                        url = "https://my-enterprise.registry.com"
+                        password = "topsecret"
+                        user = "panda"
+                    }
+                    homeRegistry {
+                        propertiesFile = file("path/to/my/registry.properties")
+                    }
+                }
+                //...
+                //end::dockerRegistryExample[]
             }
         }
 
