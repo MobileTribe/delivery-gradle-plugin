@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.6.1">
-<meta name="author" content="Delivery v3.1.3-SNAPSHOT, Fri Sep 28 12:00:02 CEST 2018">
+<meta name="author" content="Delivery v3.1.3-SNAPSHOT, Fri Sep 28 12:02:10 CEST 2018">
 <title>Tutorial</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -521,7 +521,7 @@ table.CodeRay td.code>pre{padding:0}
 <div id="header">
 <h1>Tutorial</h1>
 <div class="details">
-<span id="author" class="author">Delivery v3.1.3-SNAPSHOT, Fri Sep 28 12:00:02 CEST 2018</span><br>
+<span id="author" class="author">Delivery v3.1.3-SNAPSHOT, Fri Sep 28 12:02:10 CEST 2018</span><br>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -530,14 +530,13 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#version-properties">2. Version.properties</a></li>
 <li><a href="#delivery-extension">3. Delivery extension</a></li>
 <li><a href="#flows">4. Flows</a></li>
-<li><a href="#tasks">5. Tasks</a></li>
+<li><a href="#docker">5. Docker</a></li>
 <li><a href="#signing-config">6. Signing config</a>
 <ul class="sectlevel2">
 <li><a href="#android">6.1. Android</a></li>
 <li><a href="#ios">6.2. iOS</a></li>
 <li><a href="#ionic">6.3. Ionic</a></li>
 <li><a href="#react-native">6.4. React Native</a></li>
-<li><a href="#docker">6.5. Docker</a></li>
 </ul>
 </li>
 <li><a href="#multi-modules">7. Multi Modules</a></li>
@@ -805,9 +804,42 @@ To simplify your life, Delivery provides an implementation of git release flow.
 </div>
 </div>
 <div class="sect1">
-<h2 id="tasks">5. Tasks</h2>
+<h2 id="docker">5. Docker</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p>Delivery allows you to build and push Docker images to registry.</p>
+</div>
+<div class="paragraph">
+<p>You can configure docker registry in the delivery extension :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">                <span class="comment">//...</span>
+                dockerRegistries {
+                    myEnterpriseRegistry {
+                        url = <span class="string"><span class="delimiter">&quot;</span><span class="content">https://my-enterprise.registry.com</span><span class="delimiter">&quot;</span></span>
+                        password = <span class="string"><span class="delimiter">&quot;</span><span class="content">topsecret</span><span class="delimiter">&quot;</span></span>
+                        user = <span class="string"><span class="delimiter">&quot;</span><span class="content">panda</span><span class="delimiter">&quot;</span></span>
+                    }
+                    homeRegistry {
+                        propertiesFile = file(<span class="string"><span class="delimiter">&quot;</span><span class="content">path/to/my/registry.properties</span><span class="delimiter">&quot;</span></span>)
+                    }
+                }
+                <span class="comment">//...</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To build a docker image you have to create a DockerBuild task. Delivery will detect it and add it to the build tasks.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">task(<span class="string"><span class="delimiter">'</span><span class="content">buildDockerImage</span><span class="delimiter">'</span></span>, <span class="key">type</span>: DockerBuild){
+    buildPath <span class="string"><span class="delimiter">'</span><span class="content">.</span><span class="delimiter">'</span></span> <span class="comment">//default '.'</span>
+    imageName <span class="string"><span class="delimiter">'</span><span class="content">delivery-test</span><span class="delimiter">'</span></span> <span class="comment">//default project.artifact</span>
+    registry <span class="string"><span class="delimiter">'</span><span class="content">myEnterpriseRegistry</span><span class="delimiter">'</span></span>
+}</code></pre>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -957,43 +989,6 @@ Ionic support is only available with the last Ionic version
                     }
                 }
                 <span class="comment">//...</span></code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="docker">6.5. Docker</h3>
-<div class="paragraph">
-<p>Delivery allows you to build and push Docker images to registry.</p>
-</div>
-<div class="paragraph">
-<p>You can configure docker registry in the delivery extension :</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">                <span class="comment">//...</span>
-                dockerRegistries {
-                    myEnterpriseRegistry {
-                        url = <span class="string"><span class="delimiter">&quot;</span><span class="content">https://my-enterprise.registry.com</span><span class="delimiter">&quot;</span></span>
-                        password = <span class="string"><span class="delimiter">&quot;</span><span class="content">topsecret</span><span class="delimiter">&quot;</span></span>
-                        user = <span class="string"><span class="delimiter">&quot;</span><span class="content">panda</span><span class="delimiter">&quot;</span></span>
-                    }
-                    homeRegistry {
-                        propertiesFile = file(<span class="string"><span class="delimiter">&quot;</span><span class="content">path/to/my/registry.properties</span><span class="delimiter">&quot;</span></span>)
-                    }
-                }
-                <span class="comment">//...</span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>To build a docker image you have to create a DockerBuild task. Delivery will detect it and add it to the build tasks.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">task(<span class="string"><span class="delimiter">'</span><span class="content">buildDockerImage</span><span class="delimiter">'</span></span>, <span class="key">type</span>: DockerBuild){
-    buildPath <span class="string"><span class="delimiter">'</span><span class="content">.</span><span class="delimiter">'</span></span> <span class="comment">//default '.'</span>
-    imageName <span class="string"><span class="delimiter">'</span><span class="content">delivery-test</span><span class="delimiter">'</span></span> <span class="comment">//default project.artifact</span>
-    registry <span class="string"><span class="delimiter">'</span><span class="content">myEnterpriseRegistry</span><span class="delimiter">'</span></span>
-}</code></pre>
 </div>
 </div>
 </div>
@@ -1201,7 +1196,7 @@ security unlock-keychain -p $KEYCHAIN_PASSWORD ~/Library/Keychains/login.keychai
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-09-28 12:00:00 CEST
+Last updated 2018-09-28 12:02:08 CEST
 </div>
 </div>
 </body>

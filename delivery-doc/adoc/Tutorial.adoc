@@ -94,8 +94,24 @@ NOTE: To simplify your life, Delivery provides an implementation of git release 
 
 link:Flows.html[See preconfigured Flows]
 
-== Tasks
+== Docker
 
+Delivery allows you to build and push Docker images to registry.
+
+You can configure docker registry in the delivery extension :
+[source, groovy]
+----
+include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[tags=dockerRegistryExample]
+
+----
+
+To build a docker image you have to create a DockerBuild task. Delivery will detect it and add it to the build tasks.
+
+[source, groovy]
+----
+include::{testGroovyDir}com/leroymerlin/plugins/test/integration/DockerTest.groovy[tags=dockerBuild]
+
+----
 
 == Signing config
 
@@ -143,25 +159,6 @@ include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[t
 [source,groovy]
 ----
 include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[tags=signingReactExample]
-----
-
-=== Docker
-
-Delivery allows you to build and push Docker images to registry.
-
-You can configure docker registry in the delivery extension :
-[source, groovy]
-----
-include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[tags=dockerRegistryExample]
-
-----
-
-To build a docker image you have to create a DockerBuild task. Delivery will detect it and add it to the build tasks.
-
-[source, groovy]
-----
-include::{testGroovyDir}com/leroymerlin/plugins/test/integration/DockerTest.groovy[tags=dockerBuild]
-
 ----
 
 
