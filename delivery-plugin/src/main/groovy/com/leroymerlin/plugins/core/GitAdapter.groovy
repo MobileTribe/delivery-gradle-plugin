@@ -55,7 +55,9 @@ fi
             }
 
             //configure origin
-            exec(['git', 'config', 'remote.origin.fetch', "+refs/heads/*:refs/remotes/origin/*"])
+            exec(['git', 'config', 'remote.origin.fetch', "+refs/heads/*:refs/remotes/origin/*"]) {
+                silent = true
+            }
         }
     }
 
