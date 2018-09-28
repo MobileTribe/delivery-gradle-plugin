@@ -11,7 +11,10 @@ class DeliveryLogger {
 
         @Override
         synchronized String format(LogRecord record) {
-            String message = formatMessage(record);
+            String message = formatMessage(record)
+            if (SystemUtils.getEnvProperty("ugly") != null) {
+                return message
+            }
             return String.format('%1$s: %2$s\n',
                     record.getLevel().getLocalizedName(),
                     message)
@@ -28,26 +31,26 @@ class DeliveryLogger {
     }
 
 
-    private void logMessage(String message, Ansi color = null, Level logLevel = Level.INFO) {
+    private static void logMessage(String message, Ansi color = null, Level logLevel = Level.INFO) {
         logger.log(logLevel, color != null ? color.colorize(message) : message)
     }
 
-    void logError(String message) {
+    static void logError(String message) {
         logMessage(message, (SystemUtils.getEnvProperty("ugly") != null)
                 ? null : new Ansi(Ansi.HIGH_INTENSITY, Ansi.RED), Level.SEVERE)
     }
 
-    void logWarning(String message) {
+    static void logWarning(String message) {
         logMessage(message, (SystemUtils.getEnvProperty("ugly") != null)
                 ? null : new Ansi(Ansi.HIGH_INTENSITY, Ansi.YELLOW), Level.WARNING)
     }
 
-    void logOutput(String message) {
+    static void logOutput(String message) {
         logMessage(message, (SystemUtils.getEnvProperty("ugly") != null)
                 ? null : Ansi.Green, Level.WARNING)
     }
 
-    void logInfo(String message) {
+    static void logInfo(String message) {
         logMessage(message, (SystemUtils.getEnvProperty("ugly") != null)
                 ? null : Ansi.Cyan, Level.WARNING)
     }

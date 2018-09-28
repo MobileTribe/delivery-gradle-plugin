@@ -25,6 +25,7 @@ class GitAdapter implements BaseScmAdapter {
         this.project = project
         def result = exec(["git", "status"]) {
             needSuccessExitCode = false
+            silent = true
         }
         if (result.exitValue != Executor.EXIT_CODE_OK) {
             deliveryLogger.logWarning("Git is not initialized on this project")
