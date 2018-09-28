@@ -27,15 +27,11 @@ class DockerBuild extends DefaultTask {
     @TaskAction
     void run() {
         def fullImageName = getImageName()
-        cmd("docker build -t $fullImageName ${buildPath}")
-    }
-
-
-    def cmd(String cmd, @DelegatesTo(Executor.ExecutorParams) Closure closure = {}) {
-        return Executor.exec(Executor.convertToCommandLine(cmd), {
+        Executor.exec(["docker" ,"build", "-t" , fullImageName ,buildPath]){
             directory = project.projectDir
-        } << closure)
+        }
     }
+
 }
 
 

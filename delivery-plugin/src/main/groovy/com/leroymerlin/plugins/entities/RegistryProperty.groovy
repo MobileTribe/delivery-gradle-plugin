@@ -16,7 +16,7 @@ class RegistryProperty {
 
     void setPropertiesFile(File propertiesFile) {
         if (!propertiesFile.exists()) {
-            deliveryLogger.logError("Can't load ${propertiesFile.path} in $name registryProperties")
+            deliveryLogger.logError("Can't load ${propertiesFile.path} in $name dockerRegistries")
         } else {
             deliveryLogger.logInfo("$name registryProperty loaded from ${propertiesFile.path}")
             Properties fileProp = new Properties()

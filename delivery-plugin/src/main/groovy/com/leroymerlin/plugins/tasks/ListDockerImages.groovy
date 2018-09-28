@@ -11,7 +11,7 @@ class ListDockerImages extends DefaultTask {
     private static final DeliveryLogger deliveryLogger = new DeliveryLogger()
 
     @TaskAction
-    listArtifacts() {
+    def listArtifacts() {
         def taskContainer = project.tasks.withType(DockerUpload)
         if (taskContainer != null && taskContainer.size() > 0) {
             taskContainer.eachWithIndex {

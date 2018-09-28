@@ -1,6 +1,7 @@
 package com.leroymerlin.plugins.tasks
 
 import com.leroymerlin.plugins.DeliveryPluginExtension
+import com.leroymerlin.plugins.cli.Executor
 import com.leroymerlin.plugins.entities.RegistryProperty
 import com.leroymerlin.plugins.tasks.build.DockerBuild
 import org.gradle.api.DefaultTask
@@ -23,19 +24,35 @@ class DockerUpload extends DefaultTask {
             def url = registryProperties.url
             def password = registryProperties.password
             def user = registryProperties.user
-            def passwordParam = ""
-            if (password != null) {
-                passwordParam = "-p $password "
-            }
-            def userParam = ""
-            if (user != null) {
-                userParam = "-u $user"
-            }
+
 
             def fullName = "${url}/${buildTask.getImageName()}"
-            buildTask.cmd("docker tag ${buildTask.getImageName()} " + fullName)
-            buildTask.cmd("docker login $passwordParam $userParam $url", [hideCommand:true])
-            buildTask.cmd("docker push $fullName")
+
+
+            Executor.exec(["docker", "tag", buildTask.getImageName(), fullName]){
+                directory = project.projectDir
+            }
+
+
+            def loginParams = ["docker", "login"]
+
+            if (password != null) {
+                loginParams.add("-p")
+                loginParams.add(password)
+            }
+            if (user != null) {
+                loginParams.add("-u")
+                loginParams.add(user)
+            }
+            loginParams.add(url)
+
+            Executor.exec(loginParams){
+                directory = project.projectDir
+                hideCommand = true
+            }
+            Executor.exec(["docker", "push", fullName]){
+                directory = project.projectDir
+            }
         } else {
             buildTask.deliveryLogger.logWarning("can't create docker image. Registry ${buildTask.registry} not configured")
         }
@@ -45,7 +62,7 @@ class DockerUpload extends DefaultTask {
 
     RegistryProperty getRegistry() {
         def extension = project.delivery as DeliveryPluginExtension
-        def registryProperties = extension.registryProperties.getByName(buildTask.registry)
+        def registryProperties = extension.dockerRegistries.getByName(buildTask.registry)
         registryProperties
     }
 }

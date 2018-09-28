@@ -34,7 +34,7 @@ class DockerTest extends AbstractIntegrationTest {
 
 
 delivery{
-    registryProperties {
+    dockerRegistries {
         main {
             url 'docker.registry.com'
         }

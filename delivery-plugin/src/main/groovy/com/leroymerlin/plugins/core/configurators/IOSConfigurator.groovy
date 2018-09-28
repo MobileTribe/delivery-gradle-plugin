@@ -111,6 +111,7 @@ class IOSConfigurator extends ProjectConfigurator {
             }
             project.infoplist {
                 version = project.version
+                shortVersionString = project.versionId
             }
         }
     }

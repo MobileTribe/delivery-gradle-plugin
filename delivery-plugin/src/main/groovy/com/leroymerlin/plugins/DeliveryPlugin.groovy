@@ -192,7 +192,6 @@ class DeliveryPlugin implements Plugin<Project> {
             project.tasks.withType(DockerBuild).asMap.each {
                 String taskName, DockerBuild task ->
                     if (project.version == null) throwException("Version", project)
-                    if (project.artifact == null) throwException("Artifact", project)
 
                     project.task("${UPLOAD_TASK_PREFIX}${task.name.capitalize()}", type: DockerUpload, group: TASK_GROUP, dependsOn: [task]) {
                         buildTask = task
