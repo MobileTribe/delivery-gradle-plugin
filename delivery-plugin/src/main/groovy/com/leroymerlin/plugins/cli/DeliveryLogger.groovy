@@ -13,7 +13,7 @@ class DeliveryLogger {
         synchronized String format(LogRecord record) {
             String message = formatMessage(record)
             if (SystemUtils.getEnvProperty("ugly") == null) {
-                return message
+                return "$message\n"
             }
             return String.format('%1$s: %2$s\n',
                     record.getLevel().getLocalizedName(),
