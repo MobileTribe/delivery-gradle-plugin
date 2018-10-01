@@ -20,7 +20,21 @@ buildscript {
 
 apply plugin: 'com.leroymerlin.delivery'
 ```
-Create a *version.properties* file in your module. This file will contain your module *version*, *versionId* and *artifact* the plugin needs.
+
+== Version.properties
+
+Delivery use version.properties file define in project's root path
+
+[source,groovy]
+----
+include::{testProjectDir}multiModules/version.properties[]
+----
+
+WARNING: Delivery needs a *version.properties* file in your module. This file will contain your module *version*, *versionId* and *artifact*.
+
+
+== Delivery extension
+
 
 Configure the delivery gradle extension in your build.gradle to fit your need.
 
@@ -46,6 +60,11 @@ delivery {
     signingProperties {
         ...
     }
+
+    // docker registries configuration
+    dockerRegistries {
+        ...
+    }
 }
 ```
 
@@ -62,7 +81,7 @@ You can use system properties to inject scm credentials, set your project versio
 
 == Flows
 
-Flow allows you to configure release steps. +
+Flow allows you to configure build steps. +
 Once a flow is configured, you can run it by calling the gradle task named "yourFlowName+*Flow*".
 
 .Methods provided by Delivery:
@@ -75,13 +94,23 @@ NOTE: To simplify your life, Delivery provides an implementation of git release 
 
 link:Flows.html[See preconfigured Flows]
 
-== Version.properties
+== Docker
 
-Delivery use version.properties file define in project's root path
+Delivery allows you to build and push Docker images to registry.
 
-[source,groovy]
+You can configure docker registry in the delivery extension :
+[source, groovy]
 ----
-include::{testProjectDir}multiModules/version.properties[]
+include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[tags=dockerRegistryExample]
+
+----
+
+To build a docker image you have to create a DockerBuild task. Delivery will detect it and add it to the build tasks.
+
+[source, groovy]
+----
+include::{testGroovyDir}com/leroymerlin/plugins/test/integration/DockerTest.groovy[tags=dockerBuild]
+
 ----
 
 == Signing config
@@ -132,6 +161,7 @@ include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[t
 include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[tags=signingReactExample]
 ----
 
+
 == Multi Modules
 
 You can link *Install* task and *Upload* task from childs modules with parent module by using *autoLinkSubModules = true* or *linkedSubModules = 'subModule1', ...*
@@ -169,6 +199,38 @@ But if you prefer to watch classic logs you can set a system property or environ
 .Sample to disable color logs
 TIP: gradle myFlow -Dugly
 
+
+== Debug
+
+*listArtifacts* task provides many informations about the artifacts that will be archived in the project
+
+.Example:
+[source,shell]
+----
+> Task :listArtifacts
+File n°1
+Name: android-app-dev-1.0.0-SNAPSHOT-debug.apk
+Extension: apk
+Type: apk
+Classifier: debug
+Group: com.leroymerlin.pandroid.plugin.testapp
+Path: /Users/alexandre/Workspace/LM/delivery-gradle-plugin/delivery-plugin/build/tests/integration/android/build/outputs/apk/dev/debug/android-app-dev-1.0.0-SNAPSHOT-debug.apk
+Url: file:/Users/alexandre/Workspace/LM/delivery-gradle-plugin/delivery-plugin/build/tests/integration/android/build/archive/
+
+
+File n°2
+Name: android-app-dev-1.0.0-SNAPSHOT-debug.apk
+Extension: apk
+Type: apk
+Classifier: test-debug
+Group: com.leroymerlin.pandroid.plugin.testapp
+Path: /Users/alexandre/Workspace/LM/delivery-gradle-plugin/delivery-plugin/build/tests/integration/android/build/outputs/apk/dev/debug/android-app-dev-1.0.0-SNAPSHOT-debug.apk
+Url: file:/Users/alexandre/Workspace/LM/delivery-gradle-plugin/delivery-plugin/build/tests/integration/android/build/archive/
+----
+
+*listDockerImages* task provides many informations about the docker image that will be archived in the project
+
+
 == Troubleshooting
 
 === Unknown error -1=ffffffffffffffff
@@ -179,3 +241,9 @@ To use this feature, define a system property or environment variable named *KEY
 
 .Command executed to unlock the Apple Keychain
 TIP: security unlock-keychain -p $KEYCHAIN_PASSWORD ~/Library/Keychains/login.keychain-db
+
+=== attempt to unlock read lock, not locked by current thread
+
+Known issue with Android plugin 3.1.+ https://issuetracker.google.com/issues/80464216
+
+To fix it you should migrate to 3.2.+. For react project you may have to replace *OutputFile.ABI* by *com.android.build.OutputFile.ABI* in *app/build.gradle*

@@ -2,6 +2,9 @@ apply plugin: 'groovy'
 apply plugin: 'com.leroymerlin.delivery'
 
 delivery {
+
+    enableReleaseGitFlow = true
+
     archiveRepositories = project.ext.properties.containsKey('bintrayRepositories') ? project.ext.bintrayRepositories : {
     }
 

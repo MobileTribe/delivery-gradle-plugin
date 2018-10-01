@@ -30,13 +30,17 @@ class IOSConfigurator extends ProjectConfigurator {
         super.setup(project, extension)
 
         if (SystemUtils.getEnvProperty("KEYCHAIN_PASSWORD") != null) {
-            Executor.exec(["security", "unlock-keychain", "-p", SystemUtils.getEnvProperty("KEYCHAIN_PASSWORD"), "~/Library/Keychains/login.keychain-db"], [directory: project.projectDir])
+            Executor.exec(["security", "unlock-keychain", "-p", SystemUtils.getEnvProperty("KEYCHAIN_PASSWORD"), "~/Library/Keychains/login.keychain-db"]) {
+                directory = project.projectDir
+            }
         }
 
         if (isFlutterProject) {
             project.task("prepareIOSProject", group: DeliveryPlugin.TASK_GROUP).doLast {
                 project.file("Flutter/Generated.xcconfig").delete()
-                Executor.exec(["flutter", "build", "ios", "--no-codesign"], [directory: project.projectDir.toString().replace("/ios", "")])
+                Executor.exec(["flutter", "build", "ios", "--no-codesign"]) {
+                    directory = new File(project.projectDir.toString().replace("/ios", ""))
+                }
             }
         }
     }
@@ -49,7 +53,6 @@ class IOSConfigurator extends ProjectConfigurator {
         if (!project.plugins.hasPlugin(pluginId)) {
             project.plugins.apply(pluginId)
             applyProperties()
-            deliveryLogger.logInfo("group used : ${project.group}")
         }
     }
 
@@ -108,6 +111,7 @@ class IOSConfigurator extends ProjectConfigurator {
             }
             project.infoplist {
                 version = project.version
+                shortVersionString = project.versionId
             }
         }
     }

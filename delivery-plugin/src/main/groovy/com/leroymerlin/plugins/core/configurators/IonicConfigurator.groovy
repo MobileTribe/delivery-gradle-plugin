@@ -23,8 +23,23 @@ class IonicConfigurator extends ProjectConfigurator {
         super.setup(project, extension)
         String signingBuild = SystemUtils.getEnvProperty(IONIC_BUILD)
 
-        Executor.exec(["npm"], ["failOnStderr": true, "failOnStderrMessage": "I don't find npm :(, please look at https://www.npmjs.com/get-npm for more information"])
-        Executor.exec(["ionic"], ["failOnStderr": true, "failOnStderrMessage": "I don't find ionic :(, please look at https://ionicframework.com/ for more information"])
+        def npmResult = Executor.exec(["npm"]) {
+            needSuccessExitCode = false
+        }
+
+        if (npmResult.exitValue == Executor.EXIT_CODE_NOT_FOUND) {
+            throw new GradleException("I don't find npm :(, please look at https://www.npmjs.com/get-npm for more information")
+        }
+
+        def ionicResult = Executor.exec(["ionic"]) {
+            needSuccessExitCode = false
+            inputPatterns = ["The Ionic CLI has an update available": "y"]
+        }
+
+        if (ionicResult.exitValue == Executor.EXIT_CODE_NOT_FOUND) {
+            throw new GradleException("I don't find ionic :(, please look at https://ionicframework.com/ for more information")
+        }
+
 
         if (signingBuild == 'ios') {
             nestedConfigurator = new IOSConfigurator()
@@ -39,8 +54,13 @@ class IonicConfigurator extends ProjectConfigurator {
         }
         project.task("prepareNpm", group: DeliveryPlugin.TASK_GROUP).doLast {
             deliveryLogger.logInfo("Delivery support Ionic > 3.0 & Cordova > 7.0")
-            Executor.exec(["npm", "install"], [directory: project.projectDir], true)
-            Executor.exec(["ionic", "-v"], [directory: project.projectDir], true)
+
+            Executor.exec(["npm", "install"]) {
+                directory = project.projectDir
+            }
+            Executor.exec(["ionic", "-v"]) {
+                directory = project.projectDir
+            }
         }.dependsOn("prepareProject")
     }
 
@@ -69,8 +89,6 @@ class IonicConfigurator extends ProjectConfigurator {
             if (!project.group) {
                 throw new GradleException("Project group is not defined. Please use a gradle properties or configure your id in config.xml")
             }
-            deliveryLogger.logInfo("group used : ${project.group}")
-
             extension.signingProperties.each { signingProperty -> handleProperty(signingProperty) }
         }
     }
@@ -105,7 +123,9 @@ class IonicConfigurator extends ProjectConfigurator {
             def settingsGradle = project.file("platforms/${signingName}/${signingName == 'android' ? "delivery-" : ""}settings.gradle")
 
             project.task(preparePlatformTask, group: DeliveryPlugin.TASK_GROUP).doLast {
-                Executor.exec(["ionic", "cordova", "build", signingName, "--release"], [directory: project.projectDir], true)
+                Executor.exec(["ionic", "cordova", "build", signingName, "--release"]) {
+                    directory = project.projectDir
+                }
 
                 if (signingName == 'android') {
                     settingsGradle << project.file("platforms/${signingName}/settings.gradle").text

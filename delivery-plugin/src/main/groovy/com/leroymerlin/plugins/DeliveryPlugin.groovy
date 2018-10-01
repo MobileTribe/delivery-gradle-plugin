@@ -2,8 +2,11 @@ package com.leroymerlin.plugins
 
 import com.leroymerlin.plugins.cli.DeliveryLogger
 import com.leroymerlin.plugins.core.configurators.*
+import com.leroymerlin.plugins.tasks.DockerUpload
 import com.leroymerlin.plugins.tasks.ListArtifacts
+import com.leroymerlin.plugins.tasks.ListDockerImages
 import com.leroymerlin.plugins.tasks.build.DeliveryBuild
+import com.leroymerlin.plugins.tasks.build.DockerBuild
 import com.leroymerlin.plugins.utils.PropertiesUtils
 import org.gradle.api.Action
 import org.gradle.api.GradleException
@@ -41,8 +44,9 @@ class DeliveryPlugin implements Plugin<Project> {
     public static final String UPLOAD_TASK_PREFIX = 'upload'
     public static final String INSTALL_TASK_PREFIX = 'install'
 
-    public static final String TASK_UPLOAD = 'uploadArtifacts'
-    public static final String TASK_INSTALL = 'installArtifacts'
+    public static final String UPLOAD_TASK = 'uploadArtifacts'
+    public static final String INSTALL_TASK = 'installArtifacts'
+    public static final String BASE_INSTALL_TASK = 'install'
 
     static final String VERSION_ARG = 'VERSION'
     static final String VERSION_ID_ARG = 'VERSION_ID'
@@ -105,6 +109,7 @@ class DeliveryPlugin implements Plugin<Project> {
         })
 
         project.ext.DeliveryBuild = DeliveryBuild
+        project.ext.DockerBuild = DockerBuild
 
         setupProperties()
 
@@ -119,18 +124,18 @@ class DeliveryPlugin implements Plugin<Project> {
         }
         this.deliveryExtension.configurator = detectedConfigurator
 
-        project.task(TASK_UPLOAD, group: TASK_GROUP)
-        project.task(TASK_INSTALL, group: TASK_GROUP)
+        project.task(UPLOAD_TASK, group: TASK_GROUP)
+        project.task(INSTALL_TASK, group: TASK_GROUP)
+        project.tasks.maybeCreate(BASE_INSTALL_TASK)
+
         project.subprojects {
             Project subproject ->
                 subproject.afterEvaluate {
                     if (deliveryExtension.autoLinkSubModules || deliveryExtension.linkedSubModules.contains(subproject.path)) {
-
                         subproject.plugins.withType(DeliveryPlugin.class) {
-                            deliveryLogger.logInfo("${subproject.path} Install and Upload tasks linked to ${project.path}")
-
-                            project.tasks.getByName(TASK_INSTALL).dependsOn += subproject.tasks.getByName(TASK_INSTALL)
-                            project.tasks.getByName(TASK_UPLOAD).dependsOn += subproject.tasks.getByName(TASK_UPLOAD)
+                            project.tasks.getByName(BASE_INSTALL_TASK).dependsOn += subproject.tasks.getByName(BASE_INSTALL_TASK)
+                            project.tasks.getByName(INSTALL_TASK).dependsOn += subproject.tasks.getByName(INSTALL_TASK)
+                            project.tasks.getByName(UPLOAD_TASK).dependsOn += subproject.tasks.getByName(UPLOAD_TASK)
                         }
                     }
                 }
@@ -142,11 +147,8 @@ class DeliveryPlugin implements Plugin<Project> {
             }
             deliveryExtension.configurator.configure()
 
-            def buildTasks = []
-            buildTasks.addAll(project.tasks.withType(DeliveryBuild))
-
-            buildTasks.each {
-                task ->
+            project.tasks.withType(DeliveryBuild).asMap.each {
+                taskName, task ->
 
                     if (project.versionId == null) throwException("VersionId", project)
                     if (project.version == null) throwException("Version", project)
@@ -173,23 +175,40 @@ class DeliveryPlugin implements Plugin<Project> {
                         pom.setArtifactId(task.variantName as String)
                     }
                     ((Configuration) project.configurations."${configurationName}").artifacts.addAll(task.getArtifacts() as PublishArtifact[])
+
             }
 
-            def uploadArtifacts = project.tasks.findByName(TASK_UPLOAD)
+            def uploadArtifacts = project.tasks.findByName(UPLOAD_TASK)
             uploadArtifacts.dependsOn += project.tasks.withType(Upload).findAll { task -> task.name.startsWith(UPLOAD_TASK_PREFIX) }
             if (project.tasks.findByPath("check") != null) {
                 uploadArtifacts.dependsOn += project.tasks.findByPath("check")
             }
 
-            project.tasks.findByName(TASK_INSTALL).dependsOn += project.tasks.withType(Upload).findAll { task -> task.name.startsWith(INSTALL_TASK_PREFIX) }
-            if (project.tasks.findByPath("install") == null) {
-                project.task("install", dependsOn: [TASK_INSTALL])
-            }
+            project.tasks.findByName(INSTALL_TASK).dependsOn += project.tasks.withType(Upload).findAll { task -> task.name.startsWith(INSTALL_TASK_PREFIX) }
             project.task("listArtifacts", type: ListArtifacts, group: TASK_GROUP)
+
+//Docker build
+
+            project.tasks.withType(DockerBuild).asMap.each {
+                String taskName, DockerBuild task ->
+                    if (project.version == null) throwException("Version", project)
+
+                    project.task("${UPLOAD_TASK_PREFIX}${task.name.capitalize()}", type: DockerUpload, group: TASK_GROUP, dependsOn: [task]) {
+                        buildTask = task
+                    }
+            }
+
+            uploadArtifacts.dependsOn += project.tasks.withType(DockerUpload)
+            project.tasks.findByName(INSTALL_TASK).dependsOn += project.tasks.withType(DockerBuild)
+            project.task("listDockerImages", type: ListDockerImages, group: TASK_GROUP)
+
+
+
+            project.tasks.findByPath(BASE_INSTALL_TASK).dependsOn += INSTALL_TASK
         }
     }
 
-    //create default release git flow
+//create default release git flow
     void enableReleaseGitFlow(boolean enable) {
         if (enable && !project.tasks.findByPath("releaseGitFlow")) {
             deliveryExtension.flowsContainer.create(
@@ -349,4 +368,5 @@ class DeliveryPlugin implements Plugin<Project> {
     static void throwException(String missingElement, Project project) {
         throw new GradleException("$missingElement is not set, please add it in a version.properties in ${project.name} or one of his parent")
     }
+
 }

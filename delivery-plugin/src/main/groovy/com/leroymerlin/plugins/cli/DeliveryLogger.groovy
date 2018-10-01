@@ -2,33 +2,55 @@ package com.leroymerlin.plugins.cli
 
 import com.leroymerlin.plugins.utils.SystemUtils
 
-import java.util.logging.Level
-import java.util.logging.Logger
+import java.util.logging.*
 
 class DeliveryLogger {
 
-    Logger logger = Logger.getGlobal()
 
-    private void logMessage(String message, Ansi color = null, Level logLevel = Level.INFO) {
+    private static class DeliveryFormatter extends Formatter {
+
+        @Override
+        synchronized String format(LogRecord record) {
+            String message = formatMessage(record)
+            if (SystemUtils.getEnvProperty("ugly") == null) {
+                return message
+            }
+            return String.format('%1$s: %2$s\n',
+                    record.getLevel().getLocalizedName(),
+                    message)
+        }
+    }
+    static Logger logger = Logger.getLogger("DeliveryLogger")
+
+    static {
+        Handler consoleHandler = new ConsoleHandler()
+        def formatter = new DeliveryFormatter()
+        consoleHandler.setFormatter(formatter)
+        logger.setUseParentHandlers(false)
+        logger.addHandler(consoleHandler)
+    }
+
+
+    private static void logMessage(String message, Ansi color = null, Level logLevel = Level.INFO) {
         logger.log(logLevel, color != null ? color.colorize(message) : message)
     }
 
-    void logError(String message) {
+    static void logError(String message) {
         logMessage(message, (SystemUtils.getEnvProperty("ugly") != null)
                 ? null : new Ansi(Ansi.HIGH_INTENSITY, Ansi.RED), Level.SEVERE)
     }
 
-    void logWarning(String message) {
+    static void logWarning(String message) {
         logMessage(message, (SystemUtils.getEnvProperty("ugly") != null)
                 ? null : new Ansi(Ansi.HIGH_INTENSITY, Ansi.YELLOW), Level.WARNING)
     }
 
-    void logOutput(String message) {
+    static void logOutput(String message) {
         logMessage(message, (SystemUtils.getEnvProperty("ugly") != null)
                 ? null : Ansi.Green, Level.WARNING)
     }
 
-    void logInfo(String message) {
+    static void logInfo(String message) {
         logMessage(message, (SystemUtils.getEnvProperty("ugly") != null)
                 ? null : Ansi.Cyan, Level.WARNING)
     }

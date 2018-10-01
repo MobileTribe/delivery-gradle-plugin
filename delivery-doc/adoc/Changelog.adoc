@@ -3,8 +3,12 @@
 :htmlPath:
 ifdef::env-github[:htmlPath: http://mobiletribe.github.io/delivery-gradle-plugin/]
 
+=== *3.2.0* - (2018-09-28)
+- Add Docker compatibility
+- Multiple fixes
+
 === *3.1.2* - (2018-07-17)
-- fix multi module feature
+- Fix multi module feature
 
 === *3.1.1* - (2018-07-11)
 - Change group arg from GROUP to GROUP_ID
@@ -27,4 +31,4 @@ ifdef::env-github[:htmlPath: http://mobiletribe.github.io/delivery-gradle-plugin
 - Fix Android dependencies
 
 === *3.0.0* - (2018-02-16)
-link:{htmlPath}delivery-doc/html/Tutorial.html[Features]
+link:Tutorial.html[Features]

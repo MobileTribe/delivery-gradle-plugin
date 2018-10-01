@@ -4,6 +4,7 @@ import com.leroymerlin.plugins.core.BaseScmAdapter
 import com.leroymerlin.plugins.core.GitAdapter
 import com.leroymerlin.plugins.core.configurators.ProjectConfigurator
 import com.leroymerlin.plugins.entities.Flow
+import com.leroymerlin.plugins.entities.RegistryProperty
 import com.leroymerlin.plugins.entities.SigningProperty
 import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
@@ -14,6 +15,7 @@ class DeliveryPluginExtension {
     private ProjectConfigurator mConfigurator
     private BaseScmAdapter mScmAdapter
     NamedDomainObjectContainer<SigningProperty> signingProperties
+    NamedDomainObjectContainer<RegistryProperty> dockerRegistries
     NamedDomainObjectContainer<Flow> flowsContainer
     Project project
     DeliveryPlugin plugin
@@ -25,10 +27,17 @@ class DeliveryPluginExtension {
             return Flow.newInstance(name, this)
         })
         this.signingProperties = project.container(SigningProperty)
+        this.dockerRegistries = project.container(RegistryProperty)
     }
 
     def archiveRepositories = project.ext.properties.containsKey('archiveRepositories') ? project.ext.archiveRepositories : {
     }
+
+
+    void dockerRegistries(@DelegatesTo(RegistryProperty) Action<? super NamedDomainObjectContainer<RegistryProperty>> action) {
+        action.execute(dockerRegistries)
+    }
+
 
     void setEnableReleaseGitFlow(boolean enable) {
         this.plugin.enableReleaseGitFlow(enable)
@@ -38,7 +47,7 @@ class DeliveryPluginExtension {
 
     String[] linkedSubModules = []
 
-    void signingProperties(Action<? super NamedDomainObjectContainer<SigningProperty>> action) {
+    void signingProperties(@DelegatesTo(SigningProperty) Action<? super NamedDomainObjectContainer<SigningProperty>> action) {
         action.execute(signingProperties)
         signingProperties.each {
             SigningProperty signingProperty ->
@@ -46,7 +55,7 @@ class DeliveryPluginExtension {
         }
     }
 
-    def flows(Action<? super NamedDomainObjectContainer<Flow>> action) {
+    def flows(@DelegatesTo(Flow) Action<? super NamedDomainObjectContainer<Flow>> action) {
         action.execute(flowsContainer)
     }
 

@@ -13,7 +13,6 @@ import org.gradle.api.tasks.Input
 class DeliveryBuild extends DefaultTask {
 
     String variantName
-    boolean flutterProject
 
     @Input
     String setVariant(String variantName) {
@@ -33,11 +32,10 @@ class DeliveryBuild extends DefaultTask {
         }
     }
 
-    def cmd(String cmd) {
-        return Executor.exec(Executor.convertToCommandLine(cmd), [directory: project.projectDir])
-    }
 
-    static def cmd(List<String> commands, Map options = [:]) {
-        Executor.exec(commands, options)
+    def cmd(String cmd, @DelegatesTo(Executor.ExecutorParams) Closure closure = {}) {
+        return Executor.exec(Executor.convertToCommandLine(cmd), {
+            directory = project.projectDir
+        } << closure)
     }
 }
