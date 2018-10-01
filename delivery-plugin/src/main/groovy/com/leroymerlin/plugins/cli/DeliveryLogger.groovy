@@ -27,9 +27,8 @@ class DeliveryLogger {
         def formatter = new DeliveryFormatter()
         consoleHandler.setFormatter(formatter)
         logger.setUseParentHandlers(false)
-        logger.addHandler(consoleHandler)
+        if (logger.handlers.length == 0) logger.addHandler(consoleHandler)
     }
-
 
     private static void logMessage(String message, Ansi color = null, Level logLevel = Level.INFO) {
         logger.log(logLevel, color != null ? color.colorize(message) : message)
