@@ -4,6 +4,7 @@ import com.leroymerlin.plugins.DeliveryPluginExtension
 import com.leroymerlin.plugins.cli.Executor
 import com.leroymerlin.plugins.entities.RegistryProperty
 import com.leroymerlin.plugins.tasks.build.DockerBuild
+import com.sun.istack.internal.Nullable
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
@@ -60,9 +61,10 @@ class DockerUpload extends DefaultTask {
 
     }
 
+    @Nullable
     RegistryProperty getRegistry() {
         def extension = project.delivery as DeliveryPluginExtension
-        def registryProperties = extension.dockerRegistries.getByName(buildTask.registry)
+        def registryProperties = extension.dockerRegistries.findByName(buildTask.registry)
         registryProperties
     }
 }

@@ -25,6 +25,7 @@ class FlutterConfigurator extends ProjectConfigurator {
 
         def result = Executor.exec(["flutter", "--version"]) {
             needSuccessExitCode = false
+            silent = true
         }
 
         if (result.exitValue == Executor.EXIT_CODE_NOT_FOUND) {
