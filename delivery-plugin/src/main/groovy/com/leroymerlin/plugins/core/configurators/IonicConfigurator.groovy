@@ -100,9 +100,12 @@ class IonicConfigurator extends ProjectConfigurator {
             def config = project.file("config.xml")
             def widget = new XmlParser(false, false).parse(config)
             widget."@version" = project.version
-            def xmlNodePrinter = new XmlNodePrinter(new PrintWriter(config))
+            def writer = new PrintWriter(config)
+            def xmlNodePrinter = new XmlNodePrinter(writer)
             xmlNodePrinter.preserveWhitespace = true
             xmlNodePrinter.print(widget)
+            writer.flush()
+            writer.close()
         }
     }
 

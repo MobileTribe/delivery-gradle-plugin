@@ -235,14 +235,12 @@ class DeliveryPlugin implements Plugin<Project> {
                         branch releaseBranch, true
                         step 'prepareVersion', "prepare version"
                         changeProperties releaseVersion
-                        getVersionFiles(project).each {
-                            add it.path
-                        }
                         step 'generateVersionFiles', "generate version files"
                         step 'commitVersionFiles', "commit version files"
                         commit "chore(version): Update version to $releaseVersion", true
                         step 'build', 'build and archive'
                         build
+                        discardChange
                         if (baseBranch != 'false') {
                             step 'stepMergeToBaseBranch', 'merge to base branch'
                             branch baseBranch
@@ -255,9 +253,6 @@ class DeliveryPlugin implements Plugin<Project> {
                         step 'updateVersion', "Update version to $newVersionId - $newVersion"
                         branch releaseBranch
                         changeProperties newVersion, newVersionId
-                        getVersionFiles(project).each {
-                            add it.path
-                        }
                         commit "chore(version): Update to new version $newVersion and versionId $newVersionId", true
                         push
                         step 'mergeDevelop', "Merge release branch to $workBranch"
