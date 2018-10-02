@@ -23,16 +23,18 @@ class IonicConfigurator extends ProjectConfigurator {
         super.setup(project, extension)
         String signingBuild = SystemUtils.getEnvProperty(IONIC_BUILD)
 
-        def npmResult = Executor.exec(["npm"]) {
+        def npmResult = Executor.exec(["npm", "-v"]) {
             needSuccessExitCode = false
+            silent = true
         }
 
         if (npmResult.exitValue == Executor.EXIT_CODE_NOT_FOUND) {
             throw new GradleException("I don't find npm :(, please look at https://www.npmjs.com/get-npm for more information")
         }
 
-        def ionicResult = Executor.exec(["ionic"]) {
+        def ionicResult = Executor.exec(["ionic", "--version"]) {
             needSuccessExitCode = false
+            silent = true
             inputPatterns = ["The Ionic CLI has an update available": "y"]
         }
 
@@ -56,9 +58,6 @@ class IonicConfigurator extends ProjectConfigurator {
             deliveryLogger.logInfo("Delivery support Ionic > 3.0 & Cordova > 7.0")
 
             Executor.exec(["npm", "install"]) {
-                directory = project.projectDir
-            }
-            Executor.exec(["ionic", "-v"]) {
                 directory = project.projectDir
             }
         }.dependsOn("prepareProject")
