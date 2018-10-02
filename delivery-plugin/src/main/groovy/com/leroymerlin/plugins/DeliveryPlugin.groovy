@@ -258,7 +258,7 @@ class DeliveryPlugin implements Plugin<Project> {
                         getVersionFiles(project).each {
                             add it.path
                         }
-                        commit "chore(version): Update to new version $releaseVersion and versionId $newVersionId", true
+                        commit "chore(version): Update to new version $newVersion and versionId $newVersionId", true
                         push
                         step 'mergeDevelop', "Merge release branch to $workBranch"
                         branch workBranch
