@@ -68,6 +68,9 @@ image:./delivery-doc/assets/videos/releaseGitFlow.gif[]
 
 == Changelog - link:{htmlPath}delivery-doc/html/Changelog.html[Full changelog]
 
+=== *3.2.2* - (2018-10-03)
+- Group: Fix default group on android and ionic
+
 === *3.2.1* - (2018-10-03)
 - Logs: fix format
 - Logger: add handler only if there is not a handler already added
