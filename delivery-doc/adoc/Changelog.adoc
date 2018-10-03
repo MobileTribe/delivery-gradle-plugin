@@ -3,6 +3,15 @@
 :htmlPath:
 ifdef::env-github[:htmlPath: http://mobiletribe.github.io/delivery-gradle-plugin/]
 
+=== *3.2.2* - (2018-10-03)
+- Group: Fix default group on android and ionic
+
+=== *3.2.1* - (2018-10-03)
+- Logs: fix format
+- Logger: add handler only if there is not a handler already added
+- ReleaseGitFLow: fix commit message
+- Docker: fix the way to get the registry name
+
 === *3.2.0* - (2018-09-28)
 - Add Docker compatibility
 - Multiple fixes

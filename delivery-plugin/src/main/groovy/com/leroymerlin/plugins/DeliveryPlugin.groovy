@@ -338,6 +338,7 @@ class DeliveryPlugin implements Plugin<Project> {
         }
 
         if (versionProperties.getProperty('group')) {
+            project.ext.group = versionProperties.getProperty('group')
             project.group = versionProperties.getProperty('group')
         }
 
