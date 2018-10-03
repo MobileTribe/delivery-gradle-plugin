@@ -25,6 +25,7 @@ class GitAdapter implements BaseScmAdapter {
         this.project = project
         def result = exec(["git", "status"]) {
             needSuccessExitCode = false
+            silent = true
         }
         if (result.exitValue != Executor.EXIT_CODE_OK) {
             deliveryLogger.logWarning("Git is not initialized on this project")
@@ -54,7 +55,9 @@ fi
             }
 
             //configure origin
-            exec(['git', 'config', 'remote.origin.fetch', "+refs/heads/*:refs/remotes/origin/*"])
+            exec(['git', 'config', 'remote.origin.fetch', "+refs/heads/*:refs/remotes/origin/*"]) {
+                silent = true
+            }
         }
     }
 

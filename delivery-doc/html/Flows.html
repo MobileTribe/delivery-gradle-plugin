@@ -554,14 +554,12 @@ table.CodeRay td.code>pre{padding:0}
                         branch releaseBranch, true
                         step 'prepareVersion', "prepare version"
                         changeProperties releaseVersion
-                        getVersionFiles(project).each {
-                            add it.path
-                        }
                         step 'generateVersionFiles', "generate version files"
                         step 'commitVersionFiles', "commit version files"
                         commit "chore(version): Update version to $releaseVersion", true
                         step 'build', 'build and archive'
                         build
+                        discardChange
                         if (baseBranch != 'false') {
                             step 'stepMergeToBaseBranch', 'merge to base branch'
                             branch baseBranch
@@ -574,10 +572,7 @@ table.CodeRay td.code>pre{padding:0}
                         step 'updateVersion', "Update version to $newVersionId - $newVersion"
                         branch releaseBranch
                         changeProperties newVersion, newVersionId
-                        getVersionFiles(project).each {
-                            add it.path
-                        }
-                        commit "chore(version): Update to new version $releaseVersion and versionId $newVersionId", true
+                        commit "chore(version): Update to new version $newVersion and versionId $newVersionId", true
                         push
                         step 'mergeDevelop', "Merge release branch to $workBranch"
                         branch workBranch
@@ -603,7 +598,7 @@ To use it you have to set <strong>enableReleaseGitFlow = true</strong> in Delive
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-07-17 15:27:00 CEST
+Last updated 2018-07-11 10:56:46 CEST
 </div>
 </div>
 </body>

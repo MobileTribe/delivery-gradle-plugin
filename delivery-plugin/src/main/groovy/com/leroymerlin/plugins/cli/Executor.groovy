@@ -49,7 +49,7 @@ class Executor {
             "$it.key=$it.value"
         }
 
-        if (!params.hideCommand) {
+        if (!params.hideCommand && !params.silent) {
             deliveryLogger.logInfo("Running $commands in [${directory != null ? directory : System.getProperty("user.dir")}]")
         }
         int exitValue = EXIT_CODE_NOT_FOUND
@@ -66,7 +66,7 @@ class Executor {
             exitValue = process.waitFor()
             process.closeStreams()
         } catch (IOException e) {
-            if (!params.hideCommand) {
+            if (!params.hideCommand && !params.silent) {
                 deliveryLogger.logError("Running $commands in [${directory != null ? directory : System.getProperty("user.dir")}] failed")
             }
             exception = e
@@ -78,7 +78,11 @@ class Executor {
         result.exitValue = exitValue
 
         if (params.needSuccessExitCode && exitValue != 0) {
-            throw new GradleException("Running '${commands.join(' ')}' produced an error exit code: ${exitValue}")
+            String command = commands.join(' ')
+            if (params.hideCommand) {
+                command = "*******"
+            }
+            throw new GradleException("Running '$command' produced an error exit code: ${exitValue}")
         }
         return result
     }
@@ -126,8 +130,10 @@ class Executor {
                     this.out.append(next)
                     this.out.append("\n")
                 }
-                if (errorOutput) deliveryLogger.logError(next)
-                else deliveryLogger.logInfo(next)
+                if (!params.silent) {
+                    if (errorOutput) deliveryLogger.logError(next)
+                    else deliveryLogger.logInfo(next)
+                }
             }
         }
     }
@@ -136,6 +142,7 @@ class Executor {
         private ExecutorParams() {}
 
         boolean needSuccessExitCode = true
+        boolean silent = false
         File directory
         Map<String, String> env = System.getenv()
         Boolean hideCommand = false
@@ -166,122 +173,3 @@ class Executor {
         int exitValue
     }
 }
-
-//
-//class Executor {
-//
-//
-//    private String run() {
-//        StringBuffer out = new StringBuffer()
-//        File directory = options['directory'] ? options['directory'] as File : null
-//        List processEnv = options['env'] ? ((options['env'] as Map) << System.getenv()).collect {
-//            "$it.key=$it.value"
-//        } : null
-//
-//        if (!(options['hideCommand'] as boolean)) {
-//            deliveryLogger.logInfo("Running $commands in [${directory != null ? directory : System.getProperty("os.name")}]")
-//        }
-//        try {
-//            Process process = commands.execute(processEnv, directory)
-//            waitForProcessOutput(process, out)
-//        } catch (Exception e) {
-//            if (options['failOnStderr'] as boolean && options['failOnStderrMessage'] != null) {
-//                throw new Exception(options['failOnStderrMessage'] as String)
-//            } else {
-//                e.printStackTrace()
-//            }
-//        }
-//        return out.toString()
-//    }
-//
-//
-//    private void waitForProcessOutput(Process process, Appendable output) {
-//        def dumperOut = new TextDumper(process.getOutputStream(), process.getInputStream(), false, output)
-//        def dumperErr = new TextDumper(process.getOutputStream(), process.getErrorStream(), true, output)
-//
-//        Thread tout = new Thread(dumperOut)
-//        Thread terr = new Thread(dumperErr)
-//
-//        tout.start()
-//        terr.start()
-//        tout.join()
-//        terr.join()
-//
-//        process.waitFor()
-//        process.closeStreams()
-//
-//        if (dumperOut.exception) {
-//            throw dumperOut.exception
-//        }
-//        if (dumperErr.exception) {
-//            throw dumperErr.exception
-//        }
-//
-//    }
-//
-//    private class TextDumper implements Runnable {
-//        InputStream input
-//        OutputStream output
-//        boolean catchError
-//        Appendable app
-//
-//        Exception exception
-//
-//        TextDumper(OutputStream outputStream, InputStream inputStream, boolean catchError, Appendable app) {
-//            this.input = inputStream
-//            this.output = outputStream
-//            this.catchError = catchError
-//            this.app = app
-//        }
-//
-//        void run() {
-//            BufferedReader br = new BufferedReader(new InputStreamReader(this.input))
-//            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(this.output))
-//
-//            try {
-//                String next
-//                while ((next = br.readLine()) != null) {
-//                    if (next.contains("?")) {
-//                        writer.write("Yes")
-//                        writer.newLine()
-//                        writer.flush()
-//                    }
-//                    if (this.app != null) {
-//                        this.app.append(next)
-//                        this.app.append("\n")
-//                    }
-//                    if (catchError) {
-//                        if (options['failOnStderr'] as boolean) {
-//                            if (options['failOnStderrMessage'] != null) {
-//                                throw new Exception(options['failOnStderrMessage'] as String)
-//                            }
-//                            throw new Exception("Running '${commands.join(' ')}' produced an error: ${next}")
-//                        } else {
-//                            if (warning)
-//                                deliveryLogger.logWarning(next)
-//                            else
-//                                deliveryLogger.logOutput(next)
-//                        }
-//                    } else {
-//                        if (warning)
-//                            deliveryLogger.logWarning(next)
-//                        else
-//                            deliveryLogger.logOutput(next)
-//                    }
-//
-//                    if (options['errorPatterns'] && [next]*.toString().any { String s ->
-//                        (options['errorPatterns'] as List<String>).any {
-//                            s.contains(it)
-//                        }
-//                    }) {
-//                        throw new GradleException(options['errorMessage'] ? options['errorMessage'] as String : "Failed to run '${commands.join(' ')}' - $next")
-//                    }
-//                }
-//            } catch (IOException var5) {
-//                throw new GroovyRuntimeException("exception while reading process stream", var5)
-//            } catch (GradleException ex) {
-//                exception = ex
-//            }
-//        }
-//    }
-//}
