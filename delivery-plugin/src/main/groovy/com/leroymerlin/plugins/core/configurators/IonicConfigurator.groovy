@@ -80,7 +80,7 @@ class IonicConfigurator extends ProjectConfigurator {
         } else {
             File config = project.file("config.xml")
             Node widget = new XmlParser(false, false).parse(config)
-            if (!project.group) {
+            if (!project.ext.has("group")) {
                 project.ext.group = widget."@id"
                 project.group = project.ext.group
             }

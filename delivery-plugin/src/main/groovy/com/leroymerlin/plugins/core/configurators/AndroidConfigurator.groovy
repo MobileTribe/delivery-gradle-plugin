@@ -72,14 +72,18 @@ class AndroidConfigurator extends ProjectConfigurator {
                 throw new GradleException("app versionCode is ${project.android.defaultConfig.versionCode} but should be ${project.versionId}. Please set: android.defaultConfig.versionCode Integer.parseInt(versionId)")
             }
         }
-        if (!project.group) {
+        if (!project.ext.has("group")) {
             if (isAndroidApp) {
-                if (project.android.defaultConfig.applicationId) project.group = project.android.defaultConfig.applicationId
+                if (project.android.defaultConfig.applicationId) {
+                    project.group = project.android.defaultConfig.applicationId
+                    project.ext.group = project.group
+                }
             } else if (isAndroidLibrary) {
                 def manifestFile = project.file("src/main/AndroidManifest.xml")
                 if (manifestFile.exists()) {
                     def manifest = new XmlParser(false, false).parse(manifestFile)
                     project.group = manifest."@package"
+                    project.ext.group = project.group
                 }
             }
         }
