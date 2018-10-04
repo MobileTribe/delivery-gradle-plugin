@@ -184,7 +184,8 @@ class DeliveryPlugin implements Plugin<Project> {
                 uploadArtifacts.dependsOn += project.tasks.findByPath("check")
             }
 
-            project.tasks.findByName(INSTALL_TASK).dependsOn += project.tasks.withType(Upload).findAll { task -> task.name.startsWith(INSTALL_TASK_PREFIX) }
+            project.tasks.findByName(INSTALL_TASK).dependsOn += project.tasks.withType(Upload).findAll { task -> task.name.startsWith(INSTALL_TASK_PREFIX) && task.name != BASE_INSTALL_TASK }
+
             project.task("listArtifacts", type: ListArtifacts, group: TASK_GROUP)
 
 //Docker build
@@ -202,9 +203,7 @@ class DeliveryPlugin implements Plugin<Project> {
             project.tasks.findByName(INSTALL_TASK).dependsOn += project.tasks.withType(DockerBuild)
             project.task("listDockerImages", type: ListDockerImages, group: TASK_GROUP)
 
-
-
-            project.tasks.findByPath(BASE_INSTALL_TASK).dependsOn += INSTALL_TASK
+            project.tasks.findByName(BASE_INSTALL_TASK).dependsOn += project.tasks.findByName(INSTALL_TASK)
         }
     }
 

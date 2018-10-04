@@ -68,6 +68,9 @@ image:./delivery-doc/assets/videos/releaseGitFlow.gif[]
 
 == Changelog - link:{htmlPath}delivery-doc/html/Changelog.html[Full changelog]
 
+=== *3.2.3* - (2018-10-04)
+- Install : fix install task dependencies on java project
+
 === *3.2.2* - (2018-10-03)
 - Group: Fix default group on android and ionic
 
