@@ -30,25 +30,6 @@ image:https://img.shields.io/badge/Docker-1+-green.svg?style=flat-square["Docker
 image::./delivery-doc/assets/logo.png[Delivery, 300]
 _Make your continuous delivery faster and easier_
 
-== Configuration
-
-To use delivery, you just have to apply the plugin in your project.
-
-```Groovy
-buildscript {
-	repositories {
-		jcenter()
-	}
-
-	dependencies {
-		classpath 'com.leroymerlin.plugins:delivery-plugin:LAST_VERSION'
-	}
-}
-
-apply plugin: 'com.leroymerlin.delivery'
-```  
-and then configure it by following the link:{htmlPath}delivery-doc/html/Tutorial.html[Tutorial]
-
 == Note
 
 Delivery is the gradle plugin you need, to simplify your project industrialization.
@@ -69,6 +50,25 @@ This plugin is based on 2 other plugins :
 - https://github.com/openbakery/gradle-xcodePlugin[gradle-xcodePlugin] from openbakery
 
 *Delivery use Maven naming convention to archive*
+
+== Configuration
+
+To use delivery, you just have to apply the plugin in your project.
+
+```Groovy
+buildscript {
+	repositories {
+		jcenter()
+	}
+
+	dependencies {
+		classpath 'com.leroymerlin.plugins:delivery-plugin:LAST_VERSION'
+	}
+}
+
+apply plugin: 'com.leroymerlin.delivery'
+```  
+and then configure it by following the link:{htmlPath}delivery-doc/html/Tutorial.html[Tutorial]
 
 == Compatibility
 
