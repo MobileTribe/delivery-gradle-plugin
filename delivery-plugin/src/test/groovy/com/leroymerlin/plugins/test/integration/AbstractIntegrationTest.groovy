@@ -29,6 +29,7 @@ abstract class AbstractIntegrationTest {
         try {
             connection.newBuild()
                     .forTasks(":delivery-plugin:install")
+                    .withArguments("-x", "test")
                     .run()
         } finally {
             connection.close()
