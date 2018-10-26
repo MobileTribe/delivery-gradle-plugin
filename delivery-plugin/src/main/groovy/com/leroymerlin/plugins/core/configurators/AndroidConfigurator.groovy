@@ -5,6 +5,8 @@ import com.leroymerlin.plugins.DeliveryPluginExtension
 import com.leroymerlin.plugins.entities.SigningProperty
 import com.leroymerlin.plugins.tasks.build.AndroidBuild
 import com.leroymerlin.plugins.tasks.build.AndroidLibBuild
+import com.leroymerlin.plugins.tasks.build.PrepareBuildTask
+import com.leroymerlin.plugins.utils.PropertiesUtils
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.artifacts.maven.Conf2ScopeMappingContainer
@@ -43,6 +45,9 @@ class AndroidConfigurator extends ProjectConfigurator {
                     extension.signingProperties.maybeCreate(buildType.name as String)
             }
         }
+
+        project.task("prepareAndroidBuild", type: PrepareBuildTask, group: DeliveryPlugin.TASK_GROUP)
+
     }
 
     @Override
@@ -72,7 +77,7 @@ class AndroidConfigurator extends ProjectConfigurator {
                 throw new GradleException("app versionCode is ${project.android.defaultConfig.versionCode} but should be ${project.versionId}. Please set: android.defaultConfig.versionCode Integer.parseInt(versionId)")
             }
         }
-        if (!project.ext.has("group")) {
+        if (!PropertiesUtils.userHasDefineProperty(project, "group")) {
             if (isAndroidApp) {
                 if (project.android.defaultConfig.applicationId) {
                     project.group = project.android.defaultConfig.applicationId

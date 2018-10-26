@@ -4,6 +4,7 @@ import com.leroymerlin.plugins.DeliveryPlugin
 import com.leroymerlin.plugins.DeliveryPluginExtension
 import com.leroymerlin.plugins.cli.Executor
 import com.leroymerlin.plugins.entities.SigningProperty
+import com.leroymerlin.plugins.utils.PropertiesUtils
 import com.leroymerlin.plugins.utils.SystemUtils
 import org.gradle.api.GradleException
 import org.gradle.api.Project
@@ -79,7 +80,7 @@ class IonicConfigurator extends ProjectConfigurator {
         } else {
             File config = project.file("config.xml")
             Node widget = new XmlParser(false, false).parse(config)
-            if (!project.ext.has("group")) {
+            if (!PropertiesUtils.userHasDefineProperty(project, "group")) {
                 project.ext.group = widget."@id"
                 project.group = project.ext.group
             }
@@ -130,9 +131,9 @@ class IonicConfigurator extends ProjectConfigurator {
                 }
 
                 if (signingName == 'android') {
-                    settingsGradle << project.file("platforms/${signingName}/settings.gradle").text
+                    settingsGradle << "\n" + project.file("platforms/${signingName}/settings.gradle").text
                 }
-                newBuildGradleFile << project.file('build.gradle').text
+                newBuildGradleFile << "\n" + project.file('build.gradle').text
                 newBuildGradleFile.text = newBuildGradleFile.text.replace("com.android.tools.build:gradle:2.2.3", "com.android.tools.build:gradle:2.3.0")
 
             }.dependsOn('prepareNpm')

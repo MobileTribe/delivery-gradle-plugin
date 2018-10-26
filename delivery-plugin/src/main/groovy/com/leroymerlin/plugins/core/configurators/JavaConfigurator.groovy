@@ -3,6 +3,7 @@ package com.leroymerlin.plugins.core.configurators
 import com.leroymerlin.plugins.DeliveryPlugin
 import com.leroymerlin.plugins.DeliveryPluginExtension
 import com.leroymerlin.plugins.tasks.build.JavaBuild
+import com.leroymerlin.plugins.tasks.build.PrepareBuildTask
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.artifacts.maven.Conf2ScopeMappingContainer
@@ -22,6 +23,9 @@ class JavaConfigurator extends ProjectConfigurator {
         if (!isJavaProject) {
             throw new GradleException("Your project must apply java plugin to use " + getClass().simpleName)
         }
+
+        project.task("prepareJavaBuild", type: PrepareBuildTask, group: DeliveryPlugin.TASK_GROUP)
+
     }
 
     @Override

@@ -23,6 +23,9 @@ class AndroidLibBuild extends DeliveryBuild {
             outputFiles.put("", variant.outputs.get(0).outputFile as File)
         }
         dependsOn.add(variant.assemble)
+
+        variant.assemble.dependsOn += project.tasks.withType(PrepareBuildTask)
+
         if (variant.mappingFile) {
             if (!variant.mappingFile.exists()) {
                 variant.mappingFile.parentFile.mkdirs()

@@ -8,28 +8,58 @@ buildscript {
     }
 }
 
+
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    ext {
+        buildToolsVersion = "27.0.3"
+        minSdkVersion = 16
+        compileSdkVersion = 27
+        targetSdkVersion = 26
+        supportLibVersion = "27.1.1"
+    }
+    repositories {
+        jcenter()
+        google()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.2.0'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        mavenLocal()
+        jcenter()
+        maven {
+            // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
+            url "$rootDir/node_modules/react-native/android"
+        }
+        google()
+    }
+}
+
 apply plugin: 'com.leroymerlin.delivery'
 
+//tag::reactNative[]
 delivery {
     archiveRepositories = {
         maven {
-            url uri("../../build/archive_react")
+            url uri("./build/archive_react")
         }
     }
+    linkedSubModules ":ios", ":android:app"
+
+    //...
+    //end::reactNative[]
+
     flows {
         react {
             build
-        }
-    }
-
-    if (file("${System.properties['user.home']}/.gradle/signing_ios.properties").exists() && file("${System.properties['user.home']}/.gradle/signing.properties")) {
-        signingProperties {
-            android {
-                propertiesFile = file("${System.properties['user.home']}/.gradle/signing.properties")
-            }
-            ios {
-                propertiesFile = file("${System.properties['user.home']}/.gradle/signing_ios.properties")
-            }
         }
     }
 }

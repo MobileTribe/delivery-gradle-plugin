@@ -156,10 +156,20 @@ include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[t
 
 === React Native
 
+A React Native project has to be configured as a Multi modules project. Apply the delivery plugin in the root project (in charge of Npm setup), :android:app module
+(to build android) and :ios (to build ios). One apply just link module with linkedSubModules in the delivery extension.
+
+
+CAUTION: You may need to move the buildscript part in ":android" module to the root project in order to be used. Don't forget
+to fix the react repository relative path (remove useless "../")
+
+Example
 [source,groovy]
 ----
-include::{testGroovyDir}com/leroymerlin/plugins/test/DeliveryPluginTest.groovy[tags=signingReactExample]
+include::{testProjectDir}reactNative/build.gradle[tags=reactNative]
 ----
+
+For more details check the reactNative project in test resources
 
 
 == Multi Modules
@@ -174,6 +184,7 @@ include::{testProjectDir}multiModules/build.gradle[tags=multiModulesExample]
 NOTE: Look at the https://github.com/MobileTribe/delivery-gradle-plugin/tree/master/delivery-plugin/src/test/resources/multiModules[sample] for more informations
 
 CAUTION: You need to apply Delivery on all modules you want to use with Delivery
+
 
 == Custom projects
 

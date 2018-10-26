@@ -21,5 +21,9 @@ class JavaBuild extends DeliveryBuild {
         }
         outputFiles.put("sources", sourcesJar.outputs.getFiles().getSingleFile())
         dependsOn.add(sourcesJar)
+
+
+        project.build.dependsOn += project.tasks.withType(PrepareBuildTask)
+
     }
 }

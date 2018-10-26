@@ -36,10 +36,15 @@ class AndroidBuild extends DeliveryBuild {
                         dependsOn.add(variant.testVariant.assemble)
                     }
                 } else {
+
+
                     outputFiles.put(classifier as String, project
                             .file("build/outputs/apk/" +
                             "${variantName.replace("${project.artifact.toLowerCase()}", "").replaceFirst("-", "")}/$classifier/$fileName"))
                     dependsOn.add(variant.assemble)
+
+                    variant.assemble.dependsOn += project.tasks.withType(PrepareBuildTask)
+
                     if (variant.testVariant) {
                         outputFiles.put("test-$classifier" as String, project
                                 .file("build/outputs/apk/" +

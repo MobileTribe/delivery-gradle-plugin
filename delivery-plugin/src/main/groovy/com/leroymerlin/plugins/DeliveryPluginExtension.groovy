@@ -6,14 +6,18 @@ import com.leroymerlin.plugins.core.configurators.ProjectConfigurator
 import com.leroymerlin.plugins.entities.Flow
 import com.leroymerlin.plugins.entities.RegistryProperty
 import com.leroymerlin.plugins.entities.SigningProperty
+import com.leroymerlin.plugins.utils.PropertiesUtils
 import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
+import org.gradle.api.artifacts.maven.MavenDeployer
 
 class DeliveryPluginExtension {
 
     private ProjectConfigurator mConfigurator
     private BaseScmAdapter mScmAdapter
+    private Closure mArchiveRepositories;
+
     NamedDomainObjectContainer<SigningProperty> signingProperties
     NamedDomainObjectContainer<RegistryProperty> dockerRegistries
     NamedDomainObjectContainer<Flow> flowsContainer
@@ -30,11 +34,25 @@ class DeliveryPluginExtension {
         this.dockerRegistries = project.container(RegistryProperty)
     }
 
-    def archiveRepositories = project.ext.properties.containsKey('archiveRepositories') ? project.ext.archiveRepositories : {
+    void setArchiveRepositories(@DelegatesTo(MavenDeployer) Closure closure) {
+        mArchiveRepositories = closure
     }
 
+    Closure getArchiveRepositories() {
+        //if archive repositories is not define we look for a parent configuration
+        if (mArchiveRepositories == null) {
+            def parent = PropertiesUtils.findParentProjectWithDelivery(project)
+            mArchiveRepositories = parent?.delivery?.archiveRepositories
+            if (mArchiveRepositories == null) {
+                mArchiveRepositories = project.ext.properties.containsKey('archiveRepositories') ? project.ext.archiveRepositories : {
+                }
+            }
+        }
+        return mArchiveRepositories
+    }
 
-    void dockerRegistries(@DelegatesTo(RegistryProperty) Action<? super NamedDomainObjectContainer<RegistryProperty>> action) {
+    void dockerRegistries(
+            @DelegatesTo(RegistryProperty) Action<? super NamedDomainObjectContainer<RegistryProperty>> action) {
         action.execute(dockerRegistries)
     }
 
@@ -47,7 +65,8 @@ class DeliveryPluginExtension {
 
     String[] linkedSubModules = []
 
-    void signingProperties(@DelegatesTo(SigningProperty) Action<? super NamedDomainObjectContainer<SigningProperty>> action) {
+    void signingProperties(
+            @DelegatesTo(SigningProperty) Action<? super NamedDomainObjectContainer<SigningProperty>> action) {
         action.execute(signingProperties)
         signingProperties.each {
             SigningProperty signingProperty ->
@@ -88,4 +107,5 @@ class DeliveryPluginExtension {
         }
         return mScmAdapter
     }
+
 }

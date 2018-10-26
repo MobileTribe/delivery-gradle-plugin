@@ -217,20 +217,6 @@ class DeliveryPluginTest {
                 }
                 //...
                 //end::signingIonicExample[]
-                //tag::signingReactExample[]
-                //...
-                signingProperties {
-                    // you have to use android or ios name for react signing configs
-                    android {
-                        //See android needed properties
-                    }
-                    ios {
-                        //See ios needed properties
-                        //target and scheme are optionals for ionic
-                    }
-                }
-                //...
-                //end::signingReactExample[]
                 //tag::deliveryBuildExample[]
                 //...
                 task('buildVariant', type: DeliveryBuild) {
