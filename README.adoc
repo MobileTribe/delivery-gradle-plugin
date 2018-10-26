@@ -87,6 +87,11 @@ image:./delivery-doc/assets/videos/releaseGitFlow.gif[]
 
 == Changelog - link:{htmlPath}delivery-doc/html/Changelog.html[Full changelog]
 
+
+=== *3.3.0* - (soon)
+- ReactNative : refactor react native configurator
+- Debug : link listArtifacts and listDockerImages tasks to linked sub module
+
 === *3.2.3* - (2018-10-04)
 - Install : fix install task dependencies on java project
 
