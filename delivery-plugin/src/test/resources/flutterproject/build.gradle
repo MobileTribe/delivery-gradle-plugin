@@ -8,6 +8,7 @@ buildscript {
     }
 }
 
+//tag::flutterproject[]
 apply plugin: 'com.leroymerlin.delivery'
 
 delivery {
@@ -16,6 +17,9 @@ delivery {
             url uri("${rootProject.buildDir}/archive_flutter")
         }
     }
+    //...
+    //end::flutterproject[]
+
     flows {
         flutter {
             build

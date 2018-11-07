@@ -90,6 +90,7 @@ image:./delivery-doc/assets/videos/releaseGitFlow.gif[]
 
 === *3.3.0* - (soon)
 - ReactNative : refactor react native configurator
+- Flutter : refactor flutter configurator
 - Debug : link listArtifacts and listDockerImages tasks to linked sub module
 
 === *3.2.3* - (2018-10-04)

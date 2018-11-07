@@ -93,6 +93,7 @@ class IOSConfigurator extends ProjectConfigurator {
 
             buildTaskProcess.dependsOn += project.tasks.withType(PrepareBuildTask)
         }
+
         if (SystemUtils.getEnvProperty("xcodebuild") == property.name) {
             project.xcodebuild.target = target
             project.xcodebuild.scheme = scheme

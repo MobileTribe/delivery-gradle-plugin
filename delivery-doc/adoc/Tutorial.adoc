@@ -172,6 +172,21 @@ include::{testProjectDir}reactNative/build.gradle[tags=reactNative]
 For more details check the reactNative project in test resources
 
 
+=== Flutter
+
+Apply the delivery plugin in the root flutter project, configure repositories and version. Then apply the plugin in the subproject in android/app folder and ios folder and configure signing configuration of each platform.
+
+
+CAUTION: Don't add android and ios as gradle submodule of your root project. Android flutter build does't support no to be in root folder. Delivery FlutterConfigurator will run nested gradle build for you.
+
+Example
+[source,groovy]
+----
+include::{testProjectDir}flutterproject/build.gradle[tags=flutterproject]
+----
+
+For more details check the flutterproject project in test resources
+
 == Multi Modules
 
 You can link *Install* task and *Upload* task from childs modules with parent module by using *autoLinkSubModules = true* or *linkedSubModules = 'subModule1', ...*

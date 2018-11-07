@@ -4,6 +4,8 @@ import com.leroymerlin.plugins.DeliveryPlugin
 import com.leroymerlin.plugins.DeliveryPluginExtension
 import com.leroymerlin.plugins.cli.Executor
 import com.leroymerlin.plugins.entities.SigningProperty
+import com.leroymerlin.plugins.tasks.ListArtifacts
+import com.leroymerlin.plugins.tasks.ListDockerImages
 import com.leroymerlin.plugins.tasks.build.PrepareBuildTask
 import org.gradle.api.GradleException
 import org.gradle.api.Project
@@ -50,7 +52,7 @@ class FlutterConfigurator extends ProjectConfigurator {
 //                    }
                 def newStartParameter = project.getGradle().startParameter.newInstance()
                 newStartParameter.projectDir = project.file(platform)
-                newStartParameter.buildFile = new File(newStartParameter.projectDir, "build.gradle")
+               // newStartParameter.buildFile = new File(newStartParameter.projectDir, "build.gradle")
                 newStartParameter.systemPropertiesArgs.put(PARENT_BUILD_ROOT, project.rootDir.path)
                 newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.VERSION_ARG, project.version as String)
                 newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.VERSION_ID_ARG, project.versionId as String)
@@ -58,13 +60,22 @@ class FlutterConfigurator extends ProjectConfigurator {
                 newStartParameter.systemPropertiesArgs.put(DeliveryPlugin.GROUP_ARG, project.group as String)
 
                 def nestedBuild = project.task("${platform}NestedBuild", type: GradleBuild, group: DeliveryPlugin.TASK_GROUP) {
-                    startParameter = newStartParameter
+                    startParameter = newStartParameter.newInstance()
                     tasks = ['uploadArtifacts']
                 } as GradleBuild
 
+                def nestedListArtifact = project.task("${platform}ListArtifacts", type: GradleBuild, group: DeliveryPlugin.TASK_GROUP) {
+                    startParameter = newStartParameter.newInstance()
+                    tasks = ['listArtifacts']
+                }
+                project.tasks.findByName("listArtifacts").dependsOn += nestedListArtifact
 
-                println("buildFile ${nestedBuild.buildFile}")
-                println("dir ${nestedBuild.dir}")
+                def nestedListDockerImages = project.task("${platform}ListDockerImages", type: GradleBuild, group: DeliveryPlugin.TASK_GROUP) {
+                    startParameter = newStartParameter.newInstance()
+                    tasks = ['listDockerImages']
+                }
+                project.tasks.findByName("listDockerImages").dependsOn += nestedListDockerImages
+
                 nestedBuild.dependsOn += project.tasks.withType(PrepareBuildTask.class)
 
 
