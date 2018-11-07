@@ -9,6 +9,8 @@ import com.leroymerlin.plugins.tasks.build.DeliveryBuild
 import com.leroymerlin.plugins.tasks.build.DockerBuild
 import com.leroymerlin.plugins.tasks.build.PrepareBuildTask
 import com.leroymerlin.plugins.utils.PropertiesUtils
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 import org.gradle.api.Action
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
@@ -165,24 +167,26 @@ class DeliveryPlugin implements Plugin<Project> {
                     if (project.artifact == null) throwException("Artifact", project)
                     if (project.group == null) throwException("Group", project)
 
-                    String configurationName = task.variantName + "Config"
+                    def variantName = task.variantName
+
+                    String configurationName = variantName + "Config"
                     if (!project.configurations.hasProperty(configurationName)) {
                         project.configurations.create(configurationName)
                         project.dependencies.add(configurationName, 'org.apache.maven.wagon:wagon-http:2.2')
 
-                        project.task("${UPLOAD_TASK_PREFIX}${task.variantName.capitalize()}Artifacts", type: Upload, group: TASK_GROUP) {
+                        project.task("${UPLOAD_TASK_PREFIX}${variantName.capitalize()}Artifacts", type: Upload, group: TASK_GROUP) {
                             configuration = project.configurations."${configurationName}"
                             repositories deliveryExtension.archiveRepositories
                         }
 
-                        def installTask = project.task("${INSTALL_TASK_PREFIX}${task.variantName.capitalize()}Artifacts", type: Upload, group: TASK_GROUP) {
+                        def installTask = project.task("${INSTALL_TASK_PREFIX}${variantName.capitalize()}Artifacts", type: Upload, group: TASK_GROUP) {
                             configuration = project.configurations."${configurationName}"
                         }
 
                         MavenRepositoryHandlerConvention repositories = new DslObject(installTask.getRepositories()).getConvention().getPlugin(MavenRepositoryHandlerConvention.class)
                         def mavenInstaller = repositories.mavenInstaller()
                         MavenPom pom = mavenInstaller.getPom()
-                        pom.setArtifactId(task.variantName as String)
+                        pom.setArtifactId(variantName as String)
                     }
                     ((Configuration) project.configurations."${configurationName}").artifacts.addAll(task.getArtifacts() as PublishArtifact[])
 

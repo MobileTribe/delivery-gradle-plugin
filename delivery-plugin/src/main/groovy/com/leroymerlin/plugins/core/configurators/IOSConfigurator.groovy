@@ -19,7 +19,6 @@ import org.gradle.api.tasks.GradleBuild
 class IOSConfigurator extends ProjectConfigurator {
 
     static def pluginId = "org.openbakery.xcode-plugin"
-    boolean isFlutterProject
 
     @Override
     void setup(Project project, DeliveryPluginExtension extension) {
@@ -36,12 +35,12 @@ class IOSConfigurator extends ProjectConfigurator {
         }
 
         project.task("prepareIOSProject", type: PrepareBuildTask, group: DeliveryPlugin.TASK_GROUP).doLast {
-            if (isFlutterProject) {
-                project.file("Flutter/Generated.xcconfig").delete()
-                Executor.exec(["flutter", "build", "ios", "--no-codesign"]) {
-                    directory = new File(project.projectDir.toString().replace("/ios", ""))
-                }
-            }
+//            if (isFlutterProject) {
+//                project.file("Flutter/Generated.xcconfig").delete()
+//                Executor.exec(["flutter", "build", "ios", "--no-codesign"]) {
+//                    directory = new File(project.projectDir.toString().replace("/ios", ""))
+//                }
+//            }
         }
 
     }

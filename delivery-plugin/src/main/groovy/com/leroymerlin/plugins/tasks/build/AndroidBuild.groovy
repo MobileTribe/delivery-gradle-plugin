@@ -12,8 +12,6 @@ class AndroidBuild extends DeliveryBuild {
 
     private DeliveryLogger deliveryLogger = new DeliveryLogger()
 
-    boolean flutterProject
-
     @Input
     void addVariant(variant) {
         String classifier = variant.buildType.name
@@ -24,7 +22,9 @@ class AndroidBuild extends DeliveryBuild {
                 variant.outputs.all {
                     outputFileName = fileName
                 }
-                if (flutterProject) {
+                boolean isFlutter = project.plugins.find { it.class.simpleName.equals("FlutterPlugin") } != null
+
+                if (isFlutter) {
                     outputFiles.put(classifier as String, new File(project.rootProject
                             .file("build/app/outputs/apk/" +
                             "${variantName.replace("${project.artifact.toLowerCase()}", "").replaceFirst("-", "")}/$classifier/$fileName").path.replace("android/", "")))

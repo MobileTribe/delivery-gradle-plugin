@@ -72,7 +72,7 @@ class ReactConfigurator extends ProjectConfigurator {
 
     @Override
     void applySigningProperty(SigningProperty signingProperty) {
-        throw new GradleException("SigningProperty ${signingProperty.name} should be configure in Android or IOS submodule")
+        throw new GradleException("SigningProperty ${signingProperty.name} should be configured in Android or IOS submodule")
     }
 
     @Override

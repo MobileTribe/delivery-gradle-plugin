@@ -7,10 +7,12 @@ import com.leroymerlin.plugins.entities.Flow
 import com.leroymerlin.plugins.entities.RegistryProperty
 import com.leroymerlin.plugins.entities.SigningProperty
 import com.leroymerlin.plugins.utils.PropertiesUtils
+import com.leroymerlin.plugins.utils.SystemUtils
 import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.artifacts.maven.MavenDeployer
+import org.gradle.testfixtures.ProjectBuilder
 
 class DeliveryPluginExtension {
 
@@ -43,9 +45,19 @@ class DeliveryPluginExtension {
         if (mArchiveRepositories == null) {
             def parent = PropertiesUtils.findParentProjectWithDelivery(project)
             mArchiveRepositories = parent?.delivery?.archiveRepositories
+
+
+            if (SystemUtils.getEnvProperty(ProjectConfigurator.PARENT_BUILD_ROOT)) {
+                Project parentProject = ProjectBuilder.builder()
+                        .withProjectDir(new File(SystemUtils.getEnvProperty(ProjectConfigurator.PARENT_BUILD_ROOT)))
+                        .build()
+                parentProject.evaluate()
+                mArchiveRepositories = parentProject.delivery?.archiveRepositories
+            }
+
+
             if (mArchiveRepositories == null) {
-                mArchiveRepositories = project.ext.properties.containsKey('archiveRepositories') ? project.ext.archiveRepositories : {
-                }
+                mArchiveRepositories = project.ext.properties.containsKey('archiveRepositories') ? project.ext.archiveRepositories : {}
             }
         }
         return mArchiveRepositories

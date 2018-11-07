@@ -1,0 +1,26 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+    }
+    dependencies {
+        classpath "com.leroymerlin.plugins:delivery-plugin:${System.getProperty("DELIVERY_VERSION")}"
+    }
+}
+
+apply plugin: "com.leroymerlin.delivery"
+
+
+
+
+delivery{
+    if (file("${System.properties['user.home']}/.gradle/signing_ios.properties").exists()) {
+        signingProperties {
+            flutter {
+                propertiesFile = file("${System.properties['user.home']}/.gradle/signing_ios.properties")
+                target = "Runner"
+                scheme = "Runner"
+            }
+        }
+    }
+}

@@ -13,25 +13,12 @@ apply plugin: 'com.leroymerlin.delivery'
 delivery {
     archiveRepositories = {
         maven {
-            url uri("../../build/archive_flutter")
+            url uri("${rootProject.buildDir}/archive_flutter")
         }
     }
     flows {
         flutter {
             build
-        }
-    }
-
-    if (file("${System.properties['user.home']}/.gradle/signing_ios.properties").exists() && file("${System.properties['user.home']}/.gradle/signing.properties")) {
-        signingProperties {
-            android {
-                propertiesFile = file("${System.properties['user.home']}/.gradle/signing.properties")
-            }
-            ios {
-                target = "Runner"
-                scheme = "Runner"
-                propertiesFile = file("${System.properties['user.home']}/.gradle/signing_ios.properties")
-            }
         }
     }
 }

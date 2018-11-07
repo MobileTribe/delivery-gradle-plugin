@@ -19,12 +19,13 @@ class AndroidConfigurator extends ProjectConfigurator {
 
     private final String ANDROID_PLUGIN_ID = "com.android.application"
     public static final String ANDROID_LIBRARY_PLUGIN_ID = "com.android.library"
-    boolean isAndroidApp, isAndroidLibrary, isFlutterProject
+    boolean isAndroidApp, isAndroidLibrary
 
     @Override
     void setup(Project project, DeliveryPluginExtension extension) {
         super.setup(project, extension)
         isAndroidApp = project.plugins.hasPlugin(ANDROID_PLUGIN_ID)
+        isAndroidLibrary = project.plugins.hasPlugin(ANDROID_LIBRARY_PLUGIN_ID)
         isAndroidLibrary = project.plugins.hasPlugin(ANDROID_LIBRARY_PLUGIN_ID)
         if (!isAndroidApp && !isAndroidLibrary) {
             throw new GradleException("Your project must apply com.android.application or com.android.library to use " + getClass().simpleName)
@@ -97,19 +98,32 @@ class AndroidConfigurator extends ProjectConfigurator {
             throw new GradleException("Project group is not defined. Please use a gradle properties or configure your defaultConfig.applicationId")
         }
         if (isAndroidApp) {
-            project.android.applicationVariants.all { currentVariant ->
-                String flavorName = project.artifact.toString().split(' ').collect({ m -> return m.toLowerCase().capitalize() }).join("") + (currentVariant.flavorName.capitalize() ? "-${currentVariant.flavorName.capitalize()}" : "")
-                flavorName = flavorName[0].toLowerCase() + flavorName.substring(1)
-                String flavorNameNexus = project.artifact.toString().split(' ').collect({ m -> return m.toLowerCase() }).join("-") + (currentVariant.flavorName.toLowerCase() ? "-${currentVariant.flavorName.toLowerCase()}" : "")
 
-                def buildTaskName = "build${flavorName.capitalize()}Artifacts"
-                if (project.tasks.findByPath(buildTaskName) == null) {
-                    project.task(buildTaskName, type: AndroidBuild, group: DeliveryPlugin.TASK_GROUP) {
-                        variantName flavorNameNexus
-                        flutterProject isFlutterProject
+            boolean isFlutter = project.plugins.find { it.class.simpleName.equals("FlutterPlugin") } != null
+            project.android.applicationVariants.all { currentVariant ->
+                if (isFlutter && currentVariant.buildType.name.startsWith("dynamic")) {
+                    //we skip dynamic build to avoid flutter error
+                    //issue: https://github.com/flutter/flutter/issues/23208
+
+                    project.tasks.findByName("flutterBuild${currentVariant.buildType.name.capitalize()}").enabled = false
+                    //currentVariant.assemble.enabled = false
+                    //project.tasks.findByName('test').dependsOn -= "test${currentVariant.buildType.name.capitalize()}UnitTest"
+                    deliveryLogger.logInfo("${currentVariant.buildType.name} flutter buildtype skipped")
+                } else {
+
+
+                    String flavorName = project.artifact.toString().split(' ').collect({ m -> return m.toLowerCase().capitalize() }).join("") + (currentVariant.flavorName.capitalize() ? "-${currentVariant.flavorName.capitalize()}" : "")
+                    flavorName = flavorName[0].toLowerCase() + flavorName.substring(1)
+                    String flavorNameNexus = project.artifact.toString().split(' ').collect({ m -> return m.toLowerCase() }).join("-") + (currentVariant.flavorName.toLowerCase() ? "-${currentVariant.flavorName.toLowerCase()}" : "")
+
+                    def buildTaskName = "build${flavorName.capitalize()}Artifacts"
+                    if (project.tasks.findByPath(buildTaskName) == null) {
+                        project.task(buildTaskName, type: AndroidBuild, group: DeliveryPlugin.TASK_GROUP) {
+                            variantName flavorNameNexus
+                        }
                     }
+                    project.tasks.findByPath(buildTaskName).addVariant(currentVariant)
                 }
-                project.tasks.findByPath(buildTaskName).addVariant(currentVariant)
             }
         } else {
             project.android.libraryVariants.all { currentVariant ->

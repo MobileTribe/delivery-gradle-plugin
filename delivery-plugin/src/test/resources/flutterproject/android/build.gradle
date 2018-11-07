@@ -1,13 +1,25 @@
 buildscript {
     repositories {
+        mavenLocal()
+        jcenter()
+    }
+    dependencies {
+        classpath "com.leroymerlin.plugins:delivery-plugin:${System.getProperty("DELIVERY_VERSION")}"
+    }
+}
+
+buildscript {
+    repositories {
         google()
         jcenter()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'com.android.tools.build:gradle:3.2.0'
     }
 }
+
+
 
 allprojects {
     repositories {
