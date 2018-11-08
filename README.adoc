@@ -88,7 +88,7 @@ image:./delivery-doc/assets/videos/releaseGitFlow.gif[]
 == Changelog - link:{htmlPath}delivery-doc/html/Changelog.html[Full changelog]
 
 
-=== *3.3.0* - (soon)
+=== *3.3.0* - (2018-11-08)
 - ReactNative : refactor react native configurator
 - Flutter : refactor flutter configurator
 - Debug : link listArtifacts and listDockerImages tasks to linked sub module
