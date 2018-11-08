@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.6.1">
-<meta name="author" content="Delivery v3.2.3, Thu Oct 04 13:38:33 CEST 2018">
+<meta name="author" content="Delivery v3.3.0, Thu Nov 08 11:52:40 CET 2018">
 <title>Tutorial</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -521,7 +521,7 @@ table.CodeRay td.code>pre{padding:0}
 <div id="header">
 <h1>Tutorial</h1>
 <div class="details">
-<span id="author" class="author">Delivery v3.2.3, Thu Oct 04 13:38:33 CEST 2018</span><br>
+<span id="author" class="author">Delivery v3.3.0, Thu Nov 08 11:52:40 CET 2018</span><br>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -537,6 +537,7 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#ios">6.2. iOS</a></li>
 <li><a href="#ionic">6.3. Ionic</a></li>
 <li><a href="#react-native">6.4. React Native</a></li>
+<li><a href="#flutter">6.5. Flutter</a></li>
 </ul>
 </li>
 <li><a href="#multi-modules">7. Multi Modules</a></li>
@@ -975,21 +976,78 @@ Ionic support is only available with the last Ionic version
 </div>
 <div class="sect2">
 <h3 id="react-native">6.4. React Native</h3>
+<div class="paragraph">
+<p>A React Native project has to be configured as a Multi modules project. Apply the delivery plugin in the root project (in charge of Npm setup), :android:app module
+(to build android) and :ios (to build ios). One apply just link module with linkedSubModules in the delivery extension.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Caution</div>
+</td>
+<td class="content">
+You may need to move the buildscript part in ":android" module to the root project in order to be used. Don&#8217;t forget
+to fix the react repository relative path (remove useless "../")
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Example</p>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">                <span class="comment">//...</span>
-                signingProperties {
-                    <span class="comment">// you have to use android or ios name for react signing configs</span>
-                    android {
-                        <span class="comment">//See android needed properties</span>
-                    }
-                    ios {
-                        <span class="comment">//See ios needed properties</span>
-                        <span class="comment">//target and scheme are optionals for ionic</span>
-                    }
-                }
-                <span class="comment">//...</span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">delivery {
+    archiveRepositories = {
+        maven {
+            url uri(<span class="string"><span class="delimiter">&quot;</span><span class="content">./build/archive_react</span><span class="delimiter">&quot;</span></span>)
+        }
+    }
+    linkedSubModules <span class="string"><span class="delimiter">&quot;</span><span class="content">:ios</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">:android:app</span><span class="delimiter">&quot;</span></span>
+
+    <span class="comment">//...</span></code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>For more details check the reactNative project in test resources</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="flutter">6.5. Flutter</h3>
+<div class="paragraph">
+<p>Apply the delivery plugin in the root flutter project, configure repositories and version. Then apply the plugin in the subproject in android/app folder and ios folder and configure signing configuration of each platform.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Caution</div>
+</td>
+<td class="content">
+Don&#8217;t add android and ios as gradle submodule of your root project. Android flutter build does&#8217;t support no to be in root folder. Delivery FlutterConfigurator will run nested gradle build for you.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Example</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">apply <span class="key">plugin</span>: <span class="string"><span class="delimiter">'</span><span class="content">com.leroymerlin.delivery</span><span class="delimiter">'</span></span>
+
+delivery {
+    archiveRepositories = {
+        maven {
+            url uri(<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>rootProject.buildDir<span class="inline-delimiter">}</span></span><span class="content">/archive_flutter</span><span class="delimiter">&quot;</span></span>)
+        }
+    }
+    <span class="comment">//...</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For more details check the flutterproject project in test resources</p>
 </div>
 </div>
 </div>
@@ -1196,7 +1254,7 @@ security unlock-keychain -p $KEYCHAIN_PASSWORD ~/Library/Keychains/login.keychai
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-10-04 13:38:28 CEST
+Last updated 2018-11-08 11:52:33 CET
 </div>
 </div>
 </body>
