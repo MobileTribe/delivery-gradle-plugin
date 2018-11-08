@@ -109,8 +109,8 @@ class IOSConfigurator extends ProjectConfigurator {
                 }
             }
             project.infoplist {
-                version = project.version
-                shortVersionString = project.versionId
+                version = project.versionId
+                shortVersionString = project.version
             }
         }
     }
