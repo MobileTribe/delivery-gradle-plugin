@@ -1,0 +1,16 @@
+apply plugin: "com.leroymerlin.delivery"
+
+
+
+
+delivery{
+    if (file("${System.properties['user.home']}/.gradle/signing_ios.properties").exists()) {
+        signingProperties {
+            reactNative {
+                propertiesFile = file("${System.properties['user.home']}/.gradle/signing_ios.properties")
+                target = "reactNative"
+                scheme = "reactNative"
+            }
+        }
+    }
+}

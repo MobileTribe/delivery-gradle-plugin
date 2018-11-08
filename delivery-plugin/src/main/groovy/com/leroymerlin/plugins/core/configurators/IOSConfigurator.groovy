@@ -5,6 +5,7 @@ import com.leroymerlin.plugins.DeliveryPluginExtension
 import com.leroymerlin.plugins.cli.Executor
 import com.leroymerlin.plugins.entities.SigningProperty
 import com.leroymerlin.plugins.tasks.build.DeliveryBuild
+import com.leroymerlin.plugins.tasks.build.PrepareBuildTask
 import com.leroymerlin.plugins.utils.SystemUtils
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.api.GradleException
@@ -17,9 +18,7 @@ import org.gradle.api.tasks.GradleBuild
  */
 class IOSConfigurator extends ProjectConfigurator {
 
-    public boolean hybridBuild = false
     static def pluginId = "org.openbakery.xcode-plugin"
-    boolean isFlutterProject
 
     @Override
     void setup(Project project, DeliveryPluginExtension extension) {
@@ -35,14 +34,15 @@ class IOSConfigurator extends ProjectConfigurator {
             }
         }
 
-        if (isFlutterProject) {
-            project.task("prepareIOSProject", group: DeliveryPlugin.TASK_GROUP).doLast {
-                project.file("Flutter/Generated.xcconfig").delete()
-                Executor.exec(["flutter", "build", "ios", "--no-codesign"]) {
-                    directory = new File(project.projectDir.toString().replace("/ios", ""))
-                }
-            }
+        project.task("prepareIOSProject", type: PrepareBuildTask, group: DeliveryPlugin.TASK_GROUP).doLast {
+//            if (isFlutterProject) {
+//                project.file("Flutter/Generated.xcconfig").delete()
+//                Executor.exec(["flutter", "build", "ios", "--no-codesign"]) {
+//                    directory = new File(project.projectDir.toString().replace("/ios", ""))
+//                }
+//            }
         }
+
     }
 
     @Override
@@ -80,21 +80,20 @@ class IOSConfigurator extends ProjectConfigurator {
         Task buildTask = project.tasks.findByPath(taskName)
         if (buildTask == null) {
             project.task(taskName, type: DeliveryBuild, group: DeliveryPlugin.TASK_GROUP) {
-                variantName project.artifact.toString().split(' ').collect({ m -> return m.toLowerCase() }).join("-") + (hybridBuild ? "" : "-" + target.trim().toLowerCase())
-                outputFiles = ["${scheme.trim().toLowerCase().replace(" ", "-")}": project.file("${project.getBuildDir()}/package/${variantCodeName}.ipa")]
+                variantName project.artifact.toString().split(' ').collect({ m -> return m.toLowerCase() }).join("-") + ("-" + target.trim().toLowerCase())
+                outputFiles = [("${scheme.trim().toLowerCase().replace(" ", "-")}".toString()): project.file("${project.getBuildDir()}/package/${variantCodeName}.ipa")]
             }.dependsOn(taskName + "Process")
 
             def parameter = project.getGradle().startParameter.newInstance()
             parameter.systemPropertiesArgs.put("xcodebuild", property.name)
-            project.task(taskName + "Process", type: GradleBuild, group: DeliveryPlugin.TASK_GROUP) {
+            def buildTaskProcess = project.task(taskName + "Process", type: GradleBuild, group: DeliveryPlugin.TASK_GROUP) {
                 startParameter = parameter
                 tasks = ['archive', 'package']
             }
 
-            if (isFlutterProject) {
-                project.getTasksByName(taskName + "Process", false)[0].dependsOn("prepareIOSProject")
-            }
+            buildTaskProcess.dependsOn += project.tasks.withType(PrepareBuildTask)
         }
+
         if (SystemUtils.getEnvProperty("xcodebuild") == property.name) {
             project.xcodebuild.target = target
             project.xcodebuild.scheme = scheme

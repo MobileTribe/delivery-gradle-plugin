@@ -51,6 +51,25 @@ This plugin is based on 2 other plugins :
 
 *Delivery use Maven naming convention to archive*
 
+== Configuration
+
+To use delivery, you just have to apply the plugin in your project.
+
+```Groovy
+buildscript {
+	repositories {
+		jcenter()
+	}
+
+	dependencies {
+		classpath 'com.leroymerlin.plugins:delivery-plugin:LAST_VERSION'
+	}
+}
+
+apply plugin: 'com.leroymerlin.delivery'
+```  
+and then configure it by following the link:{htmlPath}delivery-doc/html/Tutorial.html[Tutorial]
+
 == Compatibility
 
 :size: 60
@@ -67,6 +86,12 @@ _All product names, logos, and brands are property of their respective owners. A
 image:./delivery-doc/assets/videos/releaseGitFlow.gif[]
 
 == Changelog - link:{htmlPath}delivery-doc/html/Changelog.html[Full changelog]
+
+
+=== *3.3.0* - (2018-11-08)
+- ReactNative : refactor react native configurator
+- Flutter : refactor flutter configurator
+- Debug : link listArtifacts and listDockerImages tasks to linked sub module
 
 === *3.2.3* - (2018-10-04)
 - Install : fix install task dependencies on java project

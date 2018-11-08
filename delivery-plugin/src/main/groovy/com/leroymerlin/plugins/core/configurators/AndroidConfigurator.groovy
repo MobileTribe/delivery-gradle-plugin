@@ -5,6 +5,8 @@ import com.leroymerlin.plugins.DeliveryPluginExtension
 import com.leroymerlin.plugins.entities.SigningProperty
 import com.leroymerlin.plugins.tasks.build.AndroidBuild
 import com.leroymerlin.plugins.tasks.build.AndroidLibBuild
+import com.leroymerlin.plugins.tasks.build.PrepareBuildTask
+import com.leroymerlin.plugins.utils.PropertiesUtils
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.artifacts.maven.Conf2ScopeMappingContainer
@@ -17,12 +19,13 @@ class AndroidConfigurator extends ProjectConfigurator {
 
     private final String ANDROID_PLUGIN_ID = "com.android.application"
     public static final String ANDROID_LIBRARY_PLUGIN_ID = "com.android.library"
-    boolean isAndroidApp, isAndroidLibrary, isFlutterProject
+    boolean isAndroidApp, isAndroidLibrary
 
     @Override
     void setup(Project project, DeliveryPluginExtension extension) {
         super.setup(project, extension)
         isAndroidApp = project.plugins.hasPlugin(ANDROID_PLUGIN_ID)
+        isAndroidLibrary = project.plugins.hasPlugin(ANDROID_LIBRARY_PLUGIN_ID)
         isAndroidLibrary = project.plugins.hasPlugin(ANDROID_LIBRARY_PLUGIN_ID)
         if (!isAndroidApp && !isAndroidLibrary) {
             throw new GradleException("Your project must apply com.android.application or com.android.library to use " + getClass().simpleName)
@@ -43,6 +46,9 @@ class AndroidConfigurator extends ProjectConfigurator {
                     extension.signingProperties.maybeCreate(buildType.name as String)
             }
         }
+
+        project.task("prepareAndroidBuild", type: PrepareBuildTask, group: DeliveryPlugin.TASK_GROUP)
+
     }
 
     @Override
@@ -72,7 +78,7 @@ class AndroidConfigurator extends ProjectConfigurator {
                 throw new GradleException("app versionCode is ${project.android.defaultConfig.versionCode} but should be ${project.versionId}. Please set: android.defaultConfig.versionCode Integer.parseInt(versionId)")
             }
         }
-        if (!project.ext.has("group")) {
+        if (!PropertiesUtils.userHasDefineProperty(project, "group")) {
             if (isAndroidApp) {
                 if (project.android.defaultConfig.applicationId) {
                     project.group = project.android.defaultConfig.applicationId
@@ -92,19 +98,32 @@ class AndroidConfigurator extends ProjectConfigurator {
             throw new GradleException("Project group is not defined. Please use a gradle properties or configure your defaultConfig.applicationId")
         }
         if (isAndroidApp) {
-            project.android.applicationVariants.all { currentVariant ->
-                String flavorName = project.artifact.toString().split(' ').collect({ m -> return m.toLowerCase().capitalize() }).join("") + (currentVariant.flavorName.capitalize() ? "-${currentVariant.flavorName.capitalize()}" : "")
-                flavorName = flavorName[0].toLowerCase() + flavorName.substring(1)
-                String flavorNameNexus = project.artifact.toString().split(' ').collect({ m -> return m.toLowerCase() }).join("-") + (currentVariant.flavorName.toLowerCase() ? "-${currentVariant.flavorName.toLowerCase()}" : "")
 
-                def buildTaskName = "build${flavorName.capitalize()}Artifacts"
-                if (project.tasks.findByPath(buildTaskName) == null) {
-                    project.task(buildTaskName, type: AndroidBuild, group: DeliveryPlugin.TASK_GROUP) {
-                        variantName flavorNameNexus
-                        flutterProject isFlutterProject
+            boolean isFlutter = project.plugins.find { it.class.simpleName.equals("FlutterPlugin") } != null
+            project.android.applicationVariants.all { currentVariant ->
+                if (isFlutter && currentVariant.buildType.name.startsWith("dynamic")) {
+                    //we skip dynamic build to avoid flutter error
+                    //issue: https://github.com/flutter/flutter/issues/23208
+
+                    project.tasks.findByName("flutterBuild${currentVariant.buildType.name.capitalize()}").enabled = false
+                    //currentVariant.assemble.enabled = false
+                    //project.tasks.findByName('test').dependsOn -= "test${currentVariant.buildType.name.capitalize()}UnitTest"
+                    deliveryLogger.logInfo("${currentVariant.buildType.name} flutter buildtype skipped")
+                } else {
+
+
+                    String flavorName = project.artifact.toString().split(' ').collect({ m -> return m.toLowerCase().capitalize() }).join("") + (currentVariant.flavorName.capitalize() ? "-${currentVariant.flavorName.capitalize()}" : "")
+                    flavorName = flavorName[0].toLowerCase() + flavorName.substring(1)
+                    String flavorNameNexus = project.artifact.toString().split(' ').collect({ m -> return m.toLowerCase() }).join("-") + (currentVariant.flavorName.toLowerCase() ? "-${currentVariant.flavorName.toLowerCase()}" : "")
+
+                    def buildTaskName = "build${flavorName.capitalize()}Artifacts"
+                    if (project.tasks.findByPath(buildTaskName) == null) {
+                        project.task(buildTaskName, type: AndroidBuild, group: DeliveryPlugin.TASK_GROUP) {
+                            variantName flavorNameNexus
+                        }
                     }
+                    project.tasks.findByPath(buildTaskName).addVariant(currentVariant)
                 }
-                project.tasks.findByPath(buildTaskName).addVariant(currentVariant)
             }
         } else {
             project.android.libraryVariants.all { currentVariant ->

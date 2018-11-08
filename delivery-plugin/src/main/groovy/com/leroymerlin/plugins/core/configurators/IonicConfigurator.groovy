@@ -4,6 +4,8 @@ import com.leroymerlin.plugins.DeliveryPlugin
 import com.leroymerlin.plugins.DeliveryPluginExtension
 import com.leroymerlin.plugins.cli.Executor
 import com.leroymerlin.plugins.entities.SigningProperty
+import com.leroymerlin.plugins.tasks.build.PrepareBuildTask
+import com.leroymerlin.plugins.utils.PropertiesUtils
 import com.leroymerlin.plugins.utils.SystemUtils
 import org.gradle.api.GradleException
 import org.gradle.api.Project
@@ -45,22 +47,20 @@ class IonicConfigurator extends ProjectConfigurator {
 
         if (signingBuild == 'ios') {
             nestedConfigurator = new IOSConfigurator()
-            nestedConfigurator.hybridBuild = true
         } else if (signingBuild == 'android') {
             nestedConfigurator = new AndroidConfigurator()
         }
         nestedConfigurator?.setup(project, extension)
 
-        project.task("prepareProject", group: DeliveryPlugin.TASK_GROUP).doLast {
+        project.task("prepareIonic", type: PrepareBuildTask, group: DeliveryPlugin.TASK_GROUP).doLast {
             project.file("platforms")?.deleteDir()
-        }
-        project.task("prepareNpm", group: DeliveryPlugin.TASK_GROUP).doLast {
             deliveryLogger.logInfo("Delivery support Ionic > 3.0 & Cordova > 7.0")
 
             Executor.exec(["npm", "install"]) {
                 directory = project.projectDir
             }
-        }.dependsOn("prepareProject")
+        }
+
     }
 
     @Override
@@ -79,7 +79,7 @@ class IonicConfigurator extends ProjectConfigurator {
         } else {
             File config = project.file("config.xml")
             Node widget = new XmlParser(false, false).parse(config)
-            if (!project.ext.has("group")) {
+            if (!PropertiesUtils.userHasDefineProperty(project, "group")) {
                 project.ext.group = widget."@id"
                 project.group = project.ext.group
             }
@@ -124,18 +124,19 @@ class IonicConfigurator extends ProjectConfigurator {
             def newBuildGradleFile = project.file("platforms/${signingName}/${signingName == 'android' ? "app/" : ""}build.gradle")
             def settingsGradle = project.file("platforms/${signingName}/${signingName == 'android' ? "delivery-" : ""}settings.gradle")
 
-            project.task(preparePlatformTask, group: DeliveryPlugin.TASK_GROUP).doLast {
+            project.task(preparePlatformTask, type: PrepareBuildTask, group: DeliveryPlugin.TASK_GROUP).doLast {
                 Executor.exec(["ionic", "cordova", "build", signingName, "--release"]) {
                     directory = project.projectDir
+                    needSuccessExitCode = false
                 }
 
                 if (signingName == 'android') {
-                    settingsGradle << project.file("platforms/${signingName}/settings.gradle").text
+                    settingsGradle << "\n" + project.file("platforms/${signingName}/settings.gradle").text
                 }
-                newBuildGradleFile << project.file('build.gradle').text
+                newBuildGradleFile << "\n" + project.file('build.gradle').text
                 newBuildGradleFile.text = newBuildGradleFile.text.replace("com.android.tools.build:gradle:2.2.3", "com.android.tools.build:gradle:2.3.0")
 
-            }.dependsOn('prepareNpm')
+            }.dependsOn('prepareIonic')
 
             def newStartParameter = project.getGradle().startParameter.newInstance()
             newStartParameter.systemPropertiesArgs.put(IONIC_BUILD, signingName)

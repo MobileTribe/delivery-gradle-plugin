@@ -23,7 +23,6 @@ class ReactTest extends AbstractIntegrationTest {
             f ->
                 list << f
         })
-
         Assert.assertEquals("archive folder should contain 10 files", 10, list.size())
     }
 }

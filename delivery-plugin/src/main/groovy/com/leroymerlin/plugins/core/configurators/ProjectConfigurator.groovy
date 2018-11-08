@@ -10,6 +10,9 @@ import org.gradle.api.Project
  */
 class ProjectConfigurator {
 
+    public static final String PARENT_BUILD_ROOT = 'PARENT_BUILD_ROOT'
+
+
     protected Project project
     protected DeliveryPluginExtension extension
     public final DeliveryLogger deliveryLogger = new DeliveryLogger()

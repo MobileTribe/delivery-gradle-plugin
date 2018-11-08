@@ -7,7 +7,10 @@ import com.leroymerlin.plugins.tasks.ListArtifacts
 import com.leroymerlin.plugins.tasks.ListDockerImages
 import com.leroymerlin.plugins.tasks.build.DeliveryBuild
 import com.leroymerlin.plugins.tasks.build.DockerBuild
+import com.leroymerlin.plugins.tasks.build.PrepareBuildTask
 import com.leroymerlin.plugins.utils.PropertiesUtils
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 import org.gradle.api.Action
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
@@ -122,11 +125,16 @@ class DeliveryPlugin implements Plugin<Project> {
         } else {
             deliveryLogger.logInfo("${project.name} configured as ${detectedConfigurator.class.simpleName - "Configurator"} project")
         }
+
         this.deliveryExtension.configurator = detectedConfigurator
 
         project.task(UPLOAD_TASK, group: TASK_GROUP)
         project.task(INSTALL_TASK, group: TASK_GROUP)
         project.tasks.maybeCreate(BASE_INSTALL_TASK)
+
+
+        project.task("listArtifacts", type: ListArtifacts, group: TASK_GROUP)
+        project.task("listDockerImages", type: ListDockerImages, group: TASK_GROUP)
 
         project.subprojects {
             Project subproject ->
@@ -136,11 +144,15 @@ class DeliveryPlugin implements Plugin<Project> {
                             project.tasks.getByName(BASE_INSTALL_TASK).dependsOn += subproject.tasks.getByName(BASE_INSTALL_TASK)
                             project.tasks.getByName(INSTALL_TASK).dependsOn += subproject.tasks.getByName(INSTALL_TASK)
                             project.tasks.getByName(UPLOAD_TASK).dependsOn += subproject.tasks.getByName(UPLOAD_TASK)
+                            project.tasks.withType(ListArtifacts).each {it.dependsOn += subproject.tasks.withType(ListArtifacts) }
+                            project.tasks.withType(ListDockerImages).each {it.dependsOn += subproject.tasks.withType(ListDockerImages) }
+                            subproject.tasks.withType(PrepareBuildTask).each { it.dependsOn += project.tasks.withType(PrepareBuildTask) }
                         }
                     }
                 }
         }
         project.afterEvaluate {
+
 
             if (deliveryExtension.configurator == null) {
                 throw new GradleException("Configurator is null. Can't configure your project. Please set the configurator or apply the plugin after your project plugin")
@@ -155,24 +167,26 @@ class DeliveryPlugin implements Plugin<Project> {
                     if (project.artifact == null) throwException("Artifact", project)
                     if (project.group == null) throwException("Group", project)
 
-                    String configurationName = task.variantName + "Config"
+                    def variantName = task.variantName
+
+                    String configurationName = variantName + "Config"
                     if (!project.configurations.hasProperty(configurationName)) {
                         project.configurations.create(configurationName)
                         project.dependencies.add(configurationName, 'org.apache.maven.wagon:wagon-http:2.2')
 
-                        project.task("${UPLOAD_TASK_PREFIX}${task.variantName.capitalize()}Artifacts", type: Upload, group: TASK_GROUP) {
+                        project.task("${UPLOAD_TASK_PREFIX}${variantName.capitalize()}Artifacts", type: Upload, group: TASK_GROUP) {
                             configuration = project.configurations."${configurationName}"
                             repositories deliveryExtension.archiveRepositories
                         }
 
-                        def installTask = project.task("${INSTALL_TASK_PREFIX}${task.variantName.capitalize()}Artifacts", type: Upload, group: TASK_GROUP) {
+                        def installTask = project.task("${INSTALL_TASK_PREFIX}${variantName.capitalize()}Artifacts", type: Upload, group: TASK_GROUP) {
                             configuration = project.configurations."${configurationName}"
                         }
 
                         MavenRepositoryHandlerConvention repositories = new DslObject(installTask.getRepositories()).getConvention().getPlugin(MavenRepositoryHandlerConvention.class)
                         def mavenInstaller = repositories.mavenInstaller()
                         MavenPom pom = mavenInstaller.getPom()
-                        pom.setArtifactId(task.variantName as String)
+                        pom.setArtifactId(variantName as String)
                     }
                     ((Configuration) project.configurations."${configurationName}").artifacts.addAll(task.getArtifacts() as PublishArtifact[])
 
@@ -186,7 +200,6 @@ class DeliveryPlugin implements Plugin<Project> {
 
             project.tasks.findByName(INSTALL_TASK).dependsOn += project.tasks.withType(Upload).findAll { task -> task.name.startsWith(INSTALL_TASK_PREFIX) && task.name != BASE_INSTALL_TASK }
 
-            project.task("listArtifacts", type: ListArtifacts, group: TASK_GROUP)
 
 //Docker build
 
@@ -201,8 +214,6 @@ class DeliveryPlugin implements Plugin<Project> {
 
             uploadArtifacts.dependsOn += project.tasks.withType(DockerUpload)
             project.tasks.findByName(INSTALL_TASK).dependsOn += project.tasks.withType(DockerBuild)
-            project.task("listDockerImages", type: ListDockerImages, group: TASK_GROUP)
-
             project.tasks.findByName(BASE_INSTALL_TASK).dependsOn += project.tasks.findByName(INSTALL_TASK)
         }
     }

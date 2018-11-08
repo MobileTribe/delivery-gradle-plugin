@@ -1,12 +1,12 @@
 package com.leroymerlin.plugins.utils
 
-import com.leroymerlin.plugins.cli.Executor
+import com.leroymerlin.plugins.DeliveryPlugin
 import org.gradle.api.Project
 
 /**
  * Created by florian on 30/01/2017.
  */
-class PropertiesUtils extends Executor {
+class PropertiesUtils {
 
     static String getSystemProperty(String key, String defaultValue = null) {
         def property = System.getProperty(key)
@@ -51,6 +51,27 @@ class PropertiesUtils extends Executor {
     static void applyPropertiesOnProject(Project project, Properties properties) {
         properties.each { prop ->
             project.ext.set(prop.key, prop.value)
+        }
+    }
+
+
+    static Project findParentProjectWithDelivery(Project project) {
+        if (project.parent != null) {
+            if (project.parent.plugins.hasPlugin(DeliveryPlugin.class)) {
+                return project.parent
+            }
+            return findParentProjectWithDelivery(project.parent)
+        }
+        return null
+    }
+
+    static boolean userHasDefineProperty(Project project, String propertyName) {
+        if (project == null) {
+            return false
+        } else if (project.ext.has(propertyName)) {
+            return true
+        } else {
+            return userHasDefineProperty(project.parent, propertyName)
         }
     }
 }
