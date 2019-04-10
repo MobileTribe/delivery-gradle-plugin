@@ -15,7 +15,6 @@ import java.util.concurrent.ConcurrentHashMap
 class ChangePropertiesTask extends DefaultTask {
 
     String version, versionId, artifact
-    Project project
     private final DeliveryLogger deliveryLogger = new DeliveryLogger()
 
     @TaskAction

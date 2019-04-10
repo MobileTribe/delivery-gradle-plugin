@@ -4,10 +4,11 @@ import com.leroymerlin.plugins.DeliveryPluginExtension
 import com.leroymerlin.plugins.cli.Executor
 import com.leroymerlin.plugins.entities.RegistryProperty
 import com.leroymerlin.plugins.tasks.build.DockerBuild
-import com.sun.istack.internal.Nullable
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
+
+import javax.annotation.Nullable
 
 /**
  * Created by alexandre on 15/02/2017.
@@ -30,7 +31,7 @@ class DockerUpload extends DefaultTask {
             def fullName = "${url}/${buildTask.getImageName()}"
 
 
-            Executor.exec(["docker", "tag", buildTask.getImageName(), fullName]){
+            Executor.exec(["docker", "tag", buildTask.getImageName(), fullName]) {
                 directory = project.projectDir
             }
 
@@ -47,11 +48,11 @@ class DockerUpload extends DefaultTask {
             }
             loginParams.add(url)
 
-            Executor.exec(loginParams){
+            Executor.exec(loginParams) {
                 directory = project.projectDir
                 hideCommand = true
             }
-            Executor.exec(["docker", "push", fullName]){
+            Executor.exec(["docker", "push", fullName]) {
                 directory = project.projectDir
             }
         } else {
