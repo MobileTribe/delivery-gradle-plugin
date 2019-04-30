@@ -1,7 +1,9 @@
 package com.leroymerlin.plugins.test.integration
 
+import com.leroymerlin.plugins.cli.Executor
 import groovy.io.FileType
 import org.junit.Assert
+import org.junit.Assume
 import org.junit.Before
 import org.junit.Test
 
@@ -13,6 +15,15 @@ class IonicTest extends AbstractIntegrationTest {
     @Override
     String getProjectName() {
         return "ionic"
+    }
+
+
+    @Before
+    void beforeMethod() {
+        def exec = Executor.exec(Executor.convertToCommandLine("ionic -v")) {
+            needSuccessExitCode = false
+        }
+        Assume.assumeTrue("ionic is not installed", exec.exitValue == Executor.EXIT_CODE_OK)
     }
 
     @Test
