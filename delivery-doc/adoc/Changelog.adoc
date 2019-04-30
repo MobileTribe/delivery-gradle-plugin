@@ -3,6 +3,18 @@
 :htmlPath:
 ifdef::env-github[:htmlPath: http://mobiletribe.github.io/delivery-gradle-plugin/]
 
+=== *3.3.1* - (2019-04-30)
+- Fix : crash on sdk 11+
+- Fix : Git credential in env ignored
+
+=== *3.3.0* - (2018-11-08)
+- ReactNative : refactor react native configurator
+- Flutter : refactor flutter configurator
+- Debug : link listArtifacts and listDockerImages tasks to linked sub module
+
+=== *3.2.3* - (2018-10-04)
+- Install : fix install task dependencies on java project
+
 === *3.2.2* - (2018-10-03)
 - Group: Fix default group on android and ionic
 
