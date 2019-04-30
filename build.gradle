@@ -4,7 +4,7 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath "com.leroymerlin.plugins:delivery-plugin:3.1.2"
+        classpath "com.leroymerlin.plugins:delivery-plugin:3.3.0"
     }
 }
 allprojects {
