@@ -100,6 +100,7 @@ class IOSConfigurator extends ProjectConfigurator {
             project.xcodebuild {
                 bundleName = scheme
                 ipaFileName = variantCodeName
+                additionalParameters = "CODE_SIGNING_ALLOWED=NO"
                 configuration = "Release"
                 simulator = false
                 signing {
@@ -109,8 +110,8 @@ class IOSConfigurator extends ProjectConfigurator {
                 }
             }
             project.infoplist {
-                version = project.version
-                shortVersionString = project.versionId
+                version = project.versionId
+                shortVersionString = project.version
             }
         }
     }

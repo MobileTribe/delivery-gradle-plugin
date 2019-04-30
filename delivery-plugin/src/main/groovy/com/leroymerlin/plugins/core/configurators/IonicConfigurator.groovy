@@ -59,6 +59,11 @@ class IonicConfigurator extends ProjectConfigurator {
             Executor.exec(["npm", "install"]) {
                 directory = project.projectDir
             }
+
+            Executor.exec(["ionic", "cordova", "prepare"]) {
+                directory = project.projectDir
+                needSuccessExitCode = false
+            }
         }
 
     }
@@ -127,7 +132,6 @@ class IonicConfigurator extends ProjectConfigurator {
             project.task(preparePlatformTask, type: PrepareBuildTask, group: DeliveryPlugin.TASK_GROUP).doLast {
                 Executor.exec(["ionic", "cordova", "build", signingName, "--release"]) {
                     directory = project.projectDir
-                    needSuccessExitCode = false
                 }
 
                 if (signingName == 'android') {

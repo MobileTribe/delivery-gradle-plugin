@@ -158,7 +158,7 @@ class AndroidConfigurator extends ProjectConfigurator {
             }
 
             if (!project.file(signingProperty.storeFile).exists()) {
-                throw new IllegalStateException("KS not found for buildType '${signingProperty.name}' at path $filePath")
+                throw new IllegalStateException("KS not found for buildType '${signingProperty.name}' at path ${signingProperty.storeFile}")
             }
 
             def ksFile = project.file(signingProperty.storeFile)
