@@ -115,14 +115,13 @@ class DeliveryPlugin implements Plugin<Project> {
         project.ext.DeliveryBuild = DeliveryBuild
         project.ext.DockerBuild = DockerBuild
 
+        setupProperties()
 
         //Check if child process is evaluating delivery extension to get repositories
-        def parentBuildRoot = SystemUtils.getEnvProperty(ProjectConfigurator.PARENT_BUILD_ROOT)
-        if (parentBuildRoot && parentBuildRoot == project.rootDir.path){
+        if (isChildEvaluation()){
             return;
         }
 
-        setupProperties()
 
         ProjectConfigurator detectedConfigurator = configurators.find {
             configurator ->
@@ -226,9 +225,15 @@ class DeliveryPlugin implements Plugin<Project> {
         }
     }
 
+
+    boolean isChildEvaluation(){
+        def parentBuildRoot = SystemUtils.getEnvProperty(ProjectConfigurator.PARENT_BUILD_ROOT)
+        return parentBuildRoot && parentBuildRoot == project.rootDir.path
+    }
+
 //create default release git flow
     void enableReleaseGitFlow(boolean enable) {
-        if (enable && !project.tasks.findByPath("releaseGitFlow")) {
+        if (enable && !project.tasks.findByPath("releaseGitFlow") && !isChildEvaluation()) {
             deliveryExtension.flowsContainer.create(
 //tag::gitReleaseFlow[]
                     'releaseGit',

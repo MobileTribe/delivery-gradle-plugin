@@ -46,11 +46,9 @@ class DeliveryPluginExtension {
             def parent = PropertiesUtils.findParentProjectWithDelivery(project)
             mArchiveRepositories = parent?.delivery?.archiveRepositories
 
-
-            def parentBuildRoot = SystemUtils.getEnvProperty(ProjectConfigurator.PARENT_BUILD_ROOT)
-            if (parentBuildRoot && parentBuildRoot != project.rootDir.path) {
+            if (!plugin.isChildEvaluation()) {
                 Project parentProject = ProjectBuilder.builder()
-                        .withProjectDir(new File(parentBuildRoot))
+                        .withProjectDir(new File(SystemUtils.getEnvProperty(ProjectConfigurator.PARENT_BUILD_ROOT)))
                         .build()
                 parentProject.evaluate()
                 mArchiveRepositories = parentProject.delivery?.archiveRepositories
