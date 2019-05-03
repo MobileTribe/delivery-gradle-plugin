@@ -9,6 +9,7 @@ import com.leroymerlin.plugins.tasks.build.DeliveryBuild
 import com.leroymerlin.plugins.tasks.build.DockerBuild
 import com.leroymerlin.plugins.tasks.build.PrepareBuildTask
 import com.leroymerlin.plugins.utils.PropertiesUtils
+import com.leroymerlin.plugins.utils.SystemUtils
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import org.gradle.api.Action
@@ -113,6 +114,13 @@ class DeliveryPlugin implements Plugin<Project> {
 
         project.ext.DeliveryBuild = DeliveryBuild
         project.ext.DockerBuild = DockerBuild
+
+
+        //Check if child process is evaluating delivery extension to get repositories
+        def parentBuildRoot = SystemUtils.getEnvProperty(ProjectConfigurator.PARENT_BUILD_ROOT)
+        if (parentBuildRoot && parentBuildRoot == project.rootDir.path){
+            return;
+        }
 
         setupProperties()
 

@@ -24,6 +24,11 @@ class FlutterTest extends AbstractIntegrationTest {
     }
 
     @Test
+    void testListArtifact() {
+        testTask('listArtifact')
+    }
+
+    @Test
     void testBuildTaskGeneration() {
         def archiveDirectory = new File(workingDirectory, "build/archive_flutter")
         testTask('flutterFlow')
