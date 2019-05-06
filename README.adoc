@@ -88,6 +88,9 @@ image:./delivery-doc/assets/videos/releaseGitFlow.gif[]
 == Changelog - link:{htmlPath}delivery-doc/html/Changelog.html[Full changelog]
 
 
+=== *3.3.2* - (2019-05-06)
+- Fix : loop in flutter build
+
 === *3.3.1* - (2019-04-30)
 - Fix : crash on sdk 11+
 - Fix : Git credential in env ignored
@@ -113,20 +116,6 @@ image:./delivery-doc/assets/videos/releaseGitFlow.gif[]
 - Add Docker compatibility
 - Multiple fixes
 
-=== *3.1.2* - (2018-07-17)
-- Fix multi module feature
-
-=== *3.1.1* - (2018-07-11)
-- Change group arg from GROUP to GROUP_ID
-- Unlock Apple keychain before ios builds
-
-=== *3.1.0* - (2018-05-31)
-- Add Flutter compatibility
-- Check OS and platforms before builds
-- Add color for logs
-- Show more precise logs
-- Add task to list all artifacts
-- Use group system property if set for Android build
 
 == Get Started - link:{htmlPath}delivery-doc/html/Tutorial.html[Tutorial]
 
