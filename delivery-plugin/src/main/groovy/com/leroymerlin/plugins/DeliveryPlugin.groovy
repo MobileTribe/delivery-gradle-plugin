@@ -9,6 +9,7 @@ import com.leroymerlin.plugins.tasks.build.DeliveryBuild
 import com.leroymerlin.plugins.tasks.build.DockerBuild
 import com.leroymerlin.plugins.tasks.build.PrepareBuildTask
 import com.leroymerlin.plugins.utils.PropertiesUtils
+import com.leroymerlin.plugins.utils.SystemUtils
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import org.gradle.api.Action
@@ -116,6 +117,12 @@ class DeliveryPlugin implements Plugin<Project> {
 
         setupProperties()
 
+        //Check if child process is evaluating delivery extension to get repositories
+        if (isChildEvaluation()){
+            return;
+        }
+
+
         ProjectConfigurator detectedConfigurator = configurators.find {
             configurator ->
                 configurator.newInstance().handleProject(project)
@@ -218,9 +225,15 @@ class DeliveryPlugin implements Plugin<Project> {
         }
     }
 
+
+    boolean isChildEvaluation(){
+        def parentBuildRoot = SystemUtils.getEnvProperty(ProjectConfigurator.PARENT_BUILD_ROOT)
+        return parentBuildRoot && parentBuildRoot == project.rootDir.path
+    }
+
 //create default release git flow
     void enableReleaseGitFlow(boolean enable) {
-        if (enable && !project.tasks.findByPath("releaseGitFlow")) {
+        if (enable && !project.tasks.findByPath("releaseGitFlow") && !isChildEvaluation()) {
             deliveryExtension.flowsContainer.create(
 //tag::gitReleaseFlow[]
                     'releaseGit',
