@@ -122,6 +122,10 @@ class DeliveryPlugin implements Plugin<Project> {
             return;
         }
 
+        if(!checkVersionProperties()){
+            deliveryLogger.logWarning("version or versionId are not configure in project ${project.name}. Delivery can't configure. Please add version.properties to fix it.")
+            return;
+        }
 
         ProjectConfigurator detectedConfigurator = configurators.find {
             configurator ->
@@ -228,7 +232,15 @@ class DeliveryPlugin implements Plugin<Project> {
 
     boolean isChildEvaluation(){
         def parentBuildRoot = SystemUtils.getEnvProperty(ProjectConfigurator.PARENT_BUILD_ROOT)
-        return parentBuildRoot && parentBuildRoot == project.rootDir.path
+        return parentBuildRoot != null && parentBuildRoot == project.rootDir.path
+    }
+
+
+    boolean checkVersionProperties(){
+        if(project.version == null || project.versionId == null){
+            return false
+        }
+        return true
     }
 
 //create default release git flow
@@ -364,6 +376,10 @@ class DeliveryPlugin implements Plugin<Project> {
             project.ext.group = versionProperties.getProperty('group')
             project.group = versionProperties.getProperty('group')
         }
+
+
+
+
 
         deliveryExtension.configurator?.applyProperties()
     }
