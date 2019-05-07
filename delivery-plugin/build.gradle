@@ -5,7 +5,7 @@ delivery {
 
     enableReleaseGitFlow = true
 
-    archiveRepositories = project.ext.properties.containsKey('bintrayRepositories') ? project.ext.bintrayRepositories : {
+    archiveRepositories = project.ext.properties.containsKey('bintrayMobiletribeRepositories') ? project.ext.bintrayMobiletribeRepositories : {
     }
 
     flows {

@@ -46,7 +46,7 @@ class DeliveryPluginExtension {
             def parent = PropertiesUtils.findParentProjectWithDelivery(project)
             mArchiveRepositories = parent?.delivery?.archiveRepositories
 
-            if (!plugin.isChildEvaluation()) {
+            if (plugin.isChildEvaluation()) {
                 Project parentProject = ProjectBuilder.builder()
                         .withProjectDir(new File(SystemUtils.getEnvProperty(ProjectConfigurator.PARENT_BUILD_ROOT)))
                         .build()
@@ -82,7 +82,10 @@ class DeliveryPluginExtension {
         action.execute(signingProperties)
         signingProperties.each {
             SigningProperty signingProperty ->
-                getConfigurator().applySigningProperty(signingProperty)
+                def configurator = getConfigurator()
+                if(configurator != null){
+                    configurator.applySigningProperty(signingProperty)
+                }
         }
     }
 
