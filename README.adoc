@@ -88,6 +88,9 @@ image:./delivery-doc/assets/videos/releaseGitFlow.gif[]
 == Changelog - link:{htmlPath}delivery-doc/html/Changelog.html[Full changelog]
 
 
+=== *3.3.4* - (2019-06-11)
+- Refactor : add version in docker build task
+
 === *3.3.3* - (2019-05-06)
 - Fix : flutter build with delivery
 

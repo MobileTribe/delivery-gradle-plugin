@@ -28,10 +28,10 @@ class DockerUpload extends DefaultTask {
             def user = registryProperties.user
 
 
-            def fullName = "${url}/${buildTask.getImageName()}"
+            def fullName = "${url}/${buildTask.getImageFullName()}"
 
 
-            Executor.exec(["docker", "tag", buildTask.getImageName(), fullName]) {
+            Executor.exec(["docker", "tag", buildTask.getImageFullName(), fullName]) {
                 directory = project.projectDir
             }
 
