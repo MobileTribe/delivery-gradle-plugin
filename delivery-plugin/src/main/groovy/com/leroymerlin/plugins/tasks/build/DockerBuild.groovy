@@ -20,13 +20,16 @@ class DockerBuild extends DefaultTask {
     @Input
     String imageName = project.artifact
 
-    String getImageName() {
-        return "${imageName}:${project.version}"
+    @Input
+    String version = project.version
+
+    String getImageFullName() {
+        return "${this.imageName}:${this.version}"
     }
 
     @TaskAction
     void run() {
-        def fullImageName = getImageName()
+        def fullImageName = getImageFullName()
         Executor.exec(["docker" ,"build", "-t" , fullImageName ,buildPath]){
             directory = project.projectDir
         }

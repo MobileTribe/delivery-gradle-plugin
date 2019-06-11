@@ -19,11 +19,11 @@ class ListDockerImages extends DefaultTask {
                     def buildTask = task.buildTask
                     deliveryLogger.logInfo("Image n°${index + 1}")
                     deliveryLogger.logInfo("Name: ${buildTask.imageName}")
-                    deliveryLogger.logInfo("Version: ${project.version}")
+                    deliveryLogger.logInfo("Version: ${buildTask.version}")
                     deliveryLogger.logInfo("Registry: ${buildTask.registry}")
                     RegistryProperty property = task.getRegistry()
                     if (property != null && property.url != null) {
-                        deliveryLogger.logInfo("Full name: ${property.url}/${buildTask.getImageName()}")
+                        deliveryLogger.logInfo("Full name: ${property.url}/${buildTask.getImageFullName()}")
                     } else {
                         buildTask.deliveryLogger.logWarning("Registry not configured ${buildTask.registry} not configured")
                     }
