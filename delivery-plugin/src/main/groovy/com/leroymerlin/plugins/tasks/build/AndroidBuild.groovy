@@ -28,12 +28,12 @@ class AndroidBuild extends DeliveryBuild {
                     outputFiles.put(classifier as String, new File(project.rootProject
                             .file("build/app/outputs/apk/" +
                             "${variantName.replace("${project.artifact.toLowerCase()}", "").replaceFirst("-", "")}/$classifier/$fileName").path.replace("android/", "")))
-                    dependsOn.add(variant.assemble)
+                    dependsOn.add(variant.hasProperty("assembleProvider") ? variant.assembleProvider.name : variant.assemble.name)
                     if (variant.testVariant) {
                         outputFiles.put("test-$classifier" as String, new File(project.rootProject
                                 .file("build/app/outputs/apk/" +
                                 "${variantName.replace("${project.artifact.toLowerCase()}", "").replaceFirst("-", "")}/$classifier/$fileName").path.replace("android/", "")))
-                        dependsOn.add(variant.testVariant.assemble)
+                        dependsOn.add(variant.testVariant.hasProperty("assembleProvider") ? variant.testVariant.assembleProvider.name : variant.testVariant.assemble)
                     }
                 } else {
 
@@ -41,7 +41,8 @@ class AndroidBuild extends DeliveryBuild {
                     outputFiles.put(classifier as String, project
                             .file("build/outputs/apk/" +
                             "${variantName.replace("${project.artifact.toLowerCase()}", "").replaceFirst("-", "")}/$classifier/$fileName"))
-                    dependsOn.add(variant.assemble)
+
+                    dependsOn.add(variant.hasProperty("assembleProvider") ? variant.assembleProvider.name : variant.assemble.name)
 
                     variant.assemble.dependsOn += project.tasks.withType(PrepareBuildTask)
 
@@ -49,7 +50,7 @@ class AndroidBuild extends DeliveryBuild {
                         outputFiles.put("test-$classifier" as String, project
                                 .file("build/outputs/apk/" +
                                 "${variantName.replace("${project.artifact.toLowerCase()}", "").replaceFirst("-", "")}/$classifier/$fileName"))
-                        dependsOn.add(variant.testVariant.assemble)
+                        dependsOn.add(variant.testVariant.hasProperty("assembleProvider") ? variant.testVariant.assembleProvider.name : variant.testVariant.assemble)
                     }
                 }
             }
