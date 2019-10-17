@@ -9,6 +9,10 @@ buildscript {
 }
 allprojects {
     repositories {
+        google()
         jcenter()
+        maven {
+            url('http://repository.openbakery.org/')
+        }
     }
 }

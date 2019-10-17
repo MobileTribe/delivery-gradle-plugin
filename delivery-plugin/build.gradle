@@ -25,32 +25,35 @@ repositories {
 
 configurations {
     // configuration that holds jars to include in the jar
-    extraLibs
+    jarLibs
+    // add only transitive dependency to the implementation config
+    transitiveImplementation
 }
 
 jar {
     from {
-        configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.jarLibs.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
+
 
 dependencies {
     implementation gradleApi()
     implementation localGroovy()
 
-    implementation("commons-io:commons-io:2.5")
-    implementation("commons-collections:commons-collections:3.2.2")
-    implementation("commons-configuration:commons-configuration:1.10")
-    implementation("com.google.guava:guava:18.0")
-
-    extraLibs("org.openbakery:xcode-plugin:0.15.4") {
-        exclude group: 'commons-io', module: 'commons-io'
-        exclude group: 'commons-collections', module: 'commons-collections'
-        exclude group: 'commons-configuration', module: 'commons-configuration'
-        exclude group: 'com.google.guava', module: 'guava'
+    //xcode-plugin not available in a public repo. We add it in the plugin jar
+    jarLibs("org.openbakery:xcode-plugin:0.19.1") {
+        transitive = false
     }
+    transitiveImplementation("org.openbakery:xcode-plugin:0.19.1")
+
     testImplementation 'junit:junit:4.12'
-    testImplementation 'com.android.tools.build:gradle:2.3.3'
+    testImplementation 'com.android.tools.build:gradle:3.5.1'
+}
+
+ResolvedDependency topDependency = configurations.transitiveImplementation.resolvedConfiguration.firstLevelModuleDependencies.iterator().next()
+topDependency.children.each { ResolvedDependency child ->
+    project.dependencies.implementation(child.module.toString())
 }
 
 test {
