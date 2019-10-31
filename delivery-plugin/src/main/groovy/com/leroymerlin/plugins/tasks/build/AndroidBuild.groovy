@@ -2,6 +2,7 @@ package com.leroymerlin.plugins.tasks.build
 
 import com.leroymerlin.plugins.DeliveryPlugin
 import com.leroymerlin.plugins.cli.DeliveryLogger
+import org.gradle.api.Task
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.bundling.Jar
 
@@ -28,39 +29,39 @@ class AndroidBuild extends DeliveryBuild {
                     outputFiles.put(classifier as String, new File(project.rootProject
                             .file("build/app/outputs/apk/" +
                             "${variantName.replace("${project.artifact.toLowerCase()}", "").replaceFirst("-", "")}/$classifier/$fileName").path.replace("android/", "")))
-                    dependsOn.add(variant.hasProperty("assembleProvider") ? variant.assembleProvider.name : variant.assemble.name)
+                    def assembleTask = getAssembleTask(variant)
+                    dependsOn.add(assembleTask)
+                    assembleTask.dependsOn += project.tasks.withType(PrepareBuildTask)
                     if (variant.testVariant) {
                         outputFiles.put("test-$classifier" as String, new File(project.rootProject
                                 .file("build/app/outputs/apk/" +
                                 "${variantName.replace("${project.artifact.toLowerCase()}", "").replaceFirst("-", "")}/$classifier/$fileName").path.replace("android/", "")))
-                        dependsOn.add(variant.testVariant.hasProperty("assembleProvider") ? variant.testVariant.assembleProvider.name : variant.testVariant.assemble)
+                        dependsOn.add(getAssembleTask(variant.testVariant))
                     }
                 } else {
-
-
                     outputFiles.put(classifier as String, project
                             .file("build/outputs/apk/" +
                             "${variantName.replace("${project.artifact.toLowerCase()}", "").replaceFirst("-", "")}/$classifier/$fileName"))
 
-                    dependsOn.add(variant.hasProperty("assembleProvider") ? variant.assembleProvider.name : variant.assemble.name)
-
-                    variant.assemble.dependsOn += project.tasks.withType(PrepareBuildTask)
+                    def assembleTask = getAssembleTask(variant)
+                    dependsOn.add(assembleTask)
+                    assembleTask.dependsOn += project.tasks.withType(PrepareBuildTask)
 
                     if (variant.testVariant) {
                         outputFiles.put("test-$classifier" as String, project
                                 .file("build/outputs/apk/" +
                                 "${variantName.replace("${project.artifact.toLowerCase()}", "").replaceFirst("-", "")}/$classifier/$fileName"))
-                        dependsOn.add(variant.testVariant.hasProperty("assembleProvider") ? variant.testVariant.assembleProvider.name : variant.testVariant.assemble)
+                        dependsOn.add(getAssembleTask(variant.testVariant))
                     }
                 }
             }
             // Before Android plugin 3.0.0
             catch (MissingMethodException ignored) {
                 outputFiles.put(classifier as String, variant.outputs.get(0).outputFile as File)
-                dependsOn.add(variant.assemble)
+                dependsOn.add(getAssembleTask(variant))
                 if (variant.testVariant) {
                     outputFiles.put("test-$classifier" as String, variant.testVariant.outputs.get(0).outputFile as File)
-                    dependsOn.add(variant.testVariant.assemble)
+                    dependsOn.add(getAssembleTask(variant.testVariant))
                 }
             }
             if (variant.mappingFile) {
@@ -85,5 +86,9 @@ class AndroidBuild extends DeliveryBuild {
         } else {
             deliveryLogger.logWarning("$classifier has no valid signing config and will not be archived")
         }
+    }
+
+    static Task getAssembleTask(variant){
+        return variant.hasProperty("assembleProvider") ? variant.assembleProvider.get() : variant.assemble
     }
 }
