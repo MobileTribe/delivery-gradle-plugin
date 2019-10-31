@@ -1,6 +1,7 @@
 package com.leroymerlin.plugins.tasks.build
 
 import com.leroymerlin.plugins.DeliveryPlugin
+import org.gradle.api.Task
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.bundling.Jar
 
@@ -22,9 +23,9 @@ class AndroidLibBuild extends DeliveryBuild {
         } catch (MissingMethodException ignored) {
             outputFiles.put("", variant.outputs.get(0).outputFile as File)
         }
-        dependsOn.add(variant.assemble)
-
-        variant.assemble.dependsOn += project.tasks.withType(PrepareBuildTask)
+        def assembleTask = AndroidBuild.getAssembleTask(variant)
+        dependsOn.add(assembleTask)
+        assembleTask.dependsOn += project.tasks.withType(PrepareBuildTask)
 
         if (variant.mappingFile) {
             if (!variant.mappingFile.exists()) {

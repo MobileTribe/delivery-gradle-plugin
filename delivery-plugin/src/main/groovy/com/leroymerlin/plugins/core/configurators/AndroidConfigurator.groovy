@@ -106,12 +106,8 @@ class AndroidConfigurator extends ProjectConfigurator {
                     //issue: https://github.com/flutter/flutter/issues/23208
 
                     project.tasks.findByName("flutterBuild${currentVariant.buildType.name.capitalize()}").enabled = false
-                    //currentVariant.assemble.enabled = false
-                    //project.tasks.findByName('test').dependsOn -= "test${currentVariant.buildType.name.capitalize()}UnitTest"
                     deliveryLogger.logInfo("${currentVariant.buildType.name} flutter buildtype skipped")
                 } else {
-
-
                     String flavorName = project.artifact.toString().split(' ').collect({ m -> return m.toLowerCase().capitalize() }).join("") + (currentVariant.flavorName.capitalize() ? "-${currentVariant.flavorName.capitalize()}" : "")
                     flavorName = flavorName[0].toLowerCase() + flavorName.substring(1)
                     String flavorNameNexus = project.artifact.toString().split(' ').collect({ m -> return m.toLowerCase() }).join("-") + (currentVariant.flavorName.toLowerCase() ? "-${currentVariant.flavorName.toLowerCase()}" : "")

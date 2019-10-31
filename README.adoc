@@ -87,6 +87,9 @@ image:./delivery-doc/assets/videos/releaseGitFlow.gif[]
 
 == Changelog - link:{htmlPath}delivery-doc/html/Changelog.html[Full changelog]
 
+=== *3.3.6* - (2019-10-31)
+- Fix : Android warning accessing assemble task from variant
+
 === *3.3.5* - (2019-10-17)
 - Refactor : Android build to remove warning
 - Fix : Jetifier conflict with xcode-plugin
