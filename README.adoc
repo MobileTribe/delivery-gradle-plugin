@@ -87,6 +87,9 @@ image:./delivery-doc/assets/videos/releaseGitFlow.gif[]
 
 == Changelog - link:{htmlPath}delivery-doc/html/Changelog.html[Full changelog]
 
+=== *3.3.7* - (2019-11-13)
+- Refactor : add pull in begin of release git flow
+
 === *3.3.6* - (2019-10-31)
 - Fix : Android warning accessing assemble task from variant
 
