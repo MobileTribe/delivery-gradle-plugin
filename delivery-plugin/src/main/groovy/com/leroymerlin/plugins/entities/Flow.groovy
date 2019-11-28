@@ -82,8 +82,8 @@ class Flow {
         createTask(PushTagTask, [tagName: tagName])
     }
 
-    def pull() {
-        createTask(PullTask, null)
+    def pull(String branchName = "") {
+        createTask(PullTask, [branchName: branchName])
     }
 
     def delete(String branchName) {

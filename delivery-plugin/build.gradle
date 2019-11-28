@@ -18,8 +18,12 @@ delivery {
 }
 
 repositories {
+    maven {
+        url('http://repository.openbakery.org/')
+    }
+    google()
     jcenter()
-    maven { url('http://repository.openbakery.org/') }
+    mavenLocal()
     mavenCentral()
 }
 
