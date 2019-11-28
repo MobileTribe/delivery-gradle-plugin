@@ -26,7 +26,7 @@ interface BaseScmAdapter {
 
     void pushTag(String tagName)
 
-    void pull()
+    void pull(String branchName)
 
     void discardChange()
 }

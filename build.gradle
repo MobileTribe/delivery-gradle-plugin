@@ -1,18 +1,25 @@
 buildscript {
     repositories {
+        maven {
+            url('http://repository.openbakery.org/')
+        }
+        google()
         jcenter()
         mavenLocal()
+        mavenCentral()
     }
     dependencies {
-        classpath "com.leroymerlin.plugins:delivery-plugin:3.3.0"
+        classpath "com.leroymerlin.plugins:delivery-plugin:3.3.4"
     }
 }
 allprojects {
     repositories {
-        google()
-        jcenter()
         maven {
             url('http://repository.openbakery.org/')
         }
+        google()
+        jcenter()
+        mavenLocal()
+        mavenCentral()
     }
 }
