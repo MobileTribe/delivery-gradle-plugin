@@ -266,7 +266,7 @@ class DeliveryPlugin implements Plugin<Project> {
                         def newVersionId = Integer.parseInt(project.versionId as String) + 1
 
                         branch workBranch
-                        pull
+                        pull workBranch
                         step 'prepareReleaseBranch', "prepare branch $releaseBranch"
                         branch releaseBranch, true
                         step 'prepareVersion', "prepare version"

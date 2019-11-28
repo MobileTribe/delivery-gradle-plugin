@@ -7,8 +7,10 @@ import org.gradle.api.tasks.TaskAction
  */
 class PullTask extends ScmBaseTask {
 
+    String branchName
+
     @TaskAction
     pull() {
-        scmAdapter.pull()
+        scmAdapter.pull(branchName)
     }
 }

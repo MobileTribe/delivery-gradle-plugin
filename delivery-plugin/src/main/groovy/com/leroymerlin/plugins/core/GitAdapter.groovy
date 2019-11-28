@@ -124,9 +124,14 @@ fi
         }
     }
 
+
     @Override
-    void pull() {
-        exec(generateGitCommand(['git', 'pull']))
+    void pull(String branchName = "") {
+        if (branchName == null || branchName.isEmpty()) {
+            exec(generateGitCommand(['git', 'pull']))
+        } else {
+            exec(generateGitCommand(['git', 'pull', 'origin', branchName]))
+        }
     }
 
     List<String> generateGitCommand(List<String> command) {
