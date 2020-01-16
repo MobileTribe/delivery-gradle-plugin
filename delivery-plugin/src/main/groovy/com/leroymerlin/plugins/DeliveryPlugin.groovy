@@ -179,6 +179,7 @@ class DeliveryPlugin implements Plugin<Project> {
                     if (project.group == null) throwException("Group", project)
 
                     def variantName = task.variantName
+                    def variantNameNexus = task.variantName.toLowerCase()
 
                     String configurationName = variantName + "Config"
                     if (!project.configurations.hasProperty(configurationName)) {
@@ -197,7 +198,7 @@ class DeliveryPlugin implements Plugin<Project> {
                         MavenRepositoryHandlerConvention repositories = new DslObject(installTask.getRepositories()).getConvention().getPlugin(MavenRepositoryHandlerConvention.class)
                         def mavenInstaller = repositories.mavenInstaller()
                         MavenPom pom = mavenInstaller.getPom()
-                        pom.setArtifactId(variantName as String)
+                        pom.setArtifactId(variantNameNexus as String)
                     }
                     ((Configuration) project.configurations."${configurationName}").artifacts.addAll(task.getArtifacts() as PublishArtifact[])
 
