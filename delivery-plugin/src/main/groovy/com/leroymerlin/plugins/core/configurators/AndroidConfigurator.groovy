@@ -108,12 +108,14 @@ class AndroidConfigurator extends ProjectConfigurator {
                     project.tasks.findByName("flutterBuild${currentVariant.buildType.name.capitalize()}").enabled = false
                     deliveryLogger.logInfo("${currentVariant.buildType.name} flutter buildtype skipped")
                 } else {
-                    String flavorName = project.artifact.toString().split(' ').collect({ m -> return m.toLowerCase() }).join("") + (currentVariant.flavorName.capitalize() ? "-${currentVariant.flavorName.capitalize()}" : "")
+                    String flavorName = project.artifact.toString().split(' ').collect({ m -> return m.toLowerCase().capitalize() }).join("") + (currentVariant.flavorName.capitalize() ? "-${currentVariant.flavorName.capitalize()}" : "")
+                    flavorName = flavorName[0].toLowerCase() + flavorName.substring(1)
+                    String flavorNameNexus = project.artifact.toString().split(' ').collect({ m -> return m.toLowerCase() }).join("-") + (currentVariant.flavorName.toLowerCase() ? "-${currentVariant.flavorName.toLowerCase()}" : "")
 
                     def buildTaskName = "build${flavorName.capitalize()}Artifacts"
                     if (project.tasks.findByPath(buildTaskName) == null) {
                         project.task(buildTaskName, type: AndroidBuild, group: DeliveryPlugin.TASK_GROUP) {
-                            variantName flavorName
+                            variantName flavorNameNexus
                         }
                     }
                     project.tasks.findByPath(buildTaskName).addVariant(currentVariant)
@@ -122,12 +124,14 @@ class AndroidConfigurator extends ProjectConfigurator {
         } else {
             project.android.libraryVariants.all { currentVariant ->
                 if (currentVariant.buildType.name == "release") {
-                    String flavorName = project.artifact.toString().split(' ').collect({ m -> return m.toLowerCase() }).join("") + (currentVariant.flavorName.capitalize() ? "-${currentVariant.flavorName.capitalize()}" : "")
- 
+                    String flavorName = project.artifact.toString().split(' ').collect({ m -> return m.toLowerCase().capitalize() }).join("") + (currentVariant.flavorName.capitalize() ? "-${currentVariant.flavorName.capitalize()}" : "")
+                    flavorName = flavorName[0].toLowerCase() + flavorName.substring(1)
+                    String flavorNameNexus = project.artifact.toString().split(' ').collect({ m -> return m.toLowerCase() }).join("-") + (currentVariant.flavorName.toLowerCase() ? "-${currentVariant.flavorName.toLowerCase()}" : "")
+
                     def buildTaskName = "build${flavorName.capitalize()}Artifacts"
                     if (project.tasks.findByPath(buildTaskName) == null) {
                         project.task(buildTaskName, type: AndroidLibBuild, group: DeliveryPlugin.TASK_GROUP) {
-                            variantName flavorName
+                            variantName flavorNameNexus
                         }
                     }
                     project.tasks.findByPath(buildTaskName).addVariant(currentVariant)
