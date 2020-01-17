@@ -33,6 +33,8 @@ class ListArtifacts extends DefaultTask {
                     deliveryLogger.logInfo("Type: ${artifact.type}")
                     artifact.classifier ? deliveryLogger.logInfo("Classifier: ${artifact.classifier}") : ""
                     deliveryLogger.logInfo("Group: ${project.group}")
+                    deliveryLogger.logInfo("ArtifactId: ${artifact.name}")
+                    deliveryLogger.logInfo("Version: ${project.version}")
                     deliveryLogger.logInfo("Path: ${artifact.file.path}")
                     for (ArtifactRepository repo : uploadTask.repositories) {
                         Map<String, String> repos = getUrls(repo)
