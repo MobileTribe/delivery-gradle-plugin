@@ -3,6 +3,14 @@
 :htmlPath:
 ifdef::env-github[:htmlPath: http://mobiletribe.github.io/delivery-gradle-plugin/]
 
+=== *3.3.9* - (2020-01-16)
+- Fix : correctly generated apk construction path (apk build path generated was wrong when we used multiple flavorDimensions)
+
+=== *3.3.8* - (2019-11-28)
+- Fix : error during pull on Jenkins. Forcing the name of the branch during a pull
+
+=== *3.3.7* - (2019-11-13)
+- Refactor : add pull in begin of release git flow
 
 === *3.3.6* - (2019-10-31)
 - Fix : Android warning accessing assemble task from variant

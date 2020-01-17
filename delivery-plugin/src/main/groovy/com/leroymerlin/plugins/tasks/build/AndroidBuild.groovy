@@ -24,24 +24,22 @@ class AndroidBuild extends DeliveryBuild {
                     outputFileName = fileName
                 }
                 boolean isFlutter = project.plugins.find { it.class.simpleName.equals("FlutterPlugin") } != null
+                String flavorName = variantName.replace("${project.artifact.toLowerCase()}", "").replaceFirst("-", "").uncapitalize()
 
                 if (isFlutter) {
                     outputFiles.put(classifier as String, new File(project.rootProject
-                            .file("build/app/outputs/apk/" +
-                            "${variantName.replace("${project.artifact.toLowerCase()}", "").replaceFirst("-", "")}/$classifier/$fileName").path.replace("android/", "")))
+                            .file("build/app/outputs/apk/$flavorName/$classifier/$fileName").path.replace("android/", "")))
                     def assembleTask = getAssembleTask(variant)
                     dependsOn.add(assembleTask)
                     assembleTask.dependsOn += project.tasks.withType(PrepareBuildTask)
                     if (variant.testVariant) {
                         outputFiles.put("test-$classifier" as String, new File(project.rootProject
-                                .file("build/app/outputs/apk/" +
-                                "${variantName.replace("${project.artifact.toLowerCase()}", "").replaceFirst("-", "")}/$classifier/$fileName").path.replace("android/", "")))
+                                .file("build/app/outputs/apk/$flavorName/$classifier/$fileName").path.replace("android/", "")))
                         dependsOn.add(getAssembleTask(variant.testVariant))
                     }
                 } else {
                     outputFiles.put(classifier as String, project
-                            .file("build/outputs/apk/" +
-                            "${variantName.replace("${project.artifact.toLowerCase()}", "").replaceFirst("-", "")}/$classifier/$fileName"))
+                            .file("build/outputs/apk/$flavorName/$classifier/$fileName"))
 
                     def assembleTask = getAssembleTask(variant)
                     dependsOn.add(assembleTask)
@@ -49,8 +47,7 @@ class AndroidBuild extends DeliveryBuild {
 
                     if (variant.testVariant) {
                         outputFiles.put("test-$classifier" as String, project
-                                .file("build/outputs/apk/" +
-                                "${variantName.replace("${project.artifact.toLowerCase()}", "").replaceFirst("-", "")}/$classifier/$fileName"))
+                                .file("build/outputs/apk/$flavorName/$classifier/$fileName"))
                         dependsOn.add(getAssembleTask(variant.testVariant))
                     }
                 }
