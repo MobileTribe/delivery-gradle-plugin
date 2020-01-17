@@ -87,6 +87,9 @@ image:./delivery-doc/assets/videos/releaseGitFlow.gif[]
 
 == Changelog - link:{htmlPath}delivery-doc/html/Changelog.html[Full changelog]
 
+=== *3.3.9* - (2020-01-16)
+- Fix : correctly generated apk construction path (apk build path generated was wrong when we used multiple flavorDimensions)
+
 === *3.3.8* - (2019-11-28)
 - Fix : error during pull on Jenkins. Forcing the name of the branch during a pull
 
