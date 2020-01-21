@@ -87,6 +87,9 @@ image:./delivery-doc/assets/videos/releaseGitFlow.gif[]
 
 == Changelog - link:{htmlPath}delivery-doc/html/Changelog.html[Full changelog]
 
+=== *3.3.11* - (2020-01-21)
+- Fix : correctly generated apk construction path (apk build path generated was wrong when we used multiple flavorDimensions)
+
 === *3.3.10* - (2020-01-17)
 - Fix : correctly generated artifactId (lowercase) (artifactId generated was wrong when we used multiple flavorDimensions)
 
