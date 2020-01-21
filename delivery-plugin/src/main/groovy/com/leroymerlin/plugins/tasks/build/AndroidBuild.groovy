@@ -26,7 +26,8 @@ class AndroidBuild extends DeliveryBuild {
                 }
                 boolean isFlutter = project.plugins.find { it.class.simpleName.equals("FlutterPlugin") } != null
 
-                String flavorName = variantName.replace(project.artifact.toLowerCase(), "").replaceFirst("-", "").toLowerCase()
+                //String flavorName = variantName.replace(project.artifact.toLowerCase(), "").replaceFirst("-", "").toLowerCase()
+                String flavorName = variant.flavorName
 
                 if (isFlutter) {
                     outputFiles.put(classifier as String, new File(project.rootProject
